@@ -15,14 +15,14 @@ public class BossBarManager {
         this.plugin = plugin;
     }
 
-    private BossBar bar = Bukkit.createBossBar(null, BarColor.RED, BarStyle.SEGMENTED_20);
+    private BossBar bar = Bukkit.createBossBar(null, BarColor.RED, BarStyle.SOLID);
 
-    public void addPlayer(Player player, String name) {
-        if (name != null) {
-            bar.setTitle(plugin.getConfig().getString("Bars." + name + ".DisplayName"));
-            bar.setColor(BarColor.valueOf(plugin.getConfig().getString("Bars." + name + ".Color").toUpperCase()));
-            bar.setStyle(BarStyle.valueOf(plugin.getConfig().getString("Bars." + name + ".Style").toUpperCase()));
-        }
+    public void createBar(String title, String color, String style) {
+        bar = Bukkit.createBossBar(ChatColor.translateAlternateColorCodes('&', title),
+                BarColor.valueOf(color.toUpperCase()), BarStyle.valueOf(style.toUpperCase()));
+    }
+
+    public void addPlayer(Player player) {
         if (!bar.getPlayers().contains(player) && bar != null) {
             bar.addPlayer(player);
         }
@@ -33,9 +33,28 @@ public class BossBarManager {
         bar.setProgress(1 / barProgress);
     }
 
+    public boolean containsBar(Player player) {
+        return bar.getPlayers().contains(player);
+    }
+
     public void removeBar(Player player) {
-        if (bar.getPlayers().contains(player))
-            bar.removePlayer(player);
+        bar.removePlayer(player);
+    }
+
+    public String getBarColor() {
+        return bar.getColor().name();
+    }
+
+    public void setBarColor(String color) {
+        bar.setColor(BarColor.valueOf(color.toUpperCase()));
+    }
+
+    public String getBarStyle() {
+        return bar.getStyle().name().replace("_", "");
+    }
+
+    public void setBarStyle(String style) {
+        bar.setStyle(BarStyle.valueOf(style.toUpperCase()));
     }
 
     public void setBarName(String text) {

@@ -1,5 +1,8 @@
 package com.minestom;
 
+import com.cloutteam.samjakob.gui.types.PaginatedGUI;
+import com.minestom.BarInterface.BarListener.*;
+import com.minestom.BarInterface.BossbarInterface;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -9,7 +12,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BossbarTimer extends JavaPlugin {
@@ -17,7 +22,93 @@ public class BossbarTimer extends JavaPlugin {
     private Map<String, Double> timer = new HashMap<>();
     private Map<String, Double> initialTime = new HashMap<>();
     private Map<String, BossBarManager> barManagerMap = new HashMap<>();
+    private Map<String, Map<String, String>> createBarValues = new HashMap<>();
+    private Map<String, String> barValues = new HashMap<>();
+    private Map<Player, String> barKeyName = new HashMap<>();
+    private List<Player> editing = new ArrayList<>();
+    private List<Player> colors = new ArrayList<>();
+    private List<Player> styles = new ArrayList<>();
+    private List<Player> editTimer = new ArrayList<>();
+    private List<Player> editingName = new ArrayList<>();
+    private List<Player> createBar = new ArrayList<>();
+    private BossBarManager barManager;
     private Utilities utilities;
+
+    public Map<String, Map<String, String>> getCreateBarValues() {
+        return createBarValues;
+    }
+
+    public Map<Player, String> getBarKeyName() {
+        return barKeyName;
+    }
+
+    public Map<String, String> getBarValues() {
+        return barValues;
+    }
+
+    public void setEditTimer(Player player) {
+        this.editTimer.add(player);
+    }
+
+    public void setCreatingBar(Player player) {
+        this.createBar.add(player);
+    }
+
+    public void setEditingName(Player player) {
+        this.editingName.add(player);
+    }
+
+    public void setStyles(Player player) {
+        this.styles.add(player);
+    }
+
+    public void setEditing(Player player) {
+        this.editing.add(player);
+    }
+
+    public void setColors(Player player) {
+        this.colors.add(player);
+    }
+
+    public void removeStyles(Player player) {
+        this.styles.remove(player);
+    }
+
+    public void removeCreatingBar(Player player) {
+        this.createBar.remove(player);
+    }
+
+    public void removeEditTimer(Player player) {
+        this.editTimer.remove(player);
+    }
+
+    public void removeEditingName(Player player) {
+        this.editingName.remove(player);
+    }
+
+    public boolean containsEditingName(Player player) {
+        return this.editingName.contains(player);
+    }
+
+    public boolean containsCreatingBar(Player player) {
+        return this.createBar.contains(player);
+    }
+
+    public boolean containsEditTimer(Player player) {
+        return this.editTimer.contains(player);
+    }
+
+    public void removeEditing(Player player) {
+        this.editing.remove(player);
+    }
+
+    public void removeColors(Player player) {
+        this.colors.remove(player);
+    }
+
+    public BossBarManager getBarManager() {
+        return barManager;
+    }
 
     public Map<String, BossBarManager> getBarManagerMap() {
         return barManagerMap;
@@ -41,14 +132,26 @@ public class BossbarTimer extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        barManager = new BossBarManager(this);
+        PaginatedGUI.prepare(this);
         utilities = new Utilities(this);
         BossBarManager barManager = new BossBarManager(this);
+        getServer().getPluginManager().registerEvents(new MainMenu(this), this);
+        getServer().getPluginManager().registerEvents(new EditMenu(this), this);
+        getServer().getPluginManager().registerEvents(new ColorsMenu(this), this);
+        getServer().getPluginManager().registerEvents(new StylesMenu(this), this);
+        getServer().getPluginManager().registerEvents(new NameTimeEdit(this), this);
         BukkitTask task = new CountDown(this).runTaskTimer(this, 0L, 20L);
         if (!new File(this.getDataFolder(), "config.yml").exists()) {
             this.saveDefaultConfig();
         }
         for (String name : getConfig().getConfigurationSection("Bars").getKeys(false)) {
             barManagerMap.put(name, barManager);
+        }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (barManager.containsBar(player)) {
+                barManager.removeBar(player);
+            }
         }
     }
 
@@ -61,6 +164,7 @@ public class BossbarTimer extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("bossbartimer")) {
             if (args.length == 0) {
+/*
                 sender.sendMessage(colorMessage("&8----------------------------"));
                 sender.sendMessage(colorMessage("&c&l        BossBarTimer"));
                 sender.sendMessage(colorMessage(""));
@@ -71,6 +175,15 @@ public class BossbarTimer extends JavaPlugin {
                 sender.sendMessage(colorMessage("&8 - &a/bbt reload | Sort of not working"));
                 sender.sendMessage(colorMessage(""));
                 sender.sendMessage(colorMessage("&8----------------------------"));
+*/
+                Player player = (Player) sender;
+                if (editing.contains(player)) {
+                    BossbarInterface.createEditMenu(player, this);
+                } else if (colors.contains(player)) {
+                    BossbarInterface.createColorMenu(player);
+                } else if (styles.contains(player)) {
+                    BossbarInterface.createStyleMenu(player);
+                } else BossbarInterface.createMainMenu(player);
                 return true;
             }
             if (args[0].equalsIgnoreCase("reload")) {
@@ -80,7 +193,7 @@ public class BossbarTimer extends JavaPlugin {
             if (args[0].equalsIgnoreCase("stop")) {
                 String barName = args[1];
                 BossBarManager bossBar = barManagerMap.get(barName);
-                if (!timer.containsKey(barName)){
+                if (!timer.containsKey(barName)) {
                     sender.sendMessage(colorMessage("&cBossBarTimer > &7That bar is not active!"));
                     return true;
                 }
@@ -112,7 +225,7 @@ public class BossbarTimer extends JavaPlugin {
                     sender.sendMessage(colorMessage("&cBossBarTimer > &7That bar is not available try another one!"));
                     return true;
                 }
-                if (timer.containsKey(barName)){
+                if (timer.containsKey(barName)) {
                     sender.sendMessage(colorMessage("&cBossBarTimer > &7That bar is already active!"));
                     return true;
                 }
@@ -131,8 +244,10 @@ public class BossbarTimer extends JavaPlugin {
                 initialTime.put(barName, time);
                 BossBarManager bossBar = barManagerMap.get(barName);
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    bossBar.addPlayer(player, barName);
+                    bossBar.addPlayer(player);
                 }
+                bossBar.setBarColor(getConfig().getString("Bars." + barName + ".Color").toUpperCase());
+                bossBar.setBarStyle(getConfig().getString("Bars." + barName + ".Style").toUpperCase());
                 sender.sendMessage(colorMessage("&cBossBarTimer > &7The bar &e" + barName + " &7has been started!"));
             }
         }
