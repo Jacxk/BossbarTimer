@@ -37,5 +37,17 @@ public class CountDown extends BukkitRunnable {
                         plugin.getUtilities().format((long) timeLeft - 1)));
             }
         }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (plugin.containsEditingName(player)) {
+                player.sendTitle("§aPlease enter the name", "§cin the chat", 0, 25, 0);
+            }
+            if (plugin.containsEditTimer(player)) {
+                player.sendTitle("§aPlease enter the time", "§cin the chat", 0, 25, 0);
+            }
+            if (plugin.containsCreatingBar(player)) {
+                player.sendTitle("§aPlease enter the name", "§cin the chat", 0, 25, 0);
+            }
+        }
+
     }
 }

@@ -55,6 +55,8 @@ public class NameTimeEdit implements Listener {
             }
             values.put("Time", message);
             plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
+            plugin.removeEditTimer(player);
+            plugin.setEditing(player);
             BossbarInterface.createEditMenu(player, plugin);
         }
         if (plugin.containsCreatingBar(player)) {
@@ -63,6 +65,12 @@ public class NameTimeEdit implements Listener {
                 BossbarInterface.createMainMenu(player);
                 plugin.removeCreatingBar(player);
                 return;
+            }
+            for (String bars : plugin.getBarManagerMap().keySet()) {
+                if (message.equals(bars)) {
+                    player.sendMessage("There is a bar with that name! Try another name!");
+                    return;
+                }
             }
             plugin.getBarValues().put("DisplayName", "Title");
             plugin.getBarValues().put("Time", "0s");

@@ -38,6 +38,7 @@ public class BossbarInterface {
 
         itemBuilder(inv, "&a&lCreate new Bar", Material.BOOK, 0, 1, Arrays.asList("&7Click here to create", "&7and edit a new bar timer."));
         itemBuilder(inv, "&a&lEdit Bar", Material.BOOK, 0, 3, Arrays.asList("&7Click here to edit", "&7a current bar."));
+
         player.openInventory(inv);
     }
 
@@ -48,8 +49,8 @@ public class BossbarInterface {
         itemBuilder(inv, "&a&lChange Color", Material.INK_SACK, 0, 0, Arrays.asList("&7Click here to enter the", "&7edit color mode.", "", "&eCurrent Color: &a" + values.get("Color")));
         itemBuilder(inv, "&a&lChange Style", Material.EMPTY_MAP, 0, 1, Arrays.asList("&7Click here to enter the", "&7edit style mode.", "", "&eCurrent Style: &a" + values.get("Style")));
         itemBuilder(inv, "&a&lChange Display Name", Material.BOOK, 0, 2, Arrays.asList("&7Click here to enter the", "&7edit display name mode."));
-        itemBuilder(inv, "&a&lChange Bar Timer", Material.NAME_TAG, 0, 3, Arrays.asList("&7Click here to enter the", "&7edit timer mode.", "", "&eCurrent Time: " + values.get("Time")));
-        itemBuilder(inv, "&e&lSave", Material.BARRIER, 0, 4, Arrays.asList("&7Click here save", "&7the current bar.", "", "&aBarName: &c" + plugin.getBarKeyName().get(player)));
+        itemBuilder(inv, "&a&lChange Bar Timer", Material.NAME_TAG, 0, 3, Arrays.asList("&7Click here to enter the", "&7edit timer mode.", "", "&eCurrent Time: &a" + values.get("Time")));
+        itemBuilder(inv, "&a&lSave &7| &c&lDelete", Material.BARRIER, 0, 4, Arrays.asList("", "&eLeft-Click &7to save.", "&eShift-Left-Click &7to delete.", "", "&7BarName: &c" + plugin.getBarKeyName().get(player)));
 
         player.openInventory(inv);
     }
@@ -65,6 +66,7 @@ public class BossbarInterface {
         itemBuilder(inv, "&f&lWhite", Material.INK_SACK, 15, 5, Arrays.asList("&7Click here to change", "&7the bar color."));
         itemBuilder(inv, "&4&lRed", Material.INK_SACK, 1, 6, Arrays.asList("&7Click here to change", "&7the bar color."));
         itemBuilder(inv, "&6&lBack", Material.ARROW, 0, 8, Arrays.asList("&7Click here", "&7to go back."));
+
         player.openInventory(inv);
     }
 
@@ -77,6 +79,16 @@ public class BossbarInterface {
         itemBuilder(inv, "&a&lSegmented 12", Material.EMPTY_MAP, 0, 5, Arrays.asList("&7Click here to change", "&7the bar style."));
         itemBuilder(inv, "&a&lSegmented 20", Material.EMPTY_MAP, 0, 6, Arrays.asList("&7Click here to change", "&7the bar style."));
         itemBuilder(inv, "&6&lBack", Material.ARROW, 0, 8, Arrays.asList("&7Click here", "&7to go back."));
+
+        player.openInventory(inv);
+    }
+
+    public static void createConfimMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(player, InventoryType.HOPPER, "Confirm...");
+
+        itemBuilder(inv, "&a&lConfirm", Material.EMERALD_BLOCK, 0, 1, Arrays.asList("&7Click here to confirm", "&7and execute the action."));
+        itemBuilder(inv, "&c&lDeny", Material.REDSTONE_BLOCK, 0, 3, Arrays.asList("&7Click here to confirm", "&7and execute the action."));
+
         player.openInventory(inv);
     }
 
