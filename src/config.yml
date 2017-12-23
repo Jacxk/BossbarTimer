@@ -4,6 +4,9 @@ Bars:
     Time: 5 s
     Color: GREEN
     Style: SOLID
+    AnnouncerMode:
+      Enabled: false
+      Time: 1h
     Commands:
     - 'bbt start Event2'
     - 'say Event2 starting...'
@@ -12,6 +15,9 @@ Bars:
     Time: 1 m
     Color: YELLOW
     Style: SEGMENTED_20
+    AnnouncerMode:
+      Enabled: false
+      Time: 1h
     Commands:
     - 'say Event2 ended... thanks for playing'
 

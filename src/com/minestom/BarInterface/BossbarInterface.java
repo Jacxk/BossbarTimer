@@ -4,6 +4,7 @@ import com.minestom.BossbarTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -26,7 +27,7 @@ public class BossbarInterface {
         for (String addToLore : lore) {
             displayLore.add(ChatColor.translateAlternateColorCodes('&', addToLore));
         }
-        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
+        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7" + displayName));
         itemMeta.setLore(displayLore);
         itemMeta.addItemFlags(ItemFlag.values());
         itemStack.setItemMeta(itemMeta);
@@ -36,9 +37,30 @@ public class BossbarInterface {
     public static void createMainMenu(Player player) {
         Inventory inv = Bukkit.createInventory(player, InventoryType.HOPPER, "BossbarTimer");
 
-        itemBuilder(inv, "&a&lCreate new Bar", Material.BOOK, 0, 1, Arrays.asList("&7Click here to create", "&7and edit a new bar timer."));
-        itemBuilder(inv, "&a&lEdit Bar", Material.BOOK, 0, 3, Arrays.asList("&7Click here to edit", "&7a current bar."));
+        itemBuilder(inv, "&a&lCreate new Bar", Material.BOOK, 0, 1, Arrays.asList("", "&7Click here to create", "&7and edit a new bar timer."));
+        itemBuilder(inv, "&a&lEdit Bar", Material.BOOK, 0, 3, Arrays.asList("", "&7Click here to edit see", "&7and edit available bars."));
 
+        player.openInventory(inv);
+    }
+
+    public static void createEditBarsMenu(Player player, BossbarTimer plugin) {
+        FileConfiguration configuration = plugin.getConfig();
+        Inventory inv = Bukkit.createInventory(player, 54, "Select a bar to edit");
+        int slot = -1;
+
+        for (String barKeyNames : configuration.getConfigurationSection("Bars").getKeys(false)) {
+            slot++;
+            if (slot == 49) {
+                slot = slot + 1;
+            }
+            itemBuilder(inv, "&a&l" + barKeyNames, Material.WRITTEN_BOOK, 0, slot, Arrays.asList("",
+                    "&bColor: &7" + configuration.getString("Bars." + barKeyNames + ".Color"),
+                    "&dStyle: &7" + configuration.getString("Bars." + barKeyNames + ".Style"),
+                    "&eTime: &7" + configuration.getString("Bars." + barKeyNames + ".Time"), "",
+                    "&aLeft-Click &7to edit this bar",
+                    "&aShift-Left-Click &7to remove this bar"));
+        }
+        itemBuilder(inv, "&6&lBack", Material.BARRIER, 0, 49, Arrays.asList("", "&7Click here to go back"));
         player.openInventory(inv);
     }
 
@@ -49,8 +71,8 @@ public class BossbarInterface {
         itemBuilder(inv, "&a&lChange Color", Material.INK_SACK, 0, 0, Arrays.asList("&7Click here to enter the", "&7edit color mode.", "", "&eCurrent Color: &a" + values.get("Color")));
         itemBuilder(inv, "&a&lChange Style", Material.EMPTY_MAP, 0, 1, Arrays.asList("&7Click here to enter the", "&7edit style mode.", "", "&eCurrent Style: &a" + values.get("Style")));
         itemBuilder(inv, "&a&lChange Display Name", Material.BOOK, 0, 2, Arrays.asList("&7Click here to enter the", "&7edit display name mode."));
-        itemBuilder(inv, "&a&lChange Bar Timer", Material.NAME_TAG, 0, 3, Arrays.asList("&7Click here to enter the", "&7edit timer mode.", "", "&eCurrent Time: &a" + values.get("Time")));
-        itemBuilder(inv, "&a&lSave &7| &c&lDelete", Material.BARRIER, 0, 4, Arrays.asList("", "&eLeft-Click &7to save.", "&eShift-Left-Click &7to delete.", "", "&7BarName: &c" + plugin.getBarKeyName().get(player)));
+        itemBuilder(inv, "&a&lAdvanced Settings", Material.REDSTONE_COMPARATOR, 0, 3, Arrays.asList("&7Click here to see", "&7more advanced settings.", "&7Such as time and commands"));
+        itemBuilder(inv, "&a&lSave &7| &c&lCancel", Material.BARRIER, 0, 4, Arrays.asList("", "&eLeft-Click &7to save the changes.", "&eShift-Left-Click &7to cancel the changes.", "", "&7BarName: &c" + plugin.getBarKeyName().get(player)));
 
         player.openInventory(inv);
     }
@@ -88,6 +110,26 @@ public class BossbarInterface {
 
         itemBuilder(inv, "&a&lConfirm", Material.EMERALD_BLOCK, 0, 1, Arrays.asList("&7Click here to confirm", "&7and execute the action."));
         itemBuilder(inv, "&c&lDeny", Material.REDSTONE_BLOCK, 0, 3, Arrays.asList("&7Click here to confirm", "&7and execute the action."));
+
+        player.openInventory(inv);
+    }
+
+    public static void createAvancedMenu(Player player, BossbarTimer plugin) {
+        Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
+        Inventory inv = Bukkit.createInventory(player, InventoryType.HOPPER, "Advanced Settings");
+
+        List<String> lore = new ArrayList<>();
+        lore.add("&7Current Commands:");
+        for (String cmds : values.get("Commands").split(", ")) {
+            if (values.get("Commands").isEmpty()) continue;
+            lore.add("&c- " + cmds.replaceAll("[\\[\\]]", ""));
+        }
+        lore.addAll(Arrays.asList("", "&eLeft-Click &7to add a command.", "&eRight-Click &7to delete the last command.", "&eShift-Left-Click &7to remove all commands."));
+
+        itemBuilder(inv, "&a&lChange Bar Timer", Material.NAME_TAG, 0, 0, Arrays.asList("&7Click here to enter the", "&7edit timer mode.", "", "&eCurrent Time: &a" + values.get("Time")));
+        itemBuilder(inv, "&a&lEdit Commands", Material.MAP, 0, 1, lore);
+        itemBuilder(inv, "&a&lAnnouncerMode", Material.BLAZE_ROD, 0, 2, Arrays.asList("&7Enabled: &cFalse", "&7Show Every: &c50m", "", "&eLeft-Click &7to toggle the", "&7Announcer mode.", "&eRight-Click &7to change the time."));
+        itemBuilder(inv, "&6&lBack", Material.ARROW, 0, 4, Arrays.asList("&7Click here", "&7to go back."));
 
         player.openInventory(inv);
     }

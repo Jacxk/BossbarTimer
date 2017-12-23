@@ -14,6 +14,8 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class ConfirmMenu implements Listener {
@@ -59,18 +61,43 @@ public class ConfirmMenu implements Listener {
                     plugin.removeConfirm(player);
                     plugin.removeDeleting(player);
 
+                    configuration.set(section, null);
+                    plugin.saveConfig();
+
                     player.closeInventory();
-                    player.sendMessage("The bar has been successfully deleted!");
+                    player.sendMessage("You have successfully deleted the bar!");
+                }
+
+                if (plugin.containsCanceling(player)) {
+
+                    barManager.removeBar(player);
+
+                    createBar.remove(barName);
+                    barKeyName.remove(player);
+
+                    plugin.removeConfirm(player);
+                    plugin.removeCanceling(player);
+
+                    player.closeInventory();
+                    player.sendMessage("You have cancelled the bar creation!");
                 }
 
                 if (plugin.containsSaving(player)) {
 
                     player.sendMessage("Saving the bar... Please wait...");
 
+                    List<String> lore = new ArrayList<>();
+
+                    for (String cmds : values.get("Commands").split(", ")) {
+                        if (values.get("Commands").isEmpty()) continue;
+                        lore.add(cmds.replaceAll("[\\[\\]]", ""));
+                    }
+
                     configuration.set(section + ".DisplayName", values.get("DisplayName"));
                     configuration.set(section + ".Time", values.get("Time"));
                     configuration.set(section + ".Color", values.get("Color"));
                     configuration.set(section + ".Style", values.get("Style"));
+                    configuration.set(section + ".Commands", lore);
                     plugin.saveConfig();
 
                     plugin.getBarManagerMap().put(barName, new BossBarManager(plugin));
@@ -88,10 +115,10 @@ public class ConfirmMenu implements Listener {
                 }
             }
             if (slot == 3 && item.hasItemMeta()) {
-                if (plugin.containsDeleting(player)) {
+                if (plugin.containsCanceling(player)) {
 
                     plugin.removeConfirm(player);
-                    plugin.removeDeleting(player);
+                    plugin.removeCanceling(player);
                     plugin.setEditing(player);
                     BossbarInterface.createEditMenu(player, plugin);
 
@@ -102,6 +129,13 @@ public class ConfirmMenu implements Listener {
                     plugin.removeSaving(player);
                     plugin.setEditing(player);
                     BossbarInterface.createEditMenu(player, plugin);
+
+                }
+                if (plugin.containsDeleting(player)) {
+
+                    plugin.removeConfirm(player);
+                    plugin.removeDeleting(player);
+                    BossbarInterface.createEditBarsMenu(player, plugin);
 
                 }
             }

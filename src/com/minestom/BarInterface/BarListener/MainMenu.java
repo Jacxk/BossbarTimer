@@ -1,5 +1,6 @@
 package com.minestom.BarInterface.BarListener;
 
+import com.minestom.BarInterface.BossbarInterface;
 import com.minestom.BossbarTimer;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -29,18 +30,19 @@ public class MainMenu implements Listener {
         InventoryType.SlotType slotType = event.getSlotType();
         if (inventoryName.equals("BossbarTimer") && slotType != InventoryType.SlotType.OUTSIDE
                 && inventory.getType() == InventoryType.HOPPER) {
-            if (item == null) {
+            if (item == null || !item.hasItemMeta()) {
                 return;
             }
             event.setCancelled(true);
-            if (slot == 1 && item.hasItemMeta()) {
+            if (slot == 1) {
                 player.closeInventory();
-                plugin.setEditing(player);
                 plugin.setCreatingBar(player);
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&',
                         "&aEnter the bar name in the chat. Use &eCancel &ato cancel."));
             }
+            if (slot == 3) {
+                BossbarInterface.createEditBarsMenu(player, plugin);
+            }
         }
     }
-
 }

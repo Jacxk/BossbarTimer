@@ -28,6 +28,7 @@ public class CountDown extends BukkitRunnable {
                     bossBar.removeBar(player);
                 }
                 for (String command : plugin.getConfig().getStringList("Bars." + barName + ".Commands")) {
+                    if (command.contains("none")) continue;
                     plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
                 }
             } else {

@@ -8,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class NameTimeEdit implements Listener {
@@ -30,6 +32,25 @@ public class NameTimeEdit implements Listener {
 
         if (event.isCancelled()) return;
 
+        if (plugin.containsAddingCmd(player)) {
+            event.setCancelled(true);
+            if (message.equalsIgnoreCase("cancel")) {
+                plugin.removeEditingName(player);
+                plugin.setEditing(player);
+                BossbarInterface.createAvancedMenu(player, plugin);
+                return;
+            }
+            List<String> lore = new ArrayList<>();
+            for (String cmds : values.get("Commands").split(", ")) {
+                if (values.get("Commands").isEmpty()) continue;
+                lore.add(cmds.replaceAll("[\\[\\]]", ""));
+            }
+            lore.add(message);
+            plugin.removeAddingCmd(player);
+            values.put("Commands", lore.toString());
+            plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
+            BossbarInterface.createAvancedMenu(player, plugin);
+        }
         if (plugin.containsEditingName(player)) {
             event.setCancelled(true);
             if (message.equalsIgnoreCase("cancel")) {
@@ -57,7 +78,7 @@ public class NameTimeEdit implements Listener {
             plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
             plugin.removeEditTimer(player);
             plugin.setEditing(player);
-            BossbarInterface.createEditMenu(player, plugin);
+            BossbarInterface.createAvancedMenu(player, plugin);
         }
         if (plugin.containsCreatingBar(player)) {
             event.setCancelled(true);
@@ -76,6 +97,10 @@ public class NameTimeEdit implements Listener {
             plugin.getBarValues().put("Time", "0s");
             plugin.getBarValues().put("Color", "White");
             plugin.getBarValues().put("Style", "Solid");
+            plugin.getBarValues().put("Commands", "[none, none]");
+            plugin.getBarValues().put("AnnouncerMode.Enabled", "false");
+            plugin.getBarValues().put("AnnouncerMode.Time", "1h");
+
             plugin.getCreateBarValues().put(message.replace(" ", "_"), plugin.getBarValues());
             plugin.getBarKeyName().put(player, message.replace(" ", "_"));
             plugin.removeCreatingBar(player);

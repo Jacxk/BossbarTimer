@@ -33,7 +33,9 @@ public class BossbarTimer extends JavaPlugin {
     private List<Player> createBar = new ArrayList<>();
     private List<Player> confirm = new ArrayList<>();
     private List<Player> saving = new ArrayList<>();
+    private List<Player> canceling = new ArrayList<>();
     private List<Player> deleting = new ArrayList<>();
+    private List<Player> addingCmd = new ArrayList<>();
     private BossBarManager barManager;
     private Utilities utilities;
 
@@ -49,8 +51,16 @@ public class BossbarTimer extends JavaPlugin {
         return barValues;
     }
 
+    public void setAddingCmd(Player player) {
+        this.addingCmd.add(player);
+    }
+
     public void setDeleting(Player player) {
         this.deleting.add(player);
+    }
+
+    public void setCanceling(Player player) {
+        this.canceling.add(player);
     }
 
     public void setSaving(Player player) {
@@ -107,6 +117,22 @@ public class BossbarTimer extends JavaPlugin {
 
     public boolean containsConfirm(Player player) {
         return this.confirm.contains(player);
+    }
+
+    public void removeAddingCmd(Player player) {
+        this.addingCmd.remove(player);
+    }
+
+    public boolean containsAddingCmd(Player player) {
+        return this.addingCmd.contains(player);
+    }
+
+    public void removeCanceling(Player player) {
+        this.canceling.remove(player);
+    }
+
+    public boolean containsCanceling(Player player) {
+        return this.canceling.contains(player);
     }
 
     public void removeDeleting(Player player) {
@@ -179,8 +205,10 @@ public class BossbarTimer extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EditMenu(this), this);
         getServer().getPluginManager().registerEvents(new ColorsMenu(this), this);
         getServer().getPluginManager().registerEvents(new StylesMenu(this), this);
-        getServer().getPluginManager().registerEvents(new NameTimeEdit(this), this);
         getServer().getPluginManager().registerEvents(new ConfirmMenu(this), this);
+        getServer().getPluginManager().registerEvents(new AvancedMenu(this), this);
+        getServer().getPluginManager().registerEvents(new NameTimeEdit(this), this);
+        getServer().getPluginManager().registerEvents(new EditCurrentBarsMenu(this), this);
         BukkitTask task = new CountDown(this).runTaskTimer(this, 0L, 20L);
         if (!new File(this.getDataFolder(), "config.yml").exists()) {
             this.saveDefaultConfig();
