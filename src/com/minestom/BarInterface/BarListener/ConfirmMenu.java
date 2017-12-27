@@ -65,6 +65,7 @@ public class ConfirmMenu implements Listener {
                     plugin.saveConfig();
 
                     player.closeInventory();
+                    plugin.getBarManagerMap().remove(barKeyName.get(player));
                     player.sendMessage("You have successfully deleted the bar!");
                 }
 
@@ -98,7 +99,17 @@ public class ConfirmMenu implements Listener {
                     configuration.set(section + ".Color", values.get("Color"));
                     configuration.set(section + ".Style", values.get("Style"));
                     configuration.set(section + ".Commands", lore);
+                    configuration.set(section + ".AnnouncerMode.Enabled", values.get("AnnouncerModeEnabled"));
+                    configuration.set(section + ".AnnouncerMode.Time", values.get("AnnouncerModeTime"));
                     plugin.saveConfig();
+
+                    String enabled = values.get("AnnouncerModeEnabled");
+                    if (enabled != null && enabled.equalsIgnoreCase("true")) {
+                        String timeFormat = values.get("AnnouncerModeTime");
+                        plugin.getUtilities().formatTime(barName + "-Announcer", timeFormat);
+                    } else if (enabled != null && enabled.equalsIgnoreCase("false")) {
+                        plugin.getTimer().remove(barName + "-Announcer");
+                    }
 
                     plugin.getBarManagerMap().put(barName, new BossBarManager(plugin));
                     barManager.removeBar(player);

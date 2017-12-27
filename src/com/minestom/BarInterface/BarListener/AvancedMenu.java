@@ -58,6 +58,7 @@ public class AvancedMenu implements Listener {
                 }
 
                 if (event.getClick() == ClickType.LEFT) {
+                    plugin.removeEditing(player);
                     plugin.setAddingCmd(player);
                     player.closeInventory();
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&',
@@ -86,7 +87,29 @@ public class AvancedMenu implements Listener {
 
             }
             if (slot == 2) {
-                player.sendMessage("Work in progress, Coming Soon!");
+                if (event.getClick() == ClickType.LEFT) {
+                    Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
+                    boolean enabled = false;
+
+                    if (values.get("AnnouncerModeEnabled") == null) {
+                        enabled = false;
+                    } else if (values.get("AnnouncerModeEnabled").equalsIgnoreCase("true")) {
+                        enabled = true;
+                    } else if (values.get("AnnouncerModeEnabled").equalsIgnoreCase("false")) {
+                        enabled = false;
+                    }
+
+                    if (!enabled) {
+                        values.put("AnnouncerModeEnabled", "True");
+                    } else values.put("AnnouncerModeEnabled", "False");
+
+                    BossbarInterface.createAvancedMenu(player, plugin);
+                }
+                if (event.getClick() == ClickType.RIGHT) {
+                    plugin.setAnnouncerTime(player);
+                    player.closeInventory();
+                    plugin.removeEditing(player);
+                }
             }
             if (slot == 4) {
                 BossbarInterface.createEditMenu(player, plugin);

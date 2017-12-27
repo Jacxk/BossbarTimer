@@ -4,6 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.Map;
+
 public class Utilities {
 
     private BossbarTimer plugin;
@@ -19,7 +21,7 @@ public class Utilities {
     private String formatDurationWords(long durationMillis, boolean suppressLeadingZero, boolean suppressTrailingZero) {
 
         FileConfiguration configuration = plugin.getConfig();
-        
+
         String days = configuration.getString("Messages.Format.Plural.Days");
         String hours = configuration.getString("Messages.Format.Plural.Hours");
         String minutes = configuration.getString("Messages.Format.Plural.Minutes");
@@ -75,5 +77,22 @@ public class Utilities {
         return duration.trim();
     }
 
+    public void formatTime(String name, String timeFormat) {
+        Map<String, Double> timer = plugin.getTimer();
+
+        double time = Double.parseDouble(timeFormat.replaceAll("[a-zA-Z]", ""));
+        if (timeFormat.contains("s")) {
+            timer.put(name, time);
+        } else if (timeFormat.contains("m")) {
+            time = time * 60;
+            timer.put(name, time);
+        } else if (timeFormat.contains("h")) {
+            time = time * 3600;
+            timer.put(name, time);
+        } else timer.put(name, time);
+        if (!name.contains("-Announcer")) {
+            plugin.getInitialTime().put(name, time);
+        }
+    }
 
 }

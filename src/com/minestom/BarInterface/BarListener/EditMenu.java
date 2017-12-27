@@ -36,18 +36,10 @@ public class EditMenu implements Listener {
             }
             event.setCancelled(true);
             if (slot == 0 && item.hasItemMeta()) {
-
                 BossbarInterface.createColorMenu(player);
-                plugin.removeEditing(player);
-                plugin.setColors(player);
-
             }
             if (slot == 1 && item.hasItemMeta()) {
-
                 BossbarInterface.createStyleMenu(player);
-                plugin.removeEditing(player);
-                plugin.setStyles(player);
-
             }
             if (slot == 2 && item.hasItemMeta()) {
 
@@ -84,5 +76,4 @@ public class EditMenu implements Listener {
             }
         }
     }
-
 }

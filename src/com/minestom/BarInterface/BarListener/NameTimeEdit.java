@@ -98,8 +98,8 @@ public class NameTimeEdit implements Listener {
             plugin.getBarValues().put("Color", "White");
             plugin.getBarValues().put("Style", "Solid");
             plugin.getBarValues().put("Commands", "[none, none]");
-            plugin.getBarValues().put("AnnouncerMode.Enabled", "false");
-            plugin.getBarValues().put("AnnouncerMode.Time", "1h");
+            plugin.getBarValues().put("AnnouncerModeEnabled", "false");
+            plugin.getBarValues().put("AnnouncerModeTime", "none");
 
             plugin.getCreateBarValues().put(message.replace(" ", "_"), plugin.getBarValues());
             plugin.getBarKeyName().put(player, message.replace(" ", "_"));
@@ -108,6 +108,20 @@ public class NameTimeEdit implements Listener {
             BossbarInterface.createEditMenu(player, plugin);
             barManager.createBar("Title", "white", "solid");
             barManager.addPlayer(player);
+        }
+        if (plugin.containsAnnouncerTime(player)) {
+            event.setCancelled(true);
+            if (message.equalsIgnoreCase("cancel")) {
+                plugin.removeEditingName(player);
+                plugin.setEditing(player);
+                BossbarInterface.createEditMenu(player, plugin);
+                return;
+            }
+            values.put("AnnouncerModeTime", message);
+            plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
+            plugin.removeAnnouncerTime(player);
+            plugin.setEditing(player);
+            BossbarInterface.createAvancedMenu(player, plugin);
         }
     }
 }

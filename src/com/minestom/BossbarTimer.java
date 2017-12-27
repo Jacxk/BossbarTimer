@@ -1,12 +1,8 @@
 package com.minestom;
 
-import com.cloutteam.samjakob.gui.types.PaginatedGUI;
 import com.minestom.BarInterface.BarListener.*;
-import com.minestom.BarInterface.BossbarInterface;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import com.minestom.Commands.BbtCommand;
+import com.minestom.Commands.BbtCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -25,9 +21,7 @@ public class BossbarTimer extends JavaPlugin {
     private Map<String, Map<String, String>> createBarValues = new HashMap<>();
     private Map<String, String> barValues = new HashMap<>();
     private Map<Player, String> barKeyName = new HashMap<>();
-    private List<Player> editing = new ArrayList<>();
-    private List<Player> colors = new ArrayList<>();
-    private List<Player> styles = new ArrayList<>();
+    public List<Player> editing = new ArrayList<>();
     private List<Player> editTimer = new ArrayList<>();
     private List<Player> editingName = new ArrayList<>();
     private List<Player> createBar = new ArrayList<>();
@@ -36,6 +30,7 @@ public class BossbarTimer extends JavaPlugin {
     private List<Player> canceling = new ArrayList<>();
     private List<Player> deleting = new ArrayList<>();
     private List<Player> addingCmd = new ArrayList<>();
+    private List<Player> announcerTime = new ArrayList<>();
     private BossBarManager barManager;
     private Utilities utilities;
 
@@ -53,6 +48,10 @@ public class BossbarTimer extends JavaPlugin {
 
     public void setAddingCmd(Player player) {
         this.addingCmd.add(player);
+    }
+
+    public void setAnnouncerTime(Player player) {
+        this.announcerTime.add(player);
     }
 
     public void setDeleting(Player player) {
@@ -83,24 +82,12 @@ public class BossbarTimer extends JavaPlugin {
         this.editingName.add(player);
     }
 
-    public void setStyles(Player player) {
-        this.styles.add(player);
-    }
-
     public void setEditing(Player player) {
         this.editing.add(player);
     }
 
-    public void setColors(Player player) {
-        this.colors.add(player);
-    }
-
     public void removeConfirm(Player player) {
         this.confirm.remove(player);
-    }
-
-    public void removeStyles(Player player) {
-        this.styles.remove(player);
     }
 
     public void removeCreatingBar(Player player) {
@@ -125,6 +112,14 @@ public class BossbarTimer extends JavaPlugin {
 
     public boolean containsAddingCmd(Player player) {
         return this.addingCmd.contains(player);
+    }
+
+    public void removeAnnouncerTime(Player player) {
+        this.announcerTime.remove(player);
+    }
+
+    public boolean containsAnnouncerTime(Player player) {
+        return this.announcerTime.contains(player);
     }
 
     public void removeCanceling(Player player) {
@@ -167,10 +162,6 @@ public class BossbarTimer extends JavaPlugin {
         this.editing.remove(player);
     }
 
-    public void removeColors(Player player) {
-        this.colors.remove(player);
-    }
-
     public BossBarManager getBarManager() {
         return barManager;
     }
@@ -191,15 +182,11 @@ public class BossbarTimer extends JavaPlugin {
         return timer;
     }
 
-    private String colorMessage(String text) {
-        return ChatColor.translateAlternateColorCodes('&', text);
-    }
-
     @Override
     public void onEnable() {
         barManager = new BossBarManager(this);
-        PaginatedGUI.prepare(this);
         utilities = new Utilities(this);
+
         BossBarManager barManager = new BossBarManager(this);
         getServer().getPluginManager().registerEvents(new MainMenu(this), this);
         getServer().getPluginManager().registerEvents(new EditMenu(this), this);
@@ -207,18 +194,23 @@ public class BossbarTimer extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new StylesMenu(this), this);
         getServer().getPluginManager().registerEvents(new ConfirmMenu(this), this);
         getServer().getPluginManager().registerEvents(new AvancedMenu(this), this);
+        getServer().getPluginManager().registerEvents(new JoinListener(this), this);
         getServer().getPluginManager().registerEvents(new NameTimeEdit(this), this);
         getServer().getPluginManager().registerEvents(new EditCurrentBarsMenu(this), this);
+
+        getCommand("bossbartimer").setExecutor(new BbtCommand(this));
+        getCommand("bossbartimer").setTabCompleter(new BbtCompleter(this));
+
         BukkitTask task = new CountDown(this).runTaskTimer(this, 0L, 20L);
         if (!new File(this.getDataFolder(), "config.yml").exists()) {
             this.saveDefaultConfig();
         }
-        for (String name : getConfig().getConfigurationSection("Bars").getKeys(false)) {
-            barManagerMap.put(name, barManager);
-        }
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (barManager.containsBar(player)) {
-                barManager.removeBar(player);
+        for (String barName : getConfig().getConfigurationSection("Bars").getKeys(false)) {
+            barManagerMap.put(barName, barManager);
+            String enabled = getConfig().getString("Bars." + barName + ".AnnouncerMode.Enabled");
+            if (enabled != null && enabled.equalsIgnoreCase("true")) {
+                String timeFormat = getConfig().getString("Bars." + barName + ".AnnouncerMode.Time");
+                utilities.formatTime(barName + "-Announcer", timeFormat);
             }
         }
     }
@@ -226,115 +218,5 @@ public class BossbarTimer extends JavaPlugin {
     @Override
     public void onDisable() {
         this.getServer().getScheduler().cancelTasks(this);
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (command.getName().equalsIgnoreCase("bossbartimer")) {
-            if (args.length == 0) {
-                Player player = (Player) sender;
-                if (editing.contains(player)) {
-                    BossbarInterface.createEditMenu(player, this);
-                } else if (colors.contains(player)) {
-                    BossbarInterface.createColorMenu(player);
-                } else if (styles.contains(player)) {
-                    BossbarInterface.createStyleMenu(player);
-                } else BossbarInterface.createMainMenu(player);
-                return true;
-            }
-            if (args[0].equalsIgnoreCase("help")) {
-                if (args.length == 1) {
-                    sender.sendMessage(colorMessage("&8----------------------------"));
-                    sender.sendMessage(colorMessage("&c&l        BossBarTimer"));
-                    sender.sendMessage(colorMessage(""));
-                    sender.sendMessage(colorMessage("&8 - &a/bbt start <name>"));
-                    sender.sendMessage(colorMessage("&8 - &a/bbt stop <name>"));
-                    sender.sendMessage(colorMessage("&8 - &a/bbt create <name> <time> <color> <style> <DisplayName>"));
-                    sender.sendMessage(colorMessage("&8 - &a/bbt manual <name> <time> <DisplayName>"));
-                    sender.sendMessage(colorMessage("&8 - &a/bbt reload | Sort of not working"));
-                    sender.sendMessage(colorMessage(""));
-                    sender.sendMessage(colorMessage("&8----------------------------"));
-                }
-            }
-            if (args[0].equalsIgnoreCase("reload")) {
-                if (args.length == 1) {
-                    reloadConfig();
-                    sender.sendMessage(colorMessage("&cBossBarTimer > &7The configuration file has been reloaded!"));
-                }
-            }
-            if (args[0].equalsIgnoreCase("stop")) {
-                if (args.length == 1) {
-                    sender.sendMessage(colorMessage("&cBossBarTimer > &7You need to specify a bar!"));
-                    return true;
-                }
-                String barName = args[1];
-                BossBarManager bossBar = barManagerMap.get(barName);
-                if (!timer.containsKey(barName)) {
-                    sender.sendMessage(colorMessage("&cBossBarTimer > &7That bar is not active!"));
-                    return true;
-                }
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    bossBar.removeBar(player);
-                }
-                timer.remove(barName);
-                sender.sendMessage(colorMessage("&cBossBarTimer > &7The bar timer has been stopped!"));
-            }
-            if (args[0].equalsIgnoreCase("create")) {
-                if (args.length == 1 || args.length == 2 || args.length == 3 || args.length == 4) {
-                    sender.sendMessage(colorMessage("&cBossBarTimer > &7Wrong usage! Use: &a/bbt create <name> <time> <color> <style> <DisplayName>"));
-                    return true;
-                }
-                String barName = args[1];
-                String time = args[2];
-                String color = args[3];
-                String style = args[4];
-                StringBuilder displayName = new StringBuilder();
-                for (int i = 5; i < args.length; i++) {
-                    displayName.append(args[i] + " ");
-                }
-                getConfig().set("Bars." + barName + ".DisplayName", displayName.toString().trim());
-                getConfig().set("Bars." + barName + ".Time", time);
-                getConfig().set("Bars." + barName + ".Color", color.toUpperCase());
-                getConfig().set("Bars." + barName + ".Style", style.toUpperCase());
-                saveConfig();
-                sender.sendMessage(colorMessage("&cBossBarTimer > &7A new bar timer has been created!"));
-            }
-            if (args[0].equalsIgnoreCase("start")) {
-                if (args.length == 1) {
-                    sender.sendMessage(colorMessage("&cBossBarTimer > &7You need to specify a bar!"));
-                    return true;
-                }
-                String barName = args[1];
-                if (!getConfig().isConfigurationSection("Bars." + barName)) {
-                    sender.sendMessage(colorMessage("&cBossBarTimer > &7That bar is not available try another one!"));
-                    return true;
-                }
-                if (timer.containsKey(barName)) {
-                    sender.sendMessage(colorMessage("&cBossBarTimer > &7That bar is already active!"));
-                    return true;
-                }
-                String timeFormat = getConfig().getString("Bars." + barName + ".Time");
-                double time = Double.parseDouble(timeFormat.replaceAll("[a-zA-Z]", ""));
-                if (timeFormat.contains("s")) {
-                    timer.put(barName, time);
-                } else if (timeFormat.contains("m")) {
-                    time = time * 60;
-                    timer.put(barName, time);
-                } else if (timeFormat.contains("h")) {
-                    time = time * 3600;
-                    timer.put(barName, time);
-                } else
-                    timer.put(barName, time);
-                initialTime.put(barName, time);
-                BossBarManager bossBar = barManagerMap.get(barName);
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    bossBar.addPlayer(player);
-                }
-                bossBar.setBarColor(getConfig().getString("Bars." + barName + ".Color").toUpperCase());
-                bossBar.setBarStyle(getConfig().getString("Bars." + barName + ".Style").toUpperCase());
-                sender.sendMessage(colorMessage("&cBossBarTimer > &7The bar &e" + barName + " &7has been started!"));
-            }
-        }
-        return true;
     }
 }

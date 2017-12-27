@@ -46,10 +46,7 @@ public class StylesMenu implements Listener {
             }
             if (slot == 8 && item.hasItemMeta()) {
                 BossbarInterface.createEditMenu(player, plugin);
-                plugin.removeStyles(player);
-                plugin.setEditing(player);
             }
         }
     }
-
 }

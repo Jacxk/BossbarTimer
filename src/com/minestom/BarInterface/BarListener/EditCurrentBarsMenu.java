@@ -49,8 +49,8 @@ public class EditCurrentBarsMenu implements Listener {
                 values.put("Time", configuration.getString("Bars." + barKeyName + ".Time"));
                 values.put("Color", configuration.getString("Bars." + barKeyName + ".Color"));
                 values.put("Style", configuration.getString("Bars." + barKeyName + ".Style"));
-                values.put("AnnouncerMode.Enabled", configuration.getString("Bars." + barKeyName + ".AnnouncerMode.Enabled"));
-                values.put("AnnouncerMode.Time", configuration.getString("Bars." + barKeyName + ".AnnouncerMode.Time"));
+                values.put("AnnouncerModeEnabled", configuration.getString("Bars." + barKeyName + ".AnnouncerMode.Enabled"));
+                values.put("AnnouncerModeTime", configuration.getString("Bars." + barKeyName + ".AnnouncerMode.Time"));
                 if (configuration.getString("Bars." + barKeyName + ".Commands") != null) {
                     values.put("Commands", configuration.getString("Bars." + barKeyName + ".Commands"));
                 } else values.put("Commands", "[none, none]");

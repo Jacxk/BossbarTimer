@@ -128,7 +128,7 @@ public class BossbarInterface {
 
         itemBuilder(inv, "&a&lChange Bar Timer", Material.NAME_TAG, 0, 0, Arrays.asList("&7Click here to enter the", "&7edit timer mode.", "", "&eCurrent Time: &a" + values.get("Time")));
         itemBuilder(inv, "&a&lEdit Commands", Material.MAP, 0, 1, lore);
-        itemBuilder(inv, "&a&lAnnouncerMode", Material.BLAZE_ROD, 0, 2, Arrays.asList("&7Enabled: &cFalse", "&7Show Every: &c50m", "", "&eLeft-Click &7to toggle the", "&7Announcer mode.", "&eRight-Click &7to change the time."));
+        itemBuilder(inv, "&a&lAnnouncerMode", Material.BLAZE_ROD, 0, 2, Arrays.asList("&7Enabled: &c" + values.get("AnnouncerModeEnabled"), "&7Show Every: &c" + values.get("AnnouncerModeTime"), "", "&eLeft-Click &7to toggle the", "&7Announcer mode.", "&eRight-Click &7to change the time."));
         itemBuilder(inv, "&6&lBack", Material.ARROW, 0, 4, Arrays.asList("&7Click here", "&7to go back."));
 
         player.openInventory(inv);

@@ -46,10 +46,7 @@ public class ColorsMenu implements Listener {
             }
             if (slot == 8 && item.hasItemMeta()) {
                 BossbarInterface.createEditMenu(player, plugin);
-                plugin.removeColors(player);
-                plugin.setEditing(player);
             }
         }
     }
-
 }
