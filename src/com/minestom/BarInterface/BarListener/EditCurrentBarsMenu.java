@@ -60,6 +60,9 @@ public class EditCurrentBarsMenu implements Listener {
                     barManager.createBar(configuration.getString("Bars." + barKeyName + ".DisplayName"),
                             configuration.getString("Bars." + barKeyName + ".Color"),
                             configuration.getString("Bars." + barKeyName + ".Style"));
+                    plugin.getUtilities().animateText(plugin.getConfig().getStringList("Bars." + barKeyName + ".DisplayName.Frames"),
+                            plugin.getConfig().getLong("Bars." + barKeyName + ".DisplayName.Period"), barManager);
+                    barManager.setFinished(false);
                     barManager.addPlayer(player);
 
                     plugin.setEditing(player);

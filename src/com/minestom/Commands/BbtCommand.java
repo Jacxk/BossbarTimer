@@ -51,6 +51,11 @@ public class BbtCommand implements CommandExecutor {
                 if (args.length == 1) {
                     plugin.reloadConfig();
                     sender.sendMessage(colorMessage("&cBossBarTimer > &7The configuration file has been reloaded!"));
+                    for (String barName : plugin.getConfig().getConfigurationSection("Bars").getKeys(false)) {
+                        if (!plugin.getBarManagerMap().containsKey(barName)) {
+                            plugin.getBarManagerMap().put(barName, new BossBarManager(plugin));
+                        }
+                    }
                 }
             }
             if (args[0].equalsIgnoreCase("stop")) {
@@ -68,6 +73,7 @@ public class BbtCommand implements CommandExecutor {
                     bossBar.removeBar(player);
                 }
                 plugin.getTimer().remove(barName);
+                bossBar.setFinished(false);
                 sender.sendMessage(colorMessage("&cBossBarTimer > &7The bar timer has been stopped!"));
             }
             if (args[0].equalsIgnoreCase("create")) {
@@ -113,7 +119,11 @@ public class BbtCommand implements CommandExecutor {
                 }
                 bossBar.setBarColor(plugin.getConfig().getString("Bars." + barName + ".Color").toUpperCase());
                 bossBar.setBarStyle(plugin.getConfig().getString("Bars." + barName + ".Style").toUpperCase());
+                bossBar.setFinished(false);
+
                 sender.sendMessage(colorMessage("&cBossBarTimer > &7The bar &e" + barName + " &7has been started!"));
+                plugin.getUtilities().animateText(plugin.getConfig().getStringList("Bars." + barName + ".DisplayName.Frames"),
+                        plugin.getConfig().getLong("Bars." + barName + ".DisplayName.Period"), bossBar);
             }
         }
         return true;

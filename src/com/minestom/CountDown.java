@@ -24,6 +24,7 @@ public class CountDown extends BukkitRunnable {
             if (timeLeft == 0) {
                 if (!barName.contains("-Announcer")) {
                     bossBar.setBarProgress(1, 1);
+                    bossBar.setFinished(true);
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         bossBar.removeBar(player);
                     }
@@ -56,6 +57,8 @@ public class CountDown extends BukkitRunnable {
                     } else timer.put(name, time);
 
                     plugin.getInitialTime().put(name, time);
+
+                    barManager.setFinished(false);
                     barManager.setBarColor(plugin.getConfig().getString("Bars." + name + ".Color").toUpperCase());
                     barManager.setBarStyle(plugin.getConfig().getString("Bars." + name + ".Style").toUpperCase());
 
@@ -67,8 +70,7 @@ public class CountDown extends BukkitRunnable {
                 timer.put(barName, timeLeft - 1);
                 if (!barName.contains("-Announcer")) {
                     bossBar.setBarProgress(timeLeft - 1, plugin.getInitialTime().get(barName));
-                    bossBar.setBarName(plugin.getConfig().getString("Bars." + barName + ".DisplayName").replace("{time}",
-                            plugin.getUtilities().format((long) timeLeft - 1)));
+                    bossBar.setTimeleft(timeLeft - 1);
                 }
             }
         }

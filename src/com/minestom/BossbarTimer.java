@@ -3,6 +3,7 @@ package com.minestom;
 import com.minestom.BarInterface.BarListener.*;
 import com.minestom.Commands.BbtCommand;
 import com.minestom.Commands.BbtCompleter;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -213,10 +214,35 @@ public class BossbarTimer extends JavaPlugin {
                 utilities.formatTime(barName + "-Announcer", timeFormat);
             }
         }
+        ConfigurationSection data = getConfig().getConfigurationSection("Data");
+        if (data.getKeys(true) != null) {
+            for (String barName : data.getKeys(false)) {
+                String timeFormat = getConfig().getString("Bars." + barName + ".Time");
+                utilities.formatTime(barName, timeFormat);
+
+                timer.put(barName, getConfig().getDouble("Data." + barName));
+                BossBarManager bossBar = barManagerMap.get(barName);
+
+                bossBar.setBarColor(getConfig().getString("Bars." + barName + ".Color").toUpperCase());
+                bossBar.setBarStyle(getConfig().getString("Bars." + barName + ".Style").toUpperCase());
+
+                getConfig().set("Data." + barName, null);
+                saveConfig();
+            }
+        }
     }
 
     @Override
     public void onDisable() {
         this.getServer().getScheduler().cancelTasks(this);
+        if (!timer.isEmpty()) {
+            for (Map.Entry<String, Double> entry : timer.entrySet()) {
+                String barName = entry.getKey();
+                double timeLeft = entry.getValue();
+
+                getConfig().set("Data." + barName, timeLeft);
+                saveConfig();
+            }
+        }
     }
 }

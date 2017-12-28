@@ -1,35 +1,73 @@
 Bars:
-  Event1:
-    DisplayName: '&7The event starts in &c{time}'
-    Time: 5 s
-    Color: GREEN
-    Style: SOLID
-    AnnouncerMode:
-      Enabled: false
-      Time: 1h
+  example_bar_1:
+    DisplayName:
+      Frames:
+      - '&fThe event starts in &c{time}'
+      - '&eThe event starts in &c{time}'
+      - '&fThe event starts in &c{time}'
+      - '&eThe event starts in &c{time}'
+      - '&fThe event starts in &c{time}'
+      - '&eThe event starts in &c{time}'
+      - '&fThe event starts in &c{time}'
+      - '&eThe event starts in &c{time}'
+      Period: 5
+    Time: 3m
+    Color: YELLOW
+    Style: SEGMENTED_20
     Commands:
-    - 'bbt start Event2'
-    - 'say Event2 starting...'
-  Event2:
-    DisplayName: '&7The event finishes in &c{time}'
+    - say Get ready, an event will start...
+    AnnouncerMode:
+      Enabled: 'false'
+      Time: 1h
+  example_bar_2:
+    DisplayName:
+      Frames:
+      - '&f&lBossBarTimer'
+      - '&f&lBossBarTimer'
+      - '&f&lBossBarTimer'
+      - '&f&lBossBarTimer'
+      - '&f&lBossBarTimer'
+      - '&f&lBossBarTimer'
+      - '&f&lBossBarTimer'
+      - '&c&lB&f&lossBarTimer'
+      - '&c&lBo&f&lssBarTimer'
+      - '&c&lBos&f&lsBarTimer'
+      - '&f&lB&c&loss&f&lBarTimer'
+      - '&f&lBo&c&lssB&f&larTimer'
+      - '&f&lBos&c&lsBa&f&lrTimer'
+      - '&f&lBoss&c&lBar&f&lTimer'
+      - '&f&lBossB&c&larT&f&limer'
+      - '&f&lBossBa&c&lrTi&f&lmer'
+      - '&f&lBossBar&c&lTim&f&ler'
+      - '&f&lBossBarT&c&lime&f&lr'
+      - '&f&lBossBarTi&c&lmer&f&l'
+      - '&f&lBossBarTim&c&ler&f&l'
+      - '&f&lBossBarTime&c&lr&f&l'
+      - '&f&lBossBarTimer'
+      - '&f&lBossBarTimer'
+      - '&f&lBossBarTimer'
+      - '&f&lBossBarTimer'
+      - '&f&lBossBarTimer'
+      - '&f&lBossBarTimer'
+      - '&f&lBossBarTimer'
+      Period: 1
     Time: 1 m
     Color: YELLOW
     Style: SEGMENTED_20
     AnnouncerMode:
-      Enabled: false
-      Time: 1h
+      Enabled: true
+      Time: 15m
     Commands:
-    - 'say Event2 ended... thanks for playing'
-
+    - say This server uses §eBossBarTimer made by §eBy_Jack
 Messages:
   Format:
     Singular:
-      Days: 'day'
-      Hour: 'hour'
-      Minute: 'minute'
-      Second: 'second'
+      Days: day
+      Hour: hour
+      Minute: minute
+      Second: second
     Plural:
-      Days: 'days'
-      Hours: 'hours'
-      Minutes: 'minutes'
-      Seconds: 'seconds'
+      Days: days
+      Hours: hours
+      Minutes: minutes
+      Seconds: seconds

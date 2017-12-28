@@ -3,7 +3,9 @@ package com.minestom;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.List;
 import java.util.Map;
 
 public class Utilities {
@@ -95,4 +97,22 @@ public class Utilities {
         }
     }
 
+    public void animateText(List<String> frames, long period, BossBarManager barManager) {
+        new BukkitRunnable() {
+            int i = -1;
+
+            @Override
+            public void run() {
+                if (i <= frames.size()) i++;
+                if (i >= frames.size()) i = 0;
+
+                barManager.setBarName(frames.get(i).replace("{time}",
+                        plugin.getUtilities().format((long) barManager.getTimeleft())));
+
+                if (barManager.isFinished()) {
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(plugin, 0L, period);
+    }
 }

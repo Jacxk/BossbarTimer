@@ -10,6 +10,24 @@ import org.bukkit.entity.Player;
 public class BossBarManager {
 
     private BossbarTimer plugin;
+    private boolean finished;
+    private double timeleft;
+
+    public double getTimeleft() {
+        return timeleft;
+    }
+
+    public void setTimeleft(double timeleft) {
+        this.timeleft = timeleft;
+    }
+
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
 
     public BossBarManager(BossbarTimer plugin) {
         this.plugin = plugin;
@@ -59,5 +77,9 @@ public class BossBarManager {
 
     public void setBarName(String text) {
         bar.setTitle(ChatColor.translateAlternateColorCodes('&', text));
+    }
+
+    public String getBarName() {
+        return bar.getTitle();
     }
 }
