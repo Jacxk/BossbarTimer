@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="BossbarTimer:jar">
-    <output-path>$USER_HOME$/Desktop/All Folders/Premade Bungeecord Server Thrisboss/testing/plugins</output-path>
-    <root id="archive" name="BossbarTimer.jar">
-      <element id="module-output" name="BossbarTimer" />
-    </root>
-  </artifact>
-</component>
