@@ -5,6 +5,7 @@ import com.minestom.Commands.BbtCommand;
 import com.minestom.Commands.BbtCompleter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -37,19 +38,36 @@ public class BossbarTimer extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if (!new File(this.getDataFolder(), "config.yml").exists()) {
-            this.saveDefaultConfig();
+        setupConfig();
+        init();
+        registerListeners();
+        registerCommands();
+        loadBars();
+    }
+
+    @Override
+    public void onDisable() {
+        this.getServer().getScheduler().cancelTasks(this);
+        saveBarData();
+    }
+
+    private void saveBarData() {
+        if (timer.isEmpty()) {
+            return;
         }
 
-        barManager = new BossBarManager(this);
-        utilities = new Utilities(this);
+        for (Map.Entry<String, Double> entry : timer.entrySet()) {
+            String barName = entry.getKey();
+            double timeLeft = entry.getValue();
+            if (!barName.contains("-Announcer")) {
+                getConfig().set("Data." + barName, timeLeft);
+                saveConfig();
+            }
+        }
+    }
 
+    private void loadBars() {
         BossBarManager barManager = new BossBarManager(this);
-
-        registerListener();
-        getCommand("bossbartimer").setExecutor(new BbtCommand(this));
-        getCommand("bossbartimer").setTabCompleter(new BbtCompleter(this));
-
         BukkitTask task = new CountDown(this).runTaskTimer(this, 0L, 20L);
         for (String barName : getConfig().getConfigurationSection("Bars").getKeys(false)) {
             barManagerMap.put(barName, barManager);
@@ -59,36 +77,11 @@ public class BossbarTimer extends JavaPlugin {
                 utilities.formatTime(barName + "-Announcer", timeFormat);
             }
         }
+
+        loadBarsData();
     }
 
-    @Override
-    public void onDisable() {
-        this.getServer().getScheduler().cancelTasks(this);
-        if (!timer.isEmpty()) {
-            for (Map.Entry<String, Double> entry : timer.entrySet()) {
-                String barName = entry.getKey();
-                double timeLeft = entry.getValue();
-                if (!barName.contains("-Announcer")) {
-                    getConfig().set("Data." + barName, timeLeft);
-                    saveConfig();
-                }
-            }
-        }
-    }
-
-    private void registerListener() {
-        getServer().getPluginManager().registerEvents(new MainMenu(this), this);
-        getServer().getPluginManager().registerEvents(new EditMenu(this), this);
-        getServer().getPluginManager().registerEvents(new ColorsMenu(this), this);
-        getServer().getPluginManager().registerEvents(new StylesMenu(this), this);
-        getServer().getPluginManager().registerEvents(new ConfirmMenu(this), this);
-        getServer().getPluginManager().registerEvents(new AvancedMenu(this), this);
-        getServer().getPluginManager().registerEvents(new JoinListener(this), this);
-        getServer().getPluginManager().registerEvents(new NameTimeEdit(this), this);
-        getServer().getPluginManager().registerEvents(new EditCurrentBarsMenu(this), this);
-    }
-
-    private void loadData() {
+    private void loadBarsData() {
         ConfigurationSection data = getConfig().getConfigurationSection("Data");
         if (data.getKeys(true) != null) {
             for (String barName : data.getKeys(false)) {
@@ -102,6 +95,35 @@ public class BossbarTimer extends JavaPlugin {
                 bossBar.setBarStyle(getConfig().getString("Bars." + barName + ".Style").toUpperCase());
             }
         }
+    }
+
+    private void init() {
+        barManager = new BossBarManager(this);
+        utilities = new Utilities(this);
+    }
+
+    private void setupConfig() {
+        if (!new File(this.getDataFolder(), "config.yml").exists()) {
+            this.saveDefaultConfig();
+        }
+    }
+
+    private void registerCommands() {
+        getCommand("bossbartimer").setExecutor(new BbtCommand(this));
+        getCommand("bossbartimer").setTabCompleter(new BbtCompleter(this));
+    }
+
+    private void registerListeners() {
+        PluginManager pluginManager = getServer().getPluginManager();
+        pluginManager.registerEvents(new MainMenu(this), this);
+        pluginManager.registerEvents(new EditMenu(this), this);
+        pluginManager.registerEvents(new ColorsMenu(this), this);
+        pluginManager.registerEvents(new StylesMenu(this), this);
+        pluginManager.registerEvents(new ConfirmMenu(this), this);
+        pluginManager.registerEvents(new AvancedMenu(this), this);
+        pluginManager.registerEvents(new JoinListener(this), this);
+        pluginManager.registerEvents(new NameTimeEdit(this), this);
+        pluginManager.registerEvents(new EditCurrentBarsMenu(this), this);
     }
 
     public Map<String, Map<String, String>> getCreateBarValues() {
