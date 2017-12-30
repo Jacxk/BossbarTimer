@@ -87,6 +87,9 @@ public class CountDown extends BukkitRunnable {
             if (plugin.containsCreatingBar(player)) {
                 player.sendTitle("§aPlease enter the name", "§cin the chat", 0, 22, 0);
             }
+            if (plugin.containsEditPeriod(player)) {
+                player.sendTitle("§aPlease enter the time", "§cin the chat", 0, 22, 0);
+            }
         }
     }
 }

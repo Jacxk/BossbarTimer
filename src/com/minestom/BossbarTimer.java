@@ -33,6 +33,7 @@ public class BossbarTimer extends JavaPlugin {
     private List<Player> deleting = new ArrayList<>();
     private List<Player> addingCmd = new ArrayList<>();
     private List<Player> announcerTime = new ArrayList<>();
+    private List<Player> editPeriod = new ArrayList<>();
     private BossBarManager barManager;
     private Utilities utilities;
 
@@ -142,6 +143,10 @@ public class BossbarTimer extends JavaPlugin {
         this.addingCmd.add(player);
     }
 
+    public void setEditPeriod(Player player) {
+        this.editPeriod.add(player);
+    }
+
     public void setAnnouncerTime(Player player) {
         this.announcerTime.add(player);
     }
@@ -212,6 +217,14 @@ public class BossbarTimer extends JavaPlugin {
 
     public boolean containsAnnouncerTime(Player player) {
         return this.announcerTime.contains(player);
+    }
+
+    public void removeEditPeriod(Player player) {
+        this.editPeriod.remove(player);
+    }
+
+    public boolean containsEditPeriod(Player player) {
+        return this.editPeriod.contains(player);
     }
 
     public void removeCanceling(Player player) {

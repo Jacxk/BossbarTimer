@@ -25,7 +25,6 @@ public class EditCurrentBarsMenu implements Listener {
 
     @EventHandler
     public void onInteract(InventoryClickEvent event) {
-        BossBarManager barManager = plugin.getBarManager();
 
         FileConfiguration configuration = plugin.getConfig();
         Player player = (Player) event.getWhoClicked();
@@ -45,18 +44,24 @@ public class EditCurrentBarsMenu implements Listener {
 
                 Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
 
-                values.put("DisplayName", configuration.getString("Bars." + barKeyName + ".DisplayName"));
+                if (configuration.getString("Bars." + barKeyName + ".DisplayName") != null) {
+                    values.put("DisplayName", configuration.getStringList("Bars." + barKeyName + ".DisplayName.Frames").toString());
+                } else values.put("DisplayName", "[&cAnimated Text, &fAnimated Text]");
                 values.put("Time", configuration.getString("Bars." + barKeyName + ".Time"));
                 values.put("Color", configuration.getString("Bars." + barKeyName + ".Color"));
                 values.put("Style", configuration.getString("Bars." + barKeyName + ".Style"));
+                values.put("Period", configuration.getString("Bars." + barKeyName + ".DisplayName.Period"));
                 values.put("AnnouncerModeEnabled", configuration.getString("Bars." + barKeyName + ".AnnouncerMode.Enabled"));
                 values.put("AnnouncerModeTime", configuration.getString("Bars." + barKeyName + ".AnnouncerMode.Time"));
                 if (configuration.getString("Bars." + barKeyName + ".Commands") != null) {
-                    values.put("Commands", configuration.getString("Bars." + barKeyName + ".Commands"));
-                } else values.put("Commands", "[none, none]");
+                    values.put("Commands", configuration.getStringList("Bars." + barKeyName + ".Commands").toString());
+                } else values.put("Commands", "[say test, say testing]");
+
                 plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
 
                 if (event.getClick() == ClickType.LEFT) {
+                    BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
+
                     barManager.createBar(configuration.getString("Bars." + barKeyName + ".DisplayName"),
                             configuration.getString("Bars." + barKeyName + ".Color"),
                             configuration.getString("Bars." + barKeyName + ".Style"));

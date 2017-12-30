@@ -68,9 +68,17 @@ public class BossbarInterface {
         Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
         Inventory inv = Bukkit.createInventory(player, InventoryType.HOPPER, "Edit Mode");
 
+        List<String> lore = new ArrayList<>();
+        lore.add("&7Current Frames:");
+        for (String cmds : values.get("DisplayName").split(", ")) {
+            if (values.get("DisplayName").isEmpty()) continue;
+            lore.add("&c- " + cmds.replaceAll("[\\[\\]]", ""));
+        }
+        lore.addAll(Arrays.asList("&ePeriod: &7" + plugin.getBarValues().get("Period"), "", "&eLeft-Click &7to add a new frame", "&eRight-Click &7to delete the last frame", "&eShift-Left-Click &7to remove all frames", "&eShift-Right-Click &7to edit the period time"));
+
         itemBuilder(inv, "&a&lChange Color", Material.INK_SACK, 0, 0, Arrays.asList("&7Click here to enter the", "&7edit color mode.", "", "&eCurrent Color: &a" + values.get("Color")));
         itemBuilder(inv, "&a&lChange Style", Material.EMPTY_MAP, 0, 1, Arrays.asList("&7Click here to enter the", "&7edit style mode.", "", "&eCurrent Style: &a" + values.get("Style")));
-        itemBuilder(inv, "&a&lChange Display Name", Material.BOOK, 0, 2, Arrays.asList("&7Click here to enter the", "&7edit display name mode."));
+        itemBuilder(inv, "&a&lChange Display Name", Material.BOOK, 0, 2, lore);
         itemBuilder(inv, "&a&lAdvanced Settings", Material.REDSTONE_COMPARATOR, 0, 3, Arrays.asList("&7Click here to see", "&7more advanced settings.", "&7Such as time and commands"));
         itemBuilder(inv, "&a&lSave &7| &c&lCancel", Material.BARRIER, 0, 4, Arrays.asList("", "&eLeft-Click &7to save the changes.", "&eShift-Left-Click &7to cancel the changes.", "", "&7BarName: &c" + plugin.getBarKeyName().get(player)));
 

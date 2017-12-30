@@ -3,10 +3,12 @@ package com.minestom.BarInterface.BarListener;
 import com.minestom.BarInterface.BossbarInterface;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,19 +25,19 @@ public class NameTimeEdit implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        BossBarManager barManager = plugin.getBarManager();
 
         Player player = event.getPlayer();
         String message = event.getMessage();
 
         Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
+        BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
 
         if (event.isCancelled()) return;
 
         if (plugin.containsAddingCmd(player)) {
             event.setCancelled(true);
             if (message.equalsIgnoreCase("cancel")) {
-                plugin.removeEditingName(player);
+                plugin.removeAddingCmd(player);
                 plugin.setEditing(player);
                 BossbarInterface.createAvancedMenu(player, plugin);
                 return;
@@ -59,12 +61,24 @@ public class NameTimeEdit implements Listener {
                 BossbarInterface.createEditMenu(player, plugin);
                 return;
             }
-            barManager.setBarName(message);
+
+            List<String> frames = new ArrayList<>();
+            for (String cmds : values.get("DisplayName").split(", ")) {
+                if (values.get("DisplayName").isEmpty()) continue;
+                frames.add(cmds.replaceAll("[\\[\\]]", ""));
+            }
+            frames.add(message);
+
             plugin.removeEditingName(player);
             plugin.setEditing(player);
-            values.put("DisplayName", message);
+            values.put("DisplayName", frames.toString());
             plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
             BossbarInterface.createEditMenu(player, plugin);
+
+            plugin.getUtilities().cancel(frames, Long.parseLong(values.get("Period")), barManager);
+            BukkitTask task = plugin.getUtilities().animateText(frames, Long.parseLong(values.get("Period")), barManager);
+            task.cancel();
+            BukkitTask task2 = plugin.getUtilities().animateText(frames, Long.parseLong(values.get("Period")), barManager);
         }
         if (plugin.containsEditTimer(player)) {
             event.setCancelled(true);
@@ -93,11 +107,12 @@ public class NameTimeEdit implements Listener {
                     return;
                 }
             }
-            plugin.getBarValues().put("DisplayName", "Title");
+            plugin.getBarValues().put("DisplayName", "[&cAnimated Text, &fAnimated Text]");
+            plugin.getBarValues().put("Period", "10");
             plugin.getBarValues().put("Time", "0s");
             plugin.getBarValues().put("Color", "White");
             plugin.getBarValues().put("Style", "Solid");
-            plugin.getBarValues().put("Commands", "[none, none]");
+            plugin.getBarValues().put("Commands", "[say test, say another test]");
             plugin.getBarValues().put("AnnouncerModeEnabled", "false");
             plugin.getBarValues().put("AnnouncerModeTime", "none");
 
@@ -112,7 +127,7 @@ public class NameTimeEdit implements Listener {
         if (plugin.containsAnnouncerTime(player)) {
             event.setCancelled(true);
             if (message.equalsIgnoreCase("cancel")) {
-                plugin.removeEditingName(player);
+                plugin.removeAnnouncerTime(player);
                 plugin.setEditing(player);
                 BossbarInterface.createEditMenu(player, plugin);
                 return;
@@ -122,6 +137,35 @@ public class NameTimeEdit implements Listener {
             plugin.removeAnnouncerTime(player);
             plugin.setEditing(player);
             BossbarInterface.createAvancedMenu(player, plugin);
+        }
+        if (plugin.containsEditPeriod(player)) {
+            event.setCancelled(true);
+            if (message.equalsIgnoreCase("cancel")) {
+                plugin.removeEditPeriod(player);
+                plugin.setEditing(player);
+                BossbarInterface.createEditMenu(player, plugin);
+                return;
+            }
+            if (!StringUtils.isNumeric(message)) {
+                player.sendMessage("You need to enter the time in a number.");
+                return;
+            }
+            values.put("Period", message);
+            plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
+            plugin.removeEditPeriod(player);
+            plugin.setEditing(player);
+            BossbarInterface.createEditMenu(player, plugin);
+
+            List<String> frames = new ArrayList<>();
+
+            for (String cmds : values.get("DisplayName").split(", ")) {
+                if (values.get("DisplayName").isEmpty()) continue;
+                frames.add(cmds.replaceAll("[\\[\\]]", ""));
+            }
+
+            BukkitTask task = plugin.getUtilities().animateText(frames, Long.parseLong(values.get("Period")), barManager);
+            task.cancel();
+            BukkitTask task2 = plugin.getUtilities().animateText(frames, Long.parseLong(values.get("Period")), barManager);
         }
     }
 }

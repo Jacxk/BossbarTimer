@@ -2,8 +2,9 @@ package com.minestom;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DurationFormatUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
 import java.util.Map;
@@ -97,8 +98,8 @@ public class Utilities {
         }
     }
 
-    public void animateText(List<String> frames, long period, BossBarManager barManager) {
-        new BukkitRunnable() {
+    public BukkitTask animateText(List<String> frames, long period, BossBarManager barManager) {
+        BukkitTask task = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
             int i = -1;
 
             @Override
@@ -108,11 +109,12 @@ public class Utilities {
 
                 barManager.setBarName(frames.get(i).replace("{time}",
                         plugin.getUtilities().format((long) barManager.getTimeleft())));
-
-                if (barManager.isFinished()) {
-                    this.cancel();
-                }
             }
-        }.runTaskTimer(plugin, 0L, period);
+        }, 0L, period);
+        return task;
+    }
+
+    public void cancel(List<String> frames, long period, BossBarManager barManager) {
+        animateText(frames, period, barManager).cancel();
     }
 }

@@ -28,8 +28,6 @@ public class ConfirmMenu implements Listener {
 
     @EventHandler
     public void onInteract(InventoryClickEvent event) {
-        FileConfiguration configuration = plugin.getConfig();
-        BossBarManager barManager = plugin.getBarManager();
 
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
@@ -44,6 +42,10 @@ public class ConfirmMenu implements Listener {
                 return;
             }
             event.setCancelled(true);
+
+            BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
+            FileConfiguration configuration = plugin.getConfig();
+
             if (slot == 1 && item.hasItemMeta()) {
                 Map<Player, String> barKeyName = plugin.getBarKeyName();
                 Map<String, Map<String, String>> createBar = plugin.getCreateBarValues();
@@ -89,18 +91,24 @@ public class ConfirmMenu implements Listener {
 
                     player.sendMessage("Saving the bar... Please wait...");
 
-                    List<String> lore = new ArrayList<>();
-
+                    List<String> commands = new ArrayList<>();
                     for (String cmds : values.get("Commands").split(", ")) {
                         if (values.get("Commands").isEmpty()) continue;
-                        lore.add(cmds.replaceAll("[\\[\\]]", ""));
+                        commands.add(cmds.replaceAll("[\\[\\]]", ""));
                     }
 
-                    configuration.set(section + ".DisplayName", values.get("DisplayName"));
+                    List<String> displayName = new ArrayList<>();
+                    for (String frames : values.get("DisplayName").split(", ")) {
+                        if (values.get("DisplayName").isEmpty()) continue;
+                        displayName.add(frames.replaceAll("[\\[\\]]", ""));
+                    }
+
+                    configuration.set(section + ".DisplayName.Frames", displayName);
+                    configuration.set(section + ".DisplayName.Period", Long.valueOf(values.get("Period")));
                     configuration.set(section + ".Time", values.get("Time"));
                     configuration.set(section + ".Color", values.get("Color"));
                     configuration.set(section + ".Style", values.get("Style"));
-                    configuration.set(section + ".Commands", lore);
+                    configuration.set(section + ".Commands", commands);
                     configuration.set(section + ".AnnouncerMode.Enabled", values.get("AnnouncerModeEnabled"));
                     configuration.set(section + ".AnnouncerMode.Time", values.get("AnnouncerModeTime"));
                     plugin.saveConfig();
