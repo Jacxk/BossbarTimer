@@ -3,6 +3,7 @@ package com.minestom.BarInterface.BarListener;
 import com.minestom.BarInterface.BossbarInterface;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.MessageUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -103,7 +104,7 @@ public class NameTimeEdit implements Listener {
             }
             for (String bars : plugin.getBarManagerMap().keySet()) {
                 if (message.equals(bars)) {
-                    player.sendMessage("There is a bar with that name! Try another name!");
+                    MessageUtil.sendMessage(player, "There is a bar with that name! Try another name!");
                     return;
                 }
             }
@@ -147,7 +148,7 @@ public class NameTimeEdit implements Listener {
                 return;
             }
             if (!StringUtils.isNumeric(message)) {
-                player.sendMessage("You need to enter the time in a number.");
+                MessageUtil.sendMessage(player, "You need to enter the time in a number.");
                 return;
             }
             values.put("Period", message);

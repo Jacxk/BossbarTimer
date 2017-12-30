@@ -3,6 +3,7 @@ package com.minestom.BarInterface.BarListener;
 import com.minestom.BarInterface.BossbarInterface;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.MessageUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -60,10 +61,8 @@ public class EditMenu implements Listener {
                     player.closeInventory();
                     plugin.removeEditing(player);
                     plugin.setEditingName(player);
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            "&aEnter the next frame for the display name of the bar in the chat. Use &eCancel &ato cancel."));
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            "&7TIP: You can use '{time}' to show the time left!"));
+                    MessageUtil.sendMessage(player, "&aEnter the next frame for the display name of the bar in the chat. Use &eCancel &ato cancel.");
+                    MessageUtil.sendMessage(player, "&7TIP: You can use '{time}' to show the time left!");
                 }
                 if (event.getClick() == ClickType.RIGHT) {
                     BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
@@ -99,8 +98,7 @@ public class EditMenu implements Listener {
                 }
                 if (event.getClick() == ClickType.SHIFT_RIGHT) {
                     plugin.setEditPeriod(player);
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            "&aEnter the period time of the name bar in the chat &7(time in ticks)&a. Use &eCancel &ato cancel."));
+                    MessageUtil.sendMessage(player, "&aEnter the period time of the name bar in the chat &7(time in ticks)&a. Use &eCancel &ato cancel.");
                     player.closeInventory();
                 }
             }
