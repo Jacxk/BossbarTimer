@@ -1,5 +1,6 @@
 package com.minestom;
 
+import com.minestom.Utils.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -76,19 +77,19 @@ public class CountDown extends BukkitRunnable {
         }
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (plugin.containsEditingName(player)) {
-                player.sendTitle("§aPlease enter the name", "§cin the chat", 0, 22, 0);
+                MessageUtil.sendTitle(player,"§aPlease enter the name", "§cin the chat", 0, 22, 0);
             }
             if (plugin.containsEditTimer(player)) {
-                player.sendTitle("§aPlease enter the time", "§cin the chat", 0, 22, 0);
+                MessageUtil.sendTitle(player,"§aPlease enter the time", "§cin the chat", 0, 22, 0);
             }
             if (plugin.containsAnnouncerTime(player)) {
-                player.sendTitle("§aPlease enter the time", "§cin the chat", 0, 22, 0);
+                MessageUtil.sendTitle(player,"§aPlease enter the time", "§cin the chat", 0, 22, 0);
             }
             if (plugin.containsCreatingBar(player)) {
-                player.sendTitle("§aPlease enter the name", "§cin the chat", 0, 22, 0);
+                MessageUtil.sendTitle(player,"§aPlease enter the name", "§cin the chat", 0, 22, 0);
             }
             if (plugin.containsEditPeriod(player)) {
-                player.sendTitle("§aPlease enter the time", "§cin the chat", 0, 22, 0);
+                MessageUtil.sendTitle(player,"§aPlease enter the time", "§cin the chat", 0, 22, 0);
             }
         }
     }

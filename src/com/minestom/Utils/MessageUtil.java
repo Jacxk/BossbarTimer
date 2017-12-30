@@ -40,6 +40,11 @@ public class MessageUtil
         }
     }
 
+    public static void sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut)
+    {
+        player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+    }
+
     private static String colorMessage(String text) {
         return ChatColor.translateAlternateColorCodes(colorChar, text);
     }
