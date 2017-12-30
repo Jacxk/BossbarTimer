@@ -2,6 +2,7 @@ package com.minestom.BarInterface.BarListener;
 
 import com.minestom.BarInterface.BossbarInterface;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.MessageUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -43,10 +44,8 @@ public class AvancedMenu implements Listener {
                 player.closeInventory();
                 plugin.removeEditing(player);
                 plugin.setEditTimer(player);
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        "&aEnter the time of the bar in the chat. Use &eCancel &ato cancel."));
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        "&7TIP: You can use 's' for seconds, 'm' for minutes and 'h' for ours."));
+                MessageUtil.sendMessage(player, "&aEnter the time of the bar in the chat. Use &eCancel &ato cancel.");
+                MessageUtil.sendMessage(player, "&7TIP: You can use 's' for seconds, 'm' for minutes and 'h' for ours.");
             }
             if (slot == 1) {
                 Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
@@ -61,10 +60,8 @@ public class AvancedMenu implements Listener {
                     plugin.removeEditing(player);
                     plugin.setAddingCmd(player);
                     player.closeInventory();
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            "&aEnter the command you wish to add in the chat. Use &eCancel &ato cancel."));
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            "&7TIP: Do not use slash '/'. If the commands are 'none' delete them."));
+                    MessageUtil.sendMessage(player, "&aEnter the command you wish to add in the chat. Use &eCancel &ato cancel.");
+                    MessageUtil.sendMessage(player, "&7TIP: Do not use slash '/'. If the commands are 'none' delete them.");
                 }
                 if (event.getClick() == ClickType.RIGHT) {
                     if (!lore.isEmpty()) {

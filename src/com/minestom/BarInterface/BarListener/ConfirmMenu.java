@@ -3,6 +3,7 @@ package com.minestom.BarInterface.BarListener;
 import com.minestom.BarInterface.BossbarInterface;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -69,7 +70,7 @@ public class ConfirmMenu implements Listener {
 
                     player.closeInventory();
                     plugin.getBarManagerMap().remove(barKeyName.get(player));
-                    player.sendMessage("You have successfully deleted the bar!");
+                    MessageUtil.sendMessage(player, "You have successfully deleted the bar!");
                 }
 
                 if (plugin.containsCanceling(player)) {
@@ -84,12 +85,12 @@ public class ConfirmMenu implements Listener {
                     plugin.removeCanceling(player);
 
                     player.closeInventory();
-                    player.sendMessage("You have cancelled the bar creation!");
+                    MessageUtil.sendMessage(player, "You have cancelled the bar creation!");
                 }
 
                 if (plugin.containsSaving(player)) {
 
-                    player.sendMessage("Saving the bar... Please wait...");
+                    MessageUtil.sendMessage(player, "Saving the bar... Please wait...");
 
                     List<String> commands = new ArrayList<>();
                     for (String cmds : values.get("Commands").split(", ")) {
@@ -133,7 +134,7 @@ public class ConfirmMenu implements Listener {
                     plugin.removeSaving(player);
 
                     player.closeInventory();
-                    player.sendMessage("The bar has been successfully saved!");
+                    MessageUtil.sendMessage(player, "The bar has been successfully saved!");
                 }
             }
             if (slot == 3 && item.hasItemMeta()) {
