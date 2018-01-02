@@ -64,6 +64,7 @@ public class ConfirmMenu implements Listener {
 
                     plugin.removeConfirm(player);
                     plugin.removeDeleting(player);
+                    if (plugin.containsEditing(player)) plugin.removeEditing(player);
 
                     configuration.set(section, null);
                     plugin.saveConfig();
@@ -80,6 +81,7 @@ public class ConfirmMenu implements Listener {
 
                     createBar.remove(barName);
                     barKeyName.remove(player);
+                    if (plugin.containsEditing(player)) plugin.removeEditing(player);
 
                     plugin.removeConfirm(player);
                     plugin.removeCanceling(player);
@@ -125,7 +127,7 @@ public class ConfirmMenu implements Listener {
                     plugin.getBarManagerMap().put(barName, new BossBarManager(plugin));
                     barManager.removeBar(player);
                     barManager.setFinished(true);
-                    plugin.removeEditing(player);
+                    if (plugin.containsEditing(player)) plugin.removeEditing(player);
 
                     createBar.remove(barName);
                     barKeyName.remove(player);
@@ -158,6 +160,7 @@ public class ConfirmMenu implements Listener {
 
                     plugin.removeConfirm(player);
                     plugin.removeDeleting(player);
+                    plugin.setEditing(player);
                     BossbarMenuMaker.createEditBarsMenu(player, plugin);
 
                 }

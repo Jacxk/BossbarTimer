@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -100,6 +101,7 @@ public class Utilities {
         }
     }
 
+    private int taskId;
     private List<String> frames;
     private long period;
 
@@ -109,6 +111,8 @@ public class Utilities {
 
             @Override
             public void run() {
+                taskId = this.getTaskId();
+                if (frames.isEmpty()) frames.addAll(Arrays.asList("&cExample &fText", "&fExample &cText"));
                 if (i <= frames.size()) i++;
                 if (i >= frames.size()) i = 0;
                 barManager.setBarName(frames.get(i).replace("{time}",
@@ -119,6 +123,10 @@ public class Utilities {
 
     public void setFrames(List<String> frames) {
         this.frames = frames;
+    }
+
+    public int getTaskId() {
+        return taskId;
     }
 
     public void setPeriod(long period) {

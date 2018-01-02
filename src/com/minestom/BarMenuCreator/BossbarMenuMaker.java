@@ -72,7 +72,7 @@ public class BossbarMenuMaker {
         lore.add("&7Current Frames:");
         for (String cmds : values.get("DisplayName").split(", ")) {
             if (values.get("DisplayName").isEmpty()) continue;
-            lore.add("&c- " + cmds.replaceAll("[\\[\\]]", ""));
+            lore.add("&c- &f" + cmds.replaceAll("[\\[\\]]", ""));
         }
         lore.addAll(Arrays.asList("&ePeriod: &7" + plugin.getBarValues().get("Period"), "", "&eLeft-Click &7to add a new frame", "&eRight-Click &7to delete the last frame", "&eShift-Left-Click &7to remove all frames", "&eShift-Right-Click &7to edit the period time"));
 
@@ -130,7 +130,7 @@ public class BossbarMenuMaker {
         lore.add("&7Current Commands:");
         for (String cmds : values.get("Commands").split(", ")) {
             if (values.get("Commands").isEmpty()) continue;
-            lore.add("&c- " + cmds.replaceAll("[\\[\\]]", ""));
+            lore.add("&c- &f" + cmds.replaceAll("[\\[\\]]", ""));
         }
         lore.addAll(Arrays.asList("", "&eLeft-Click &7to add a command.", "&eRight-Click &7to delete the last command.", "&eShift-Left-Click &7to remove all commands."));
 

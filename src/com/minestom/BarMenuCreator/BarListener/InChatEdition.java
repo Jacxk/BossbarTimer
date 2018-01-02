@@ -6,20 +6,22 @@ import com.minestom.BossbarTimer;
 import com.minestom.Utils.MessageUtil;
 import com.minestom.Utils.Utilities;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class NameTimeEdit implements Listener {
+public class InChatEdition implements Listener {
 
     private BossbarTimer plugin;
 
-    public NameTimeEdit(BossbarTimer plugin) {
+    public InChatEdition(BossbarTimer plugin) {
         this.plugin = plugin;
     }
 
@@ -32,7 +34,6 @@ public class NameTimeEdit implements Listener {
         String message = event.getMessage();
 
         Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
-        BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
 
         if (event.isCancelled()) return;
 
@@ -106,7 +107,7 @@ public class NameTimeEdit implements Listener {
                     return;
                 }
             }
-            plugin.getBarValues().put("DisplayName", "[&cAnimated Text, &fAnimated Text]");
+            plugin.getBarValues().put("DisplayName", "[&cExample &fText, &fExample &cText]");
             plugin.getBarValues().put("Period", "10");
             plugin.getBarValues().put("Time", "0s");
             plugin.getBarValues().put("Color", "White");
@@ -117,11 +118,20 @@ public class NameTimeEdit implements Listener {
 
             plugin.getCreateBarValues().put(message.replace(" ", "_"), plugin.getBarValues());
             plugin.getBarKeyName().put(player, message.replace(" ", "_"));
+            plugin.getBarManagerMap().put(plugin.getBarKeyName().get(player), new BossBarManager(plugin));
+            BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
+
+            barManager.createBar(" ", "WHITE", "SOLID");
+            barManager.setFinished(false);
+            barManager.addPlayer(player);
+
+            plugin.getUtilities().setFrames(Arrays.asList("&cExample &fText", "&fExample &cText"));
+            plugin.getUtilities().setPeriod(20);
+            plugin.getUtilities().animateText(barManager);
+
+            BossbarMenuMaker.createEditMenu(player, plugin);
             plugin.removeCreatingBar(player);
             plugin.setEditing(player);
-            BossbarMenuMaker.createEditMenu(player, plugin);
-            barManager.createBar("Title", "white", "solid");
-            barManager.addPlayer(player);
         }
         if (plugin.containsAnnouncerTime(player)) {
             event.setCancelled(true);
@@ -139,6 +149,8 @@ public class NameTimeEdit implements Listener {
         }
         if (plugin.containsEditPeriod(player)) {
             event.setCancelled(true);
+            BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
+
             if (message.equalsIgnoreCase("cancel")) {
                 plugin.removeEditPeriod(player);
                 plugin.setEditing(player);
@@ -162,7 +174,7 @@ public class NameTimeEdit implements Listener {
                 frames.add(cmds.replaceAll("[\\[\\]]", ""));
             }
 
-            utilities.animateText(barManager).cancel();
+            Bukkit.getScheduler().cancelTask(utilities.getTaskId());
             utilities.setPeriod(Long.parseLong(values.get("Period")));
             utilities.setFrames(frames);
             utilities.animateText(barManager);

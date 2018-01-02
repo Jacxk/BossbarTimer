@@ -23,7 +23,6 @@ public class StylesMenu implements Listener {
 
     @EventHandler
     public void onInteract(InventoryClickEvent event) {
-        BossBarManager barManager = plugin.getBarManager();
 
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
@@ -31,6 +30,7 @@ public class StylesMenu implements Listener {
         String inventoryName = event.getView().getTopInventory().getTitle();
         InventoryType.SlotType slotType = event.getSlotType();
 
+        BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
         Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
 
         if (inventoryName.equals("Choose a style") && slotType != InventoryType.SlotType.OUTSIDE) {

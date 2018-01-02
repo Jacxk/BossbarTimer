@@ -77,19 +77,19 @@ public class CountDown extends BukkitRunnable {
         }
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (plugin.containsEditingName(player)) {
-                MessageUtil.sendTitle(player,"§aPlease enter the name", "§cin the chat", 0, 22, 0);
+                MessageUtil.sendTitle(player, "§aPlease enter the name", "§cin the chat", 0, 25, 0);
             }
             if (plugin.containsEditTimer(player)) {
-                MessageUtil.sendTitle(player,"§aPlease enter the time", "§cin the chat", 0, 22, 0);
+                MessageUtil.sendTitle(player, "§aPlease enter the time", "§cin the chat", 0, 25, 0);
             }
             if (plugin.containsAnnouncerTime(player)) {
-                MessageUtil.sendTitle(player,"§aPlease enter the time", "§cin the chat", 0, 22, 0);
+                MessageUtil.sendTitle(player, "§aPlease enter the time", "§cin the chat", 0, 25, 0);
             }
             if (plugin.containsCreatingBar(player)) {
-                MessageUtil.sendTitle(player,"§aPlease enter the name", "§cin the chat", 0, 22, 0);
+                MessageUtil.sendTitle(player, "§aPlease enter the name", "§cin the chat", 0, 25, 0);
             }
             if (plugin.containsEditPeriod(player)) {
-                MessageUtil.sendTitle(player,"§aPlease enter the time", "§cin the chat", 0, 22, 0);
+                MessageUtil.sendTitle(player, "§aPlease enter the time", "§cin the chat", 0, 25, 0);
             }
         }
     }

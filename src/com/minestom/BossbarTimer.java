@@ -124,7 +124,7 @@ public class BossbarTimer extends JavaPlugin {
         pluginManager.registerEvents(new ConfirmMenu(this), this);
         pluginManager.registerEvents(new AvancedMenu(this), this);
         pluginManager.registerEvents(new JoinListener(this), this);
-        pluginManager.registerEvents(new NameTimeEdit(this), this);
+        pluginManager.registerEvents(new InChatEdition(this), this);
         pluginManager.registerEvents(new EditCurrentBarsMenu(this), this);
     }
 
@@ -262,6 +262,10 @@ public class BossbarTimer extends JavaPlugin {
 
     public boolean containsEditTimer(Player player) {
         return this.editTimer.contains(player);
+    }
+
+    public boolean containsEditing(Player player) {
+        return this.editing.contains(player);
     }
 
     public void removeEditing(Player player) {
