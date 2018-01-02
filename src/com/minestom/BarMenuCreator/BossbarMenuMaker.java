@@ -1,4 +1,4 @@
-package com.minestom.BarInterface;
+package com.minestom.BarMenuCreator;
 
 import com.minestom.BossbarTimer;
 import org.bukkit.Bukkit;
@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class BossbarInterface {
+public class BossbarMenuMaker {
 
 
     private static void itemBuilder(Inventory inventory, String displayName, Material material, int data, int slot, List<String> lore) {

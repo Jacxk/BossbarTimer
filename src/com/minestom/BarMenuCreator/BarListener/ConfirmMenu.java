@@ -1,6 +1,6 @@
-package com.minestom.BarInterface.BarListener;
+package com.minestom.BarMenuCreator.BarListener;
 
-import com.minestom.BarInterface.BossbarInterface;
+import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
 import com.minestom.Utils.MessageUtil;
@@ -143,7 +143,7 @@ public class ConfirmMenu implements Listener {
                     plugin.removeConfirm(player);
                     plugin.removeCanceling(player);
                     plugin.setEditing(player);
-                    BossbarInterface.createEditMenu(player, plugin);
+                    BossbarMenuMaker.createEditMenu(player, plugin);
 
                 }
                 if (plugin.containsSaving(player)) {
@@ -151,14 +151,14 @@ public class ConfirmMenu implements Listener {
                     plugin.removeConfirm(player);
                     plugin.removeSaving(player);
                     plugin.setEditing(player);
-                    BossbarInterface.createEditMenu(player, plugin);
+                    BossbarMenuMaker.createEditMenu(player, plugin);
 
                 }
                 if (plugin.containsDeleting(player)) {
 
                     plugin.removeConfirm(player);
                     plugin.removeDeleting(player);
-                    BossbarInterface.createEditBarsMenu(player, plugin);
+                    BossbarMenuMaker.createEditBarsMenu(player, plugin);
 
                 }
             }
@@ -176,7 +176,7 @@ public class ConfirmMenu implements Listener {
                 Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                     @Override
                     public void run() {
-                        BossbarInterface.createConfimMenu(player);
+                        BossbarMenuMaker.createConfimMenu(player);
                     }
                 }, 1L);
             }

@@ -1,9 +1,8 @@
-package com.minestom.BarInterface.BarListener;
+package com.minestom.BarMenuCreator.BarListener;
 
-import com.minestom.BarInterface.BossbarInterface;
+import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossbarTimer;
 import com.minestom.Utils.MessageUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -73,13 +72,13 @@ public class AvancedMenu implements Listener {
                         values.put("Commands", "");
                     }
                     plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
-                    BossbarInterface.createAvancedMenu(player, plugin);
+                    BossbarMenuMaker.createAvancedMenu(player, plugin);
                 }
                 if (event.getClick() == ClickType.SHIFT_LEFT) {
                     lore.clear();
                     values.put("Commands", "");
                     plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
-                    BossbarInterface.createAvancedMenu(player, plugin);
+                    BossbarMenuMaker.createAvancedMenu(player, plugin);
                 }
 
             }
@@ -100,7 +99,7 @@ public class AvancedMenu implements Listener {
                         values.put("AnnouncerModeEnabled", "True");
                     } else values.put("AnnouncerModeEnabled", "False");
 
-                    BossbarInterface.createAvancedMenu(player, plugin);
+                    BossbarMenuMaker.createAvancedMenu(player, plugin);
                 }
                 if (event.getClick() == ClickType.RIGHT) {
                     plugin.setAnnouncerTime(player);
@@ -109,7 +108,7 @@ public class AvancedMenu implements Listener {
                 }
             }
             if (slot == 4) {
-                BossbarInterface.createEditMenu(player, plugin);
+                BossbarMenuMaker.createEditMenu(player, plugin);
             }
         }
     }

@@ -1,8 +1,9 @@
 package com.minestom;
 
-import com.minestom.BarInterface.BarListener.*;
+import com.minestom.BarMenuCreator.BarListener.*;
 import com.minestom.Commands.BbtCommand;
 import com.minestom.Commands.BbtCompleter;
+import com.minestom.Utils.Utilities;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;

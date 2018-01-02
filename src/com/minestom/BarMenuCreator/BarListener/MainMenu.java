@@ -1,9 +1,8 @@
-package com.minestom.BarInterface.BarListener;
+package com.minestom.BarMenuCreator.BarListener;
 
-import com.minestom.BarInterface.BossbarInterface;
+import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossbarTimer;
 import com.minestom.Utils.MessageUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -41,7 +40,7 @@ public class MainMenu implements Listener {
                 MessageUtil.sendMessage(player, "&aEnter the bar name in the chat. Use &eCancel &ato cancel.");
             }
             if (slot == 3) {
-                BossbarInterface.createEditBarsMenu(player, plugin);
+                BossbarMenuMaker.createEditBarsMenu(player, plugin);
             }
         }
     }

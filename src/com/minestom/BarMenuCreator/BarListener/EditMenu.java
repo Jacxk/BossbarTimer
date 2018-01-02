@@ -1,10 +1,9 @@
-package com.minestom.BarInterface.BarListener;
+package com.minestom.BarMenuCreator.BarListener;
 
-import com.minestom.BarInterface.BossbarInterface;
-import com.minestom.BossBarManager;
+import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossbarTimer;
 import com.minestom.Utils.MessageUtil;
-import org.bukkit.ChatColor;
+import com.minestom.Utils.Utilities;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,7 +12,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +28,8 @@ public class EditMenu implements Listener {
 
     @EventHandler
     public void onInteract(InventoryClickEvent event) {
+        Utilities utilities = plugin.getUtilities();
+
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
         ItemStack item = event.getCurrentItem();
@@ -44,10 +44,10 @@ public class EditMenu implements Listener {
             }
             event.setCancelled(true);
             if (slot == 0 && item.hasItemMeta()) {
-                BossbarInterface.createColorMenu(player);
+                BossbarMenuMaker.createColorMenu(player);
             }
             if (slot == 1 && item.hasItemMeta()) {
-                BossbarInterface.createStyleMenu(player);
+                BossbarMenuMaker.createStyleMenu(player);
             }
             if (slot == 2 && item.hasItemMeta()) {
                 Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
@@ -65,7 +65,6 @@ public class EditMenu implements Listener {
                     MessageUtil.sendMessage(player, "&7TIP: You can use '{time}' to show the time left!");
                 }
                 if (event.getClick() == ClickType.RIGHT) {
-                    BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
 
                     if (!lore.isEmpty()) {
                         lore.remove(lore.size() - 1);
@@ -76,24 +75,18 @@ public class EditMenu implements Listener {
                         values.put("DisplayName", "");
                     }
                     plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
-                    BossbarInterface.createEditMenu(player, plugin);
+                    BossbarMenuMaker.createEditMenu(player, plugin);
 
-                    BukkitTask task = plugin.getUtilities().animateText(lore, Long.parseLong(values.get("Period")), barManager);
-                    task.cancel();
-                    BukkitTask task2 = plugin.getUtilities().animateText(lore, Long.parseLong(values.get("Period")), barManager);
-
+                    utilities.setFrames(lore);
                 }
                 if (event.getClick() == ClickType.SHIFT_LEFT) {
-                    BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
 
                     lore.clear();
                     values.put("DisplayName", "");
                     plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
-                    BossbarInterface.createEditMenu(player, plugin);
+                    BossbarMenuMaker.createEditMenu(player, plugin);
 
-                    BukkitTask task = plugin.getUtilities().animateText(Arrays.asList("&cExample &fText", "&fExample &cText"), Long.parseLong(values.get("Period")), barManager);
-                    task.cancel();
-                    BukkitTask task2 = plugin.getUtilities().animateText(Arrays.asList("&cExample &fText", "&fExample &cText"), Long.parseLong(values.get("Period")), barManager);
+                    utilities.setFrames(Arrays.asList("&cExample &fText", "&fExample &cText"));
 
                 }
                 if (event.getClick() == ClickType.SHIFT_RIGHT) {
@@ -103,7 +96,7 @@ public class EditMenu implements Listener {
                 }
             }
             if (slot == 3 && item.hasItemMeta()) {
-                BossbarInterface.createAvancedMenu(player, plugin);
+                BossbarMenuMaker.createAvancedMenu(player, plugin);
             }
             if (slot == 4 && item.hasItemMeta()) {
 
@@ -112,7 +105,7 @@ public class EditMenu implements Listener {
                     plugin.removeEditing(player);
                     plugin.setCanceling(player);
                     plugin.setConfirm(player);
-                    BossbarInterface.createConfimMenu(player);
+                    BossbarMenuMaker.createConfimMenu(player);
 
                 }
                 if (event.getClick() == ClickType.LEFT) {
@@ -120,7 +113,7 @@ public class EditMenu implements Listener {
                     plugin.removeEditing(player);
                     plugin.setSaving(player);
                     plugin.setConfirm(player);
-                    BossbarInterface.createConfimMenu(player);
+                    BossbarMenuMaker.createConfimMenu(player);
 
                 }
             }

@@ -1,6 +1,6 @@
-package com.minestom.BarInterface.BarListener;
+package com.minestom.BarMenuCreator.BarListener;
 
-import com.minestom.BarInterface.BossbarInterface;
+import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
 import org.bukkit.ChatColor;
@@ -65,23 +65,24 @@ public class EditCurrentBarsMenu implements Listener {
                     barManager.createBar(configuration.getString("Bars." + barKeyName + ".DisplayName"),
                             configuration.getString("Bars." + barKeyName + ".Color"),
                             configuration.getString("Bars." + barKeyName + ".Style"));
-                    plugin.getUtilities().animateText(plugin.getConfig().getStringList("Bars." + barKeyName + ".DisplayName.Frames"),
-                            plugin.getConfig().getLong("Bars." + barKeyName + ".DisplayName.Period"), barManager);
+                    plugin.getUtilities().setFrames(plugin.getConfig().getStringList("Bars." + barKeyName + ".DisplayName.Frames"));
+                    plugin.getUtilities().setPeriod(plugin.getConfig().getLong("Bars." + barKeyName + ".DisplayName.Period"));
+                    plugin.getUtilities().animateText(barManager);
                     barManager.setFinished(false);
                     barManager.addPlayer(player);
 
                     plugin.setEditing(player);
-                    BossbarInterface.createEditMenu(player, plugin);
+                    BossbarMenuMaker.createEditMenu(player, plugin);
                 }
                 if (event.getClick() == ClickType.SHIFT_LEFT) {
                     plugin.setDeleting(player);
                     plugin.setConfirm(player);
-                    BossbarInterface.createConfimMenu(player);
+                    BossbarMenuMaker.createConfimMenu(player);
                 }
             }
 
             if (slot == 49) {
-                BossbarInterface.createMainMenu(player);
+                BossbarMenuMaker.createMainMenu(player);
             }
         }
     }

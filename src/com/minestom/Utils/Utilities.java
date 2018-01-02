@@ -1,9 +1,11 @@
-package com.minestom;
+package com.minestom.Utils;
 
+import com.minestom.BossBarManager;
+import com.minestom.BossbarTimer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DurationFormatUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
@@ -98,23 +100,28 @@ public class Utilities {
         }
     }
 
-    public BukkitTask animateText(List<String> frames, long period, BossBarManager barManager) {
-        BukkitTask task = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+    private List<String> frames;
+    private long period;
+
+    public BukkitTask animateText(BossBarManager barManager) {
+        return new BukkitRunnable() {
             int i = -1;
 
             @Override
             public void run() {
                 if (i <= frames.size()) i++;
                 if (i >= frames.size()) i = 0;
-
                 barManager.setBarName(frames.get(i).replace("{time}",
                         plugin.getUtilities().format((long) barManager.getTimeleft())));
             }
-        }, 0L, period);
-        return task;
+        }.runTaskTimer(plugin, 0L, period);
     }
 
-    public void cancel(List<String> frames, long period, BossBarManager barManager) {
-        animateText(frames, period, barManager).cancel();
+    public void setFrames(List<String> frames) {
+        this.frames = frames;
+    }
+
+    public void setPeriod(long period) {
+        this.period = period;
     }
 }

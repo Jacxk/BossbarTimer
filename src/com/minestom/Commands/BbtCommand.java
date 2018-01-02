@@ -1,11 +1,10 @@
 package com.minestom.Commands;
 
-import com.minestom.BarInterface.BossbarInterface;
+import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
 import com.minestom.Utils.MessageUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -29,8 +28,8 @@ public class BbtCommand implements CommandExecutor {
         Player player = (Player) sender;
         if (argsLength == 0) {
             if (plugin.editing.contains(player)) {
-                BossbarInterface.createEditMenu(player, plugin);
-            } else BossbarInterface.createMainMenu(player);
+                BossbarMenuMaker.createEditMenu(player, plugin);
+            } else BossbarMenuMaker.createMainMenu(player);
             return true;
         }
 
@@ -160,7 +159,8 @@ public class BbtCommand implements CommandExecutor {
         bossBar.setFinished(false);
 
         MessageUtil.sendMessage(player, "The bar &e" + barName + " &7has been started!");
-        plugin.getUtilities().animateText(plugin.getConfig().getStringList("Bars." + barName + ".DisplayName.Frames"),
-        plugin.getConfig().getLong("Bars." + barName + ".DisplayName.Period"), bossBar);
+        plugin.getUtilities().setFrames(plugin.getConfig().getStringList("Bars." + barName + ".DisplayName.Frames"));
+        plugin.getUtilities().setPeriod(plugin.getConfig().getLong("Bars." + barName + ".DisplayName.Period"));
+        plugin.getUtilities().animateText(bossBar);
     }
 }

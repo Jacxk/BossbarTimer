@@ -1,6 +1,6 @@
-package com.minestom.BarInterface.BarListener;
+package com.minestom.BarMenuCreator.BarListener;
 
-import com.minestom.BarInterface.BossbarInterface;
+import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
 import org.bukkit.ChatColor;
@@ -13,11 +13,11 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
-public class ColorsMenu implements Listener {
+public class StylesMenu implements Listener {
 
     private BossbarTimer plugin;
 
-    public ColorsMenu(BossbarTimer plugin) {
+    public StylesMenu(BossbarTimer plugin) {
         this.plugin = plugin;
     }
 
@@ -33,19 +33,19 @@ public class ColorsMenu implements Listener {
 
         Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
 
-        if (inventoryName.equals("Choose a color") && slotType != InventoryType.SlotType.OUTSIDE) {
+        if (inventoryName.equals("Choose a style") && slotType != InventoryType.SlotType.OUTSIDE) {
             if (item == null) {
                 return;
             }
             event.setCancelled(true);
             if (slot != 8 && item.hasItemMeta()) {
-                String color = ChatColor.stripColor(item.getItemMeta().getDisplayName());
-                barManager.setBarColor(color);
-                values.put("Color", color);
+                String style = ChatColor.stripColor(item.getItemMeta().getDisplayName()).replace(" ", "_");
+                barManager.setBarStyle(style);
+                values.put("Style", style);
                 plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
             }
             if (slot == 8 && item.hasItemMeta()) {
-                BossbarInterface.createEditMenu(player, plugin);
+                BossbarMenuMaker.createEditMenu(player, plugin);
             }
         }
     }
