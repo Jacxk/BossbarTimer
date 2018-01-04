@@ -53,8 +53,7 @@ public class BbtCommand implements CommandExecutor {
         return true;
     }
 
-    private void helpParameter(Player player, Integer argsLength)
-    {
+    private void helpParameter(Player player, Integer argsLength) {
         if (argsLength == 1) {
             String[] messages = {
                     "&8----------------------------",
@@ -73,8 +72,7 @@ public class BbtCommand implements CommandExecutor {
         }
     }
 
-    private void reloadParameter(Player player, Integer argsLength)
-    {
+    private void reloadParameter(Player player, Integer argsLength) {
         if (argsLength == 1) {
             plugin.reloadConfig();
             MessageUtil.sendMessage(player, "The configuration file has been reloaded!");
@@ -86,8 +84,7 @@ public class BbtCommand implements CommandExecutor {
         }
     }
 
-    private void stopParameter(Player player, Integer argsLength, String[] args)
-    {
+    private void stopParameter(Player player, Integer argsLength, String[] args) {
         if (argsLength == 1) {
             MessageUtil.sendMessage(player, "You need to specify a bar!");
             return;
@@ -103,11 +100,11 @@ public class BbtCommand implements CommandExecutor {
         }
         plugin.getTimer().remove(barName);
         bossBar.setFinished(false);
+        Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
         MessageUtil.sendMessage(player, "The bar timer has been stopped!");
     }
 
-    private void createParameter(Player player, Integer argsLength, String[] args)
-    {
+    private void createParameter(Player player, Integer argsLength, String[] args) {
         if (argsLength <= 4) {
             MessageUtil.sendMessage(player, "Wrong usage! Use: &a/bbt create <name> <time> <color> <style> <DisplayName>");
             return;
@@ -129,8 +126,8 @@ public class BbtCommand implements CommandExecutor {
         MessageUtil.sendMessage(player, "A new bar timer has been created!");
     }
 
-    private void startParameter(Player player, Integer argsLength, String[] args)
-    {
+    private void startParameter(Player player, Integer argsLength, String[] args) {
+        Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
         if (argsLength == 1) {
             MessageUtil.sendMessage(player, "You need to specify a bar!");
             return;

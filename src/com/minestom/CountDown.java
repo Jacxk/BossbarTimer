@@ -29,14 +29,12 @@ public class CountDown extends BukkitRunnable {
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         bossBar.removeBar(player);
                     }
-                    for (String command : plugin.getConfig().getStringList("Bars." + barName + ".Commands")) {
-                        if (command.contains("none")) continue;
-                        plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
-                    }
+                    plugin.getUtilities().executeCommand(plugin.getConfig().getStringList("Bars." + barName + ".Commands"));
                     if (plugin.getConfig().getString("Bars." + barName + ".AnnouncerMode.Enabled") != null &&
                             plugin.getConfig().getString("Bars." + barName + ".AnnouncerMode.Enabled").equalsIgnoreCase("True")) {
                         plugin.getUtilities().formatTime(barName + "-Announcer", plugin.getConfig().getString("Bars." + barName + ".AnnouncerMode.Time"));
                     }
+                    Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
                     timer.remove(barName);
                 } else {
                     String name = barName.replace("-Announcer", "");

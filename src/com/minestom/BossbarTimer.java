@@ -4,6 +4,7 @@ import com.minestom.BarMenuCreator.BarListener.*;
 import com.minestom.Commands.BbtCommand;
 import com.minestom.Commands.BbtCompleter;
 import com.minestom.Utils.Utilities;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -40,15 +41,23 @@ public class BossbarTimer extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        if (getServer().getVersion().contains("1.8")) {
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
         setupConfig();
         init();
         registerListeners();
         registerCommands();
         loadBars();
+        getLogger().info("Plugin made by By_Jack with help of False!");
+        getLogger().info("The plugin is now ready to use!");
     }
 
     @Override
     public void onDisable() {
+        getLogger().info("Thanks for using the plugin!");
+        getLogger().info("Plugin successfully disabled");
         this.getServer().getScheduler().cancelTasks(this);
         saveBarData();
     }
@@ -85,7 +94,7 @@ public class BossbarTimer extends JavaPlugin {
 
     private void loadBarsData() {
         ConfigurationSection data = getConfig().getConfigurationSection("Data");
-        if (data.getKeys(true) != null) {
+        if (data != null) {
             for (String barName : data.getKeys(false)) {
                 String timeFormat = getConfig().getString("Bars." + barName + ".Time");
                 utilities.formatTime(barName, timeFormat);

@@ -4,7 +4,11 @@ import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DurationFormatUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -85,19 +89,67 @@ public class Utilities {
 
     public void formatTime(String name, String timeFormat) {
         Map<String, Double> timer = plugin.getTimer();
-
-        double time = Double.parseDouble(timeFormat.replaceAll("[a-zA-Z]", ""));
-        if (timeFormat.contains("s")) {
-            timer.put(name, time);
-        } else if (timeFormat.contains("m")) {
-            time = time * 60;
-            timer.put(name, time);
-        } else if (timeFormat.contains("h")) {
-            time = time * 3600;
-            timer.put(name, time);
-        } else timer.put(name, time);
+        String[] timeBefore = timeFormat.split(" ");
+        double time = 0;
+        for (String splitTime : timeBefore) {
+            if (splitTime.contains("s")) {
+                time += Double.parseDouble(splitTime.replaceAll("[a-zA-Z]", ""));
+            }
+            if (splitTime.contains("m")) {
+                time += Double.parseDouble(splitTime.replaceAll("[a-zA-Z]", "")) * 60;
+            }
+            if (splitTime.contains("h")) {
+                time += Double.parseDouble(splitTime.replaceAll("[a-zA-Z]", "")) * 3600;
+            }
+            if (splitTime.contains("d")) {
+                time += Double.parseDouble(splitTime.replaceAll("[a-zA-Z]", "")) * 86400;
+            }
+        }
         if (!name.contains("-Announcer")) {
             plugin.getInitialTime().put(name, time);
+        }
+        timer.put(name, time);
+    }
+
+    public void executeCommand(List<String> cmds) {
+        for (String command : cmds) {
+            if (command.contains("none") || command.isEmpty()) continue;
+            if (!command.startsWith("[")) Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+            if (command.startsWith("[message]")) {
+                for (Player players : Bukkit.getOnlinePlayers()) {
+                    players.sendMessage(ChatColor.translateAlternateColorCodes('&', command.replace("[message]", "")));
+                }
+            }
+            if (command.startsWith("[title-subtitle]")) {
+                String[] strings = command.replace("[title-subtitle]", "").split(";");
+                for (Player players : Bukkit.getOnlinePlayers()) {
+                    if (strings[1] == null) {
+                        players.sendTitle(ChatColor.translateAlternateColorCodes('&', strings[0]), null, 10, 40, 10);
+                        continue;
+                    }
+                    if (strings[2] == null) {
+                        players.sendTitle(ChatColor.translateAlternateColorCodes('&', strings[0]),
+                                ChatColor.translateAlternateColorCodes('&', strings[1]), 10, 40, 10);
+                        continue;
+                    }
+                    players.sendTitle(ChatColor.translateAlternateColorCodes('&', strings[0]),
+                            ChatColor.translateAlternateColorCodes('&', strings[1]), Integer.valueOf(strings[2]),
+                            Integer.valueOf(strings[3]), Integer.valueOf(strings[4]));
+                }
+            }
+            if (command.startsWith("[sound]")) {
+                for (Player players : Bukkit.getOnlinePlayers()) {
+                    players.playSound(players.getLocation(), Sound.valueOf(command.replace("[sound]", "").replace(" ", "").toUpperCase()), 1, 2);
+                }
+            }
+            if (command.startsWith("[console]")) {
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command.replace("[console]", ""));
+            }
+            if (command.startsWith("[player]")) {
+                for (Player players : Bukkit.getOnlinePlayers()) {
+                    Bukkit.getServer().dispatchCommand(players, command.replace("[player]", ""));
+                }
+            }
         }
     }
 

@@ -1,5 +1,17 @@
+Messages:
+  Format:
+    Singular:
+      Days: day
+      Hour: hour
+      Minute: minute
+      Second: second
+    Plural:
+      Days: days
+      Hours: hours
+      Minutes: minutes
+      Seconds: seconds
 Bars:
-  example_bar_1:
+  example_event_1:
     DisplayName:
       Frames:
       - '&fThe event starts in &c{time}'
@@ -15,11 +27,37 @@ Bars:
     Color: YELLOW
     Style: SEGMENTED_20
     Commands:
-    - say Get ready, an event will start...
+    - '[message]&dGet ready, an event will start...'
     AnnouncerMode:
-      Enabled: 'false'
-      Time: 1h
-  example_bar_2:
+      Enabled: false
+      Time: 1h 30m
+  example_event_2:
+    DisplayName:
+      Frames:
+      - '&fThe event have started!'
+      - '&cThe event have started!'
+      - '&fThe event have started!'
+      - '&cThe event have started!'
+      - '&fThe event have started!'
+      - '&cThe event have started!'
+      - '&fThe Will finish in &6&l{time}&f!'
+      - '&fThe Will finish in &6&l{time}&f!'
+      - '&fThe Will finish in &6&l{time}&f!'
+      - '&fThe Will finish in &6&l{time}&f!'
+      - '&fThe Will finish in &6&l{time}&f!'
+      - '&fThe Will finish in &6&l{time}&f!'
+      Period: 5
+    Time: 3m
+    Color: YELLOW
+    Style: SEGMENTED_20
+    Commands:
+    - '[title-subtitle]&a&lThank You;&7&lFor Using BossbarTimer;5;40;5'
+    - '[message]&dThank you all for testing :D'
+    - '[sound]ENTITY_EXPERIENCE_ORB_PICKUP'
+    AnnouncerMode:
+      Enabled: false
+      Time: 1h 30m
+  example_bar_1:
     DisplayName:
       Frames:
       - '&f&lBossBarTimer'
@@ -51,23 +89,12 @@ Bars:
       - '&f&lBossBarTimer'
       - '&f&lBossBarTimer'
       Period: 1
-    Time: 1 m
+    Time: 1m 30s
     Color: YELLOW
     Style: SEGMENTED_20
     AnnouncerMode:
       Enabled: true
       Time: 15m
     Commands:
-    - say This server uses §eBossBarTimer made by §eBy_Jack
-Messages:
-  Format:
-    Singular:
-      Days: day
-      Hour: hour
-      Minute: minute
-      Second: second
-    Plural:
-      Days: days
-      Hours: hours
-      Minutes: minutes
-      Seconds: seconds
+    - '[message] &7This server uses &eBossBarTimer &7made by &eBy_Jack'
+    - '[sound] ENTITY_EXPERIENCE_ORB_PICKUP'
