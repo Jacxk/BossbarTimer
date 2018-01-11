@@ -3,6 +3,7 @@ package com.minestom;
 import com.minestom.BarMenuCreator.BarListener.*;
 import com.minestom.Commands.BbtCommand;
 import com.minestom.Commands.BbtCompleter;
+import com.minestom.Updater.SpigotUpdater;
 import com.minestom.Utils.Utilities;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -12,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +44,7 @@ public class BossbarTimer extends JavaPlugin {
     @Override
     public void onEnable() {
         if (getServer().getVersion().contains("1.8")) {
+            getLogger().info("Your server version is not compatible with the plugin!");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -52,6 +55,12 @@ public class BossbarTimer extends JavaPlugin {
         loadBars();
         getLogger().info("Plugin made by By_Jack with help of False!");
         getLogger().info("The plugin is now ready to use!");
+        try {
+            new SpigotUpdater(this, 48668, true, false);
+        } catch (IOException e) {
+            getLogger().info("An Error has occurred: " + e.getMessage());
+        }
+
     }
 
     @Override
