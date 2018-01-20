@@ -7,32 +7,18 @@ public class PlayerEditingData {
 
     private Map<String, String> barValues = new HashMap<>();
     private String barKeyName;
-    private boolean editing;
-    private boolean editTimer;
-    private boolean editingName;
-    private boolean createBar;
-    private boolean confirm;
-    private boolean saving;
-    private boolean canceling;
-    private boolean deleting;
-    private boolean addingCmd;
-    private boolean announcerTime;
-    private boolean editPeriod;
-
-    public PlayerEditingData() {
-        this.editing = false;
-        this.editTimer = false;
-        this.editingName = false;
-        this.createBar = false;
-        this.confirm = false;
-        this.saving = false;
-        this.canceling = false;
-        this.deleting = false;
-        this.addingCmd = false;
-        this.announcerTime = false;
-        this.editPeriod = false;
-    }
-
+    private boolean editing = false;
+    private boolean editTimer = false;
+    private boolean editingName = false;
+    private boolean createBar = false;
+    private boolean confirm = false;
+    private boolean saving = false;
+    private boolean canceling = false;
+    private boolean deleting = false;
+    private boolean addingCmd = false;
+    private boolean announcerTime = false;
+    private boolean editPeriod = false;
+    
     public String getBarValue(String value) {
         return barValues.get(value);
     }
