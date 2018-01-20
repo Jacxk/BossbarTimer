@@ -42,9 +42,10 @@ public class MessageUtil {
         }
     }
 
-    public static void sendMessages(CommandSender sender, String[] messages) {
+    public static void sendMessages(CommandSender sender, String[] messages, boolean prefix) {
         for (String message : messages) {
-            sendMessage(sender, message);
+            if (!prefix) sender.sendMessage(colorMessage(message));
+            else sendMessage(sender, message);
         }
     }
 

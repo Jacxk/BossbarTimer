@@ -1,6 +1,7 @@
 package com.minestom.BarMenuCreator;
 
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.PlayerEditingData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,7 +16,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class BossbarMenuMaker {
 
@@ -51,7 +51,7 @@ public class BossbarMenuMaker {
         for (String barKeyNames : configuration.getConfigurationSection("Bars").getKeys(false)) {
             slot++;
             if (slot == 49) {
-                slot = slot + 1;
+                slot += 1;
             }
             itemBuilder(inv, "&a&l" + barKeyNames, Material.WRITTEN_BOOK, 0, slot, Arrays.asList("",
                     "&bColor: &7" + configuration.getString("Bars." + barKeyNames + ".Color"),
@@ -65,22 +65,22 @@ public class BossbarMenuMaker {
     }
 
     public static void createEditMenu(Player player, BossbarTimer plugin) {
-        Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
+        PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
         Inventory inv = Bukkit.createInventory(player, InventoryType.HOPPER, "Edit Mode");
 
         List<String> lore = new ArrayList<>();
         lore.add("&7Current Frames:");
-        for (String cmds : values.get("DisplayName").split(", ")) {
-            if (values.get("DisplayName").isEmpty()) continue;
+        for (String cmds : editingData.getBarValue("DisplayName").split(", ")) {
+            if (editingData.getBarValue("DisplayName").isEmpty()) continue;
             lore.add("&c- &f" + cmds.replaceAll("[\\[\\]]", ""));
         }
-        lore.addAll(Arrays.asList("&ePeriod: &7" + plugin.getBarValues().get("Period"), "", "&eLeft-Click &7to add a new frame", "&eRight-Click &7to delete the last frame", "&eShift-Left-Click &7to remove all frames", "&eShift-Right-Click &7to edit the period time"));
+        lore.addAll(Arrays.asList("&ePeriod: &7" + editingData.getBarValue("Period"), "", "&eLeft-Click &7to add a new frame", "&eRight-Click &7to delete the last frame", "&eShift-Left-Click &7to remove all frames", "&eShift-Right-Click &7to edit the period time"));
 
-        itemBuilder(inv, "&a&lChange Color", Material.INK_SACK, 0, 0, Arrays.asList("&7Click here to enter the", "&7edit color mode.", "", "&eCurrent Color: &a" + values.get("Color")));
-        itemBuilder(inv, "&a&lChange Style", Material.EMPTY_MAP, 0, 1, Arrays.asList("&7Click here to enter the", "&7edit style mode.", "", "&eCurrent Style: &a" + values.get("Style")));
+        itemBuilder(inv, "&a&lChange Color", Material.INK_SACK, 0, 0, Arrays.asList("&7Click here to enter the", "&7edit color mode.", "", "&eCurrent Color: &a" + editingData.getBarValue("Color")));
+        itemBuilder(inv, "&a&lChange Style", Material.EMPTY_MAP, 0, 1, Arrays.asList("&7Click here to enter the", "&7edit style mode.", "", "&eCurrent Style: &a" + editingData.getBarValue("Style")));
         itemBuilder(inv, "&a&lChange Display Name", Material.BOOK, 0, 2, lore);
         itemBuilder(inv, "&a&lAdvanced Settings", Material.REDSTONE_COMPARATOR, 0, 3, Arrays.asList("&7Click here to see", "&7more advanced settings.", "&7Such as time and commands"));
-        itemBuilder(inv, "&a&lSave &7| &c&lCancel", Material.BARRIER, 0, 4, Arrays.asList("", "&eLeft-Click &7to save the changes.", "&eShift-Left-Click &7to cancel the changes.", "", "&7BarName: &c" + plugin.getBarKeyName().get(player)));
+        itemBuilder(inv, "&a&lSave &7| &c&lCancel", Material.BARRIER, 0, 4, Arrays.asList("", "&eLeft-Click &7to save the changes.", "&eShift-Left-Click &7to cancel the changes.", "", "&7BarName: &c" + editingData.getBarKeyName()));
 
         player.openInventory(inv);
     }
@@ -123,23 +123,22 @@ public class BossbarMenuMaker {
     }
 
     public static void createAvancedMenu(Player player, BossbarTimer plugin) {
-        Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
+        PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
         Inventory inv = Bukkit.createInventory(player, InventoryType.HOPPER, "Advanced Settings");
 
         List<String> lore = new ArrayList<>();
         lore.add("&7Current Commands:");
-        for (String cmds : values.get("Commands").split(", ")) {
-            if (values.get("Commands").isEmpty()) continue;
+        for (String cmds : editingData.getBarValue("Commands").split(", ")) {
+            if (editingData.getBarValue("Commands").isEmpty()) continue;
             lore.add("&c- &f" + cmds.replaceAll("[\\[\\]]", ""));
         }
         lore.addAll(Arrays.asList("", "&eLeft-Click &7to add a command.", "&eRight-Click &7to delete the last command.", "&eShift-Left-Click &7to remove all commands."));
 
-        itemBuilder(inv, "&a&lChange Bar Timer", Material.NAME_TAG, 0, 0, Arrays.asList("&7Click here to enter the", "&7edit timer mode.", "", "&eCurrent Time: &a" + values.get("Time")));
+        itemBuilder(inv, "&a&lChange Bar Timer", Material.NAME_TAG, 0, 0, Arrays.asList("&7Click here to enter the", "&7edit timer mode.", "", "&eCurrent Time: &a" + editingData.getBarValue("Time")));
         itemBuilder(inv, "&a&lEdit Commands", Material.MAP, 0, 1, lore);
-        itemBuilder(inv, "&a&lAnnouncerMode", Material.BLAZE_ROD, 0, 2, Arrays.asList("&7Enabled: &c" + values.get("AnnouncerModeEnabled"), "&7Show Every: &c" + values.get("AnnouncerModeTime"), "", "&eLeft-Click &7to toggle the", "&7Announcer mode.", "&eRight-Click &7to change the time."));
+        itemBuilder(inv, "&a&lAnnouncerMode", Material.BLAZE_ROD, 0, 2, Arrays.asList("&7Enabled: &c" + editingData.getBarValue("AnnouncerModeEnabled"), "&7Show Every: &c" + editingData.getBarValue("AnnouncerModeTime"), "", "&eLeft-Click &7to toggle the", "&7Announcer mode.", "&eRight-Click &7to change the time."));
         itemBuilder(inv, "&6&lBack", Material.ARROW, 0, 4, Arrays.asList("&7Click here", "&7to go back."));
 
         player.openInventory(inv);
     }
-
 }

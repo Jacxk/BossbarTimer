@@ -13,18 +13,19 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Utilities {
 
     private BossbarTimer plugin;
-
+    private Map<Player, PlayerEditingData> playerEditingDataMap = new HashMap<>();
     public Utilities(BossbarTimer plugin) {
         this.plugin = plugin;
     }
 
-    public String format(long input) {
+    private String format(long input) {
         return formatDurationWords(input * 1000, true, true);
     }
 
@@ -183,5 +184,21 @@ public class Utilities {
 
     public void setPeriod(long period) {
         this.period = period;
+    }
+
+    public void addPlayerEditing(Player player){
+        playerEditingDataMap.put(player, new PlayerEditingData());
+    }
+
+    public void removePlayerEditing(Player player){
+        playerEditingDataMap.remove(player);
+    }
+
+    public Map<Player, PlayerEditingData> getPlayerEditingDataMap() {
+        return playerEditingDataMap;
+    }
+
+    public PlayerEditingData getEditingData(Player player){
+        return playerEditingDataMap.get(player);
     }
 }

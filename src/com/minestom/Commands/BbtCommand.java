@@ -4,6 +4,7 @@ import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
 import com.minestom.Utils.MessageUtil;
+import com.minestom.Utils.PlayerEditingData;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,7 +28,8 @@ public class BbtCommand implements CommandExecutor {
         Integer argsLength = args.length;
         if (argsLength == 0 && sender instanceof Player) {
             Player player = (Player) sender;
-            if (plugin.editing.contains(player)) {
+            PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
+            if (plugin.getUtilities().getPlayerEditingDataMap().containsKey(player) && editingData.isEditing()) {
                 BossbarMenuMaker.createEditMenu(player, plugin);
             } else BossbarMenuMaker.createMainMenu(player);
             return true;
@@ -78,7 +80,7 @@ public class BbtCommand implements CommandExecutor {
                     "",
                     "&8----------------------------"
             };
-            MessageUtil.sendMessages(sender, messages);
+            MessageUtil.sendMessages(sender, messages, false);
         }
     }
 

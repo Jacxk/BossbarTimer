@@ -1,6 +1,7 @@
 package com.minestom;
 
 import com.minestom.Utils.MessageUtil;
+import com.minestom.Utils.PlayerEditingData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -74,19 +75,21 @@ public class CountDown extends BukkitRunnable {
             }
         }
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (plugin.containsEditingName(player)) {
+            if (!plugin.getUtilities().getPlayerEditingDataMap().containsKey(player)) return;
+            PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
+            if (editingData.isEditingName()) {
                 MessageUtil.sendTitle(player, "§aPlease enter the name", "§cin the chat", 0, 25, 0);
             }
-            if (plugin.containsEditTimer(player)) {
+            if (editingData.isEditTimer()) {
                 MessageUtil.sendTitle(player, "§aPlease enter the time", "§cin the chat", 0, 25, 0);
             }
-            if (plugin.containsAnnouncerTime(player)) {
+            if (editingData.isAnnouncerTime()) {
                 MessageUtil.sendTitle(player, "§aPlease enter the time", "§cin the chat", 0, 25, 0);
             }
-            if (plugin.containsCreatingBar(player)) {
+            if (editingData.isCreateBar()) {
                 MessageUtil.sendTitle(player, "§aPlease enter the name", "§cin the chat", 0, 25, 0);
             }
-            if (plugin.containsEditPeriod(player)) {
+            if (editingData.isEditPeriod()) {
                 MessageUtil.sendTitle(player, "§aPlease enter the time", "§cin the chat", 0, 25, 0);
             }
         }
