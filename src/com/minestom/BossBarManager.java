@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 public class BossBarManager {
 
     private BossbarTimer plugin;
-    private boolean finished;
     private double timeleft;
 
     public double getTimeleft() {
@@ -21,13 +20,6 @@ public class BossBarManager {
         this.timeleft = timeleft;
     }
 
-    public boolean isFinished() {
-        return finished;
-    }
-
-    public void setFinished(boolean finished) {
-        this.finished = finished;
-    }
 
     public BossBarManager(BossbarTimer plugin) {
         this.plugin = plugin;

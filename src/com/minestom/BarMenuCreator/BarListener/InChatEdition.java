@@ -3,7 +3,9 @@ package com.minestom.BarMenuCreator.BarListener;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.BarsData;
 import com.minestom.Utils.MessageUtil;
+import com.minestom.Utils.PlayerEditingData;
 import com.minestom.Utils.Utilities;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -11,11 +13,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class InChatEdition implements Listener {
 
@@ -28,132 +30,129 @@ public class InChatEdition implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        Utilities utilities = plugin.getUtilities();
-
-        Player player = event.getPlayer();
-        String message = event.getMessage();
-
-        Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
-
         if (event.isCancelled()) return;
 
-        if (plugin.containsAddingCmd(player)) {
+        Utilities utilities = plugin.getUtilities();
+        Player player = event.getPlayer();
+
+        if (!utilities.getPlayerEditingDataMap().containsKey(player)) return;
+
+        PlayerEditingData editingData = utilities.getEditingData(player);
+        BarsData barsData = editingData.getBarsData();
+        String message = event.getMessage();
+
+        if (editingData.isAddingCmd()) {
             event.setCancelled(true);
             if (message.equalsIgnoreCase("cancel")) {
-                plugin.removeAddingCmd(player);
-                plugin.setEditing(player);
+                editingData.setAddingCmd(false);
+                editingData.setEditing(true);
+
                 BossbarMenuMaker.createAvancedMenu(player, plugin);
                 return;
             }
+
             List<String> lore = new ArrayList<>();
-            for (String cmds : values.get("Commands").split(", ")) {
-                if (values.get("Commands").isEmpty()) continue;
-                lore.add(cmds.replaceAll("[\\[\\]]", ""));
+            for (String commandString : barsData.getCommands()) {
+                if (barsData.getCommands() == null || barsData.getCommands().isEmpty()) break;
+                lore.add(commandString);
             }
             lore.add(message);
-            plugin.removeAddingCmd(player);
-            values.put("Commands", lore.toString());
-            plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
+
+            editingData.setAddingCmd(false);
+            barsData.setCommands(lore);
             BossbarMenuMaker.createAvancedMenu(player, plugin);
         }
-        if (plugin.containsEditingName(player)) {
+        if (editingData.isEditingName()) {
             event.setCancelled(true);
             if (message.equalsIgnoreCase("cancel")) {
-                plugin.removeEditingName(player);
-                plugin.setEditing(player);
+                editingData.setEditingName(false);
+                editingData.setEditing(true);
                 BossbarMenuMaker.createEditMenu(player, plugin);
                 return;
             }
 
-            List<String> frames = new ArrayList<>();
-            for (String cmds : values.get("DisplayName").split(", ")) {
-                if (values.get("DisplayName").isEmpty()) continue;
-                frames.add(cmds.replaceAll("[\\[\\]]", ""));
-            }
+            List<String> frames = new ArrayList<>(barsData.getNameFrames());
             frames.add(message);
 
-            plugin.removeEditingName(player);
-            plugin.setEditing(player);
-            values.put("DisplayName", frames.toString());
-            plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
+            editingData.setEditingName(false);
+            editingData.setEditing(true);
+            barsData.setNameFrames(frames);
             BossbarMenuMaker.createEditMenu(player, plugin);
 
             utilities.setFrames(frames);
         }
-        if (plugin.containsEditTimer(player)) {
+        if (editingData.isEditTimer()) {
             event.setCancelled(true);
             if (message.equalsIgnoreCase("cancel")) {
-                plugin.removeEditTimer(player);
-                plugin.setEditing(player);
+                editingData.setEditTimer(false);
+                editingData.setEditing(true);
                 BossbarMenuMaker.createEditMenu(player, plugin);
                 return;
             }
-            values.put("Time", message);
-            plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
-            plugin.removeEditTimer(player);
-            plugin.setEditing(player);
+            barsData.setCountdownTime(message);
+            editingData.setEditTimer(false);
+            editingData.setEditing(true);
             BossbarMenuMaker.createAvancedMenu(player, plugin);
         }
-        if (plugin.containsCreatingBar(player)) {
+        if (editingData.isCreateBar()) {
             event.setCancelled(true);
             if (message.equalsIgnoreCase("cancel")) {
                 BossbarMenuMaker.createMainMenu(player);
-                plugin.removeCreatingBar(player);
+                editingData.setCreateBar(false);
                 return;
             }
-            for (String bars : plugin.getBarManagerMap().keySet()) {
+            for (String bars : plugin.getBarDataMap().keySet()) {
                 if (message.equals(bars)) {
                     MessageUtil.sendMessage(player, "There is a bar with that name! Try another name!");
                     return;
                 }
             }
-            plugin.getBarValues().put("DisplayName", "[&cExample &fText, &fExample &cText]");
-            plugin.getBarValues().put("Period", "10");
-            plugin.getBarValues().put("Time", "0s");
-            plugin.getBarValues().put("Color", "White");
-            plugin.getBarValues().put("Style", "Solid");
-            plugin.getBarValues().put("Commands", "[say test, say another test]");
-            plugin.getBarValues().put("AnnouncerModeEnabled", "false");
-            plugin.getBarValues().put("AnnouncerModeTime", "none");
 
-            plugin.getCreateBarValues().put(message.replace(" ", "_"), plugin.getBarValues());
-            plugin.getBarKeyName().put(player, message.replace(" ", "_"));
-            plugin.getBarManagerMap().put(plugin.getBarKeyName().get(player), new BossBarManager(plugin));
-            BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
+            barsData.setBarKeyName(message.replace(" ", "_"));
+            barsData.setNameFrames(Arrays.asList("&cExample &fText", "&fExample &cText"));
+            barsData.setNamePeriod(20);
+            barsData.setCountdownTime("1m 30s");
+            barsData.setColor("WHITE");
+            barsData.setStyle("SOLID");
+            barsData.setCommands(Arrays.asList("say first command", "say second command"));
+            barsData.setAnnouncerEnabled(false);
+            barsData.setAnnouncerTime("none");
+
+            editingData.setBarKeyName(message.replace(" ", "_"));
+            plugin.getBarManagerMap().put(editingData.getBarsData(), new BossBarManager(plugin));
+            BossBarManager barManager = plugin.getBarManagerMap().get(editingData.getBarsData());
 
             barManager.createBar(" ", "WHITE", "SOLID");
-            barManager.setFinished(false);
             barManager.addPlayer(player);
 
-            plugin.getUtilities().setFrames(Arrays.asList("&cExample &fText", "&fExample &cText"));
-            plugin.getUtilities().setPeriod(20);
-            plugin.getUtilities().animateText(barManager);
+            utilities.setFrames(barsData.getNameFrames());
+            utilities.setPeriod(barsData.getNamePeriod());
+            utilities.animateText(barManager);
 
             BossbarMenuMaker.createEditMenu(player, plugin);
-            plugin.removeCreatingBar(player);
-            plugin.setEditing(player);
+            editingData.setCreateBar(false);
+            editingData.setEditing(true);
         }
-        if (plugin.containsAnnouncerTime(player)) {
+        if (editingData.isAnnouncerTime()) {
             event.setCancelled(true);
             if (message.equalsIgnoreCase("cancel")) {
-                plugin.removeAnnouncerTime(player);
-                plugin.setEditing(player);
+                editingData.setAnnouncerTime(false);
+                editingData.setEditing(true);
                 BossbarMenuMaker.createEditMenu(player, plugin);
                 return;
             }
-            values.put("AnnouncerModeTime", message);
-            plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
-            plugin.removeAnnouncerTime(player);
-            plugin.setEditing(player);
+            barsData.setAnnouncerTime(message);
+            editingData.setAnnouncerTime(false);
+            editingData.setEditing(true);
             BossbarMenuMaker.createAvancedMenu(player, plugin);
         }
-        if (plugin.containsEditPeriod(player)) {
+        if (editingData.isEditPeriod()) {
             event.setCancelled(true);
-            BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
+            BossBarManager barManager = plugin.getBarManagerMap().get(editingData.getBarsData());
 
             if (message.equalsIgnoreCase("cancel")) {
-                plugin.removeEditPeriod(player);
-                plugin.setEditing(player);
+                editingData.setEditPeriod(false);
+                editingData.setEditing(true);
                 BossbarMenuMaker.createEditMenu(player, plugin);
                 return;
             }
@@ -161,23 +160,32 @@ public class InChatEdition implements Listener {
                 MessageUtil.sendMessage(player, "You need to enter the time in a number.");
                 return;
             }
-            values.put("Period", message);
-            plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
-            plugin.removeEditPeriod(player);
-            plugin.setEditing(player);
+            barsData.setNamePeriod(Integer.valueOf(message));
+            editingData.setEditPeriod(false);
+            editingData.setEditing(true);
             BossbarMenuMaker.createEditMenu(player, plugin);
 
-            List<String> frames = new ArrayList<>();
-
-            for (String cmds : values.get("DisplayName").split(", ")) {
-                if (values.get("DisplayName").isEmpty()) continue;
-                frames.add(cmds.replaceAll("[\\[\\]]", ""));
-            }
-
             Bukkit.getScheduler().cancelTask(utilities.getTaskId());
-            utilities.setPeriod(Long.parseLong(values.get("Period")));
-            utilities.setFrames(frames);
+            utilities.setPeriod(barsData.getNamePeriod());
+            utilities.setFrames(barsData.getNameFrames());
             utilities.animateText(barManager);
         }
+    }
+
+    @EventHandler
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        if (event.isCancelled()) return;
+
+        Utilities utilities = plugin.getUtilities();
+        Player player = event.getPlayer();
+
+        if (!utilities.getPlayerEditingDataMap().containsKey(player)) return;
+
+        PlayerEditingData editingData = utilities.getEditingData(player);
+
+        if (editingData.isAnnouncerTime() || editingData.isCreateBar() || editingData.isEditTimer() ||
+                editingData.isEditingName() || editingData.isEditPeriod() || editingData.isAddingCmd())
+            event.setCancelled(true);
+
     }
 }

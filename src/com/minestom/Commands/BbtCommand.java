@@ -1,9 +1,11 @@
 package com.minestom.Commands;
 
+import com.minestom.BarMenuCreator.Api.BarStartEvent;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
 import com.minestom.Utils.MessageUtil;
+import com.minestom.Utils.PlayerEditingData;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,14 +22,19 @@ public class BbtCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!command.getName().equalsIgnoreCase("bossbartimer") || !(sender instanceof Player)) {
+        if (!command.getName().equalsIgnoreCase("bossbartimer")) {
             return true;
         }
 
         Integer argsLength = args.length;
-        Player player = (Player) sender;
-        if (argsLength == 0) {
-            if (plugin.editing.contains(player)) {
+        if (argsLength == 0 && sender instanceof Player) {
+            if (!sender.hasPermission("bossbartimer.open")) {
+                MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
+                return true;
+            }
+            Player player = (Player) sender;
+            PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
+            if (plugin.getUtilities().getPlayerEditingDataMap().containsKey(player) && editingData.isEditing()) {
                 BossbarMenuMaker.createEditMenu(player, plugin);
             } else BossbarMenuMaker.createMainMenu(player);
             return true;
@@ -35,25 +42,45 @@ public class BbtCommand implements CommandExecutor {
 
         switch (args[0]) {
             case "help":
-                helpParameter(player, argsLength);
+                if (!sender.hasPermission("bossbartimer.help")) {
+                    MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
+                    break;
+                }
+                helpParameter(sender, argsLength);
                 break;
             case "reload":
-                reloadParameter(player, argsLength);
+                if (!sender.hasPermission("bossbartimer.reload")) {
+                    MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
+                    break;
+                }
+                reloadParameter(sender, argsLength);
                 break;
             case "stop":
-                stopParameter(player, argsLength, args);
-                break;
-            case "create":
-                createParameter(player, argsLength, args);
+                if (!sender.hasPermission("bossbartimer.stop")) {
+                    MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
+                    break;
+                }
+                stopParameter(sender, argsLength, args);
                 break;
             case "start":
-                startParameter(player, argsLength, args);
+                if (!sender.hasPermission("bossbartimer.start")) {
+                    MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
+                    break;
+                }
+                startParameter(sender, argsLength, args);
+                break;
+            default:
+                if (!sender.hasPermission("bossbartimer.help")) {
+                    MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
+                    break;
+                }
+                helpParameter(sender, argsLength);
                 break;
         }
         return true;
     }
 
-    private void helpParameter(Player player, Integer argsLength) {
+    private void helpParameter(CommandSender sender, Integer argsLength) {
         if (argsLength == 1) {
             String[] messages = {
                     "&8----------------------------",
@@ -61,91 +88,71 @@ public class BbtCommand implements CommandExecutor {
                     "",
                     "&8 - &a/bbt start <name>",
                     "&8 - &a/bbt stop <name>",
-                    "&8 - &a/bbt create <name> <time> <color> <style> <DisplayName>",
                     "&8 - &a/bbt reload",
                     "",
-                    "&7TIP: Use 'Tab' to autocomplete some arguments, such as <color>, <style> and <name>",
+                    "&7https://github.com/Jacxk/BossbarTimer/wiki",
                     "",
                     "&8----------------------------"
             };
-            MessageUtil.sendMessages(player, messages, false);
+            MessageUtil.sendMessages(sender, messages, false);
         }
     }
 
-    private void reloadParameter(Player player, Integer argsLength) {
+    private void reloadParameter(CommandSender sender, Integer argsLength) {
         if (argsLength == 1) {
             plugin.reloadConfig();
-            MessageUtil.sendMessage(player, "The configuration file has been reloaded!");
-            for (String barName : plugin.getConfig().getConfigurationSection("Bars").getKeys(false)) {
-                if (!plugin.getBarManagerMap().containsKey(barName)) {
-                    plugin.getBarManagerMap().put(barName, new BossBarManager(plugin));
-                }
-            }
+            MessageUtil.sendMessage(sender, "The configuration file has been reloaded!");
+            plugin.getBarDataMap().clear();
+            plugin.getBarManagerMap().clear();
+            plugin.loadBars();
+            Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
         }
     }
 
-    private void stopParameter(Player player, Integer argsLength, String[] args) {
+    private void stopParameter(CommandSender sender, Integer argsLength, String[] args) {
         if (argsLength == 1) {
-            MessageUtil.sendMessage(player, "You need to specify a bar!");
+            MessageUtil.sendMessage(sender, "You need to specify a bar!");
             return;
         }
         String barName = args[1];
-        BossBarManager bossBar = plugin.getBarManagerMap().get(barName);
+        BossBarManager bossBar = plugin.getBarManagerMap().get(plugin.getBarDataMap().get(barName));
         if (!plugin.getTimer().containsKey(barName)) {
-            MessageUtil.sendMessage(player, "That bar is not active!");
+            MessageUtil.sendMessage(sender, "That bar is not active!");
             return;
         }
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             bossBar.removeBar(onlinePlayer);
         }
         plugin.getTimer().remove(barName);
-        bossBar.setFinished(false);
         Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
-        MessageUtil.sendMessage(player, "The bar timer has been stopped!");
+        MessageUtil.sendMessage(sender, "The bar timer has been stopped!");
+        BarStartEvent barStartEvent = new BarStartEvent(plugin.getUtilities(), plugin.getBarDataMap().get(barName));
+        Bukkit.getServer().getPluginManager().callEvent(barStartEvent);
     }
 
-    private void createParameter(Player player, Integer argsLength, String[] args) {
-        if (argsLength <= 4) {
-            MessageUtil.sendMessage(player, "Wrong usage! Use: &a/bbt create <name> <time> <color> <style> <DisplayName>");
-            return;
-        }
-        String barName = args[1];
-        String time = args[2];
-        String color = args[3];
-        String style = args[4];
-        StringBuilder displayName = new StringBuilder();
-        for (int i = 5; i < argsLength; i++) {
-            displayName.append(args[i] + " ");
-        }
-        plugin.getConfig().set("Bars." + barName + ".DisplayName", displayName.toString().trim());
-        plugin.getConfig().set("Bars." + barName + ".Time", time);
-        plugin.getConfig().set("Bars." + barName + ".Color", color.toUpperCase());
-        plugin.getConfig().set("Bars." + barName + ".Style", style.toUpperCase());
-        plugin.saveConfig();
-        plugin.getBarManagerMap().put(barName, plugin.getBarManager());
-        MessageUtil.sendMessage(player, "A new bar timer has been created!");
-    }
-
-    private void startParameter(Player player, Integer argsLength, String[] args) {
+    private void startParameter(CommandSender sender, Integer argsLength, String[] args) {
         Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
         if (argsLength == 1) {
-            MessageUtil.sendMessage(player, "You need to specify a bar!");
+            MessageUtil.sendMessage(sender, "You need to specify a bar!");
             return;
         }
 
         String barName = args[1];
 
         if (!plugin.getConfig().isConfigurationSection("Bars." + barName)) {
-            MessageUtil.sendMessage(player, "That bar is not available try another one!");
+            MessageUtil.sendMessage(sender, "That bar is not available try another one!");
             return;
         }
         if (plugin.getTimer().containsKey(barName)) {
-            MessageUtil.sendMessage(player, "That bar is already active!");
+            MessageUtil.sendMessage(sender, "That bar is already active!");
             return;
         }
+        BossBarManager bossBar = plugin.getBarManagerMap().get(plugin.getBarDataMap().get(barName));
+        BarStartEvent barStartEvent = new BarStartEvent(plugin.getUtilities(), plugin.getBarDataMap().get(barName));
+        Bukkit.getServer().getPluginManager().callEvent(barStartEvent);
+
         String timeFormat = plugin.getConfig().getString("Bars." + barName + ".Time");
         plugin.getUtilities().formatTime(barName, timeFormat);
-        BossBarManager bossBar = plugin.getBarManagerMap().get(barName);
 
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             bossBar.addPlayer(onlinePlayer);
@@ -153,11 +160,10 @@ public class BbtCommand implements CommandExecutor {
 
         bossBar.setBarColor(plugin.getConfig().getString("Bars." + barName + ".Color").toUpperCase());
         bossBar.setBarStyle(plugin.getConfig().getString("Bars." + barName + ".Style").toUpperCase());
-        bossBar.setFinished(false);
 
-        MessageUtil.sendMessage(player, "The bar &e" + barName + " &7has been started!");
+        MessageUtil.sendMessage(sender, "The bar &e" + barName + " &7has been started!");
         plugin.getUtilities().setFrames(plugin.getConfig().getStringList("Bars." + barName + ".DisplayName.Frames"));
-        plugin.getUtilities().setPeriod(plugin.getConfig().getLong("Bars." + barName + ".DisplayName.Period"));
+        plugin.getUtilities().setPeriod(plugin.getConfig().getInt("Bars." + barName + ".DisplayName.Period"));
         plugin.getUtilities().animateText(bossBar);
     }
 }

@@ -2,7 +2,9 @@ package com.minestom.BarMenuCreator.BarListener;
 
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.BarsData;
 import com.minestom.Utils.MessageUtil;
+import com.minestom.Utils.PlayerEditingData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,7 +16,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class AvancedMenu implements Listener {
 
@@ -26,38 +27,36 @@ public class AvancedMenu implements Listener {
 
     @EventHandler
     public void onInteract(InventoryClickEvent event) {
-
-        Player player = (Player) event.getWhoClicked();
-        int slot = event.getRawSlot();
-        ItemStack item = event.getCurrentItem();
         Inventory inventory = event.getClickedInventory();
         String inventoryName = event.getView().getTopInventory().getTitle();
         InventoryType.SlotType slotType = event.getSlotType();
         if (inventoryName.equals("Advanced Settings") && slotType != InventoryType.SlotType.OUTSIDE
                 && inventory.getType() == InventoryType.HOPPER) {
+            ItemStack item = event.getCurrentItem();
             if (item == null || !item.hasItemMeta()) {
                 return;
             }
             event.setCancelled(true);
+
+            Player player = (Player) event.getWhoClicked();
+            PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
+            BarsData barsData = editingData.getBarsData();
+
+            int slot = event.getRawSlot();
+
             if (slot == 0) {
                 player.closeInventory();
-                plugin.removeEditing(player);
-                plugin.setEditTimer(player);
+                editingData.setEditing(false);
+                editingData.setEditTimer(true);
                 MessageUtil.sendMessage(player, "&aEnter the time of the bar in the chat. Use &eCancel &ato cancel.");
                 MessageUtil.sendMessage(player, "&7TIP: You can use 's' for seconds, 'm' for minutes and 'h' for ours.");
             }
             if (slot == 1) {
-                Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
-                List<String> lore = new ArrayList<>();
-
-                for (String cmds : values.get("Commands").split(", ")) {
-                    if (values.get("Commands").isEmpty()) continue;
-                    lore.add(cmds.replaceAll("[\\[\\]]", ""));
-                }
+                List<String> lore = new ArrayList<>(barsData.getCommands());
 
                 if (event.getClick() == ClickType.LEFT) {
-                    plugin.removeEditing(player);
-                    plugin.setAddingCmd(player);
+                    editingData.setEditing(false);
+                    editingData.setAddingCmd(true);
                     player.closeInventory();
                     MessageUtil.sendMessage(player, "&aEnter the command you wish to add in the chat. Use &eCancel &ato cancel.");
                     MessageUtil.sendMessage(player, "&7TIP: Do not use slash '/'. If the commands are 'none' delete them.");
@@ -65,46 +64,33 @@ public class AvancedMenu implements Listener {
                 if (event.getClick() == ClickType.RIGHT) {
                     if (!lore.isEmpty()) {
                         lore.remove(lore.size() - 1);
-                        values.put("Commands", lore.toString());
+                        barsData.setCommands(lore);
                     }
                     if (lore.size() == 0) {
                         lore.clear();
-                        values.put("Commands", "");
+                        barsData.setCommands(lore);
                     }
-                    plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
                     BossbarMenuMaker.createAvancedMenu(player, plugin);
                 }
                 if (event.getClick() == ClickType.SHIFT_LEFT) {
                     lore.clear();
-                    values.put("Commands", "");
-                    plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
+                    barsData.setCommands(lore);
                     BossbarMenuMaker.createAvancedMenu(player, plugin);
                 }
 
             }
             if (slot == 2) {
                 if (event.getClick() == ClickType.LEFT) {
-                    Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
-                    boolean enabled = false;
 
-                    if (values.get("AnnouncerModeEnabled") == null) {
-                        enabled = false;
-                    } else if (values.get("AnnouncerModeEnabled").equalsIgnoreCase("true")) {
-                        enabled = true;
-                    } else if (values.get("AnnouncerModeEnabled").equalsIgnoreCase("false")) {
-                        enabled = false;
-                    }
-
-                    if (!enabled) {
-                        values.put("AnnouncerModeEnabled", "True");
-                    } else values.put("AnnouncerModeEnabled", "False");
+                    if (barsData.isAnnouncerEnabled()) barsData.setAnnouncerEnabled(false);
+                    else barsData.setAnnouncerEnabled(true);
 
                     BossbarMenuMaker.createAvancedMenu(player, plugin);
                 }
                 if (event.getClick() == ClickType.RIGHT) {
-                    plugin.setAnnouncerTime(player);
+                    editingData.setAnnouncerTime(true);
+                    editingData.setEditing(false);
                     player.closeInventory();
-                    plugin.removeEditing(player);
                 }
             }
             if (slot == 4) {

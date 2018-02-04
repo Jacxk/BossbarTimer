@@ -3,7 +3,9 @@ package com.minestom.BarMenuCreator.BarListener;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.BarsData;
 import com.minestom.Utils.MessageUtil;
+import com.minestom.Utils.PlayerEditingData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -15,10 +17,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 public class ConfirmMenu implements Listener {
 
     private BossbarTimer plugin;
@@ -29,138 +27,108 @@ public class ConfirmMenu implements Listener {
 
     @EventHandler
     public void onInteract(InventoryClickEvent event) {
-
-        Player player = (Player) event.getWhoClicked();
-        int slot = event.getRawSlot();
-        ItemStack item = event.getCurrentItem();
-        String inventoryName = event.getView().getTopInventory().getTitle();
         InventoryType.SlotType slotType = event.getSlotType();
         Inventory inventory = event.getClickedInventory();
+        String inventoryName = event.getView().getTopInventory().getTitle();
 
         if (inventoryName.equals("Confirm...") && slotType != InventoryType.SlotType.OUTSIDE
                 && inventory.getType() == InventoryType.HOPPER) {
-            if (item == null) {
-                return;
-            }
+
+            ItemStack item = event.getCurrentItem();
+            if (item == null) return;
             event.setCancelled(true);
 
-            BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
+            Player player = (Player) event.getWhoClicked();
+            PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
+            BarsData barsData = editingData.getBarsData();
+            BossBarManager barManager = plugin.getBarManagerMap().get(barsData);
             FileConfiguration configuration = plugin.getConfig();
 
+            int slot = event.getRawSlot();
+
             if (slot == 1 && item.hasItemMeta()) {
-                Map<Player, String> barKeyName = plugin.getBarKeyName();
-                Map<String, Map<String, String>> createBar = plugin.getCreateBarValues();
-                String barName = barKeyName.get(player);
-                Map<String, String> values = createBar.get(plugin.getBarKeyName().get(player));
+                String barName = editingData.getBarKeyName();
                 String section = "Bars." + barName;
 
-                if (plugin.containsDeleting(player)) {
+                if (editingData.isDeleting()) {
 
                     barManager.removeBar(player);
-                    barManager.setFinished(true);
+                    editingData.setConfirm(false);
 
-                    createBar.remove(barName);
-                    barKeyName.remove(player);
-
-                    plugin.removeConfirm(player);
-                    plugin.removeDeleting(player);
-                    if (plugin.containsEditing(player)) plugin.removeEditing(player);
+                    plugin.getBarManagerMap().remove(barsData);
+                    plugin.getUtilities().removePlayerEditing(player);
 
                     configuration.set(section, null);
                     plugin.saveConfig();
 
                     player.closeInventory();
-                    plugin.getBarManagerMap().remove(barKeyName.get(player));
                     MessageUtil.sendMessage(player, "You have successfully deleted the bar!");
                 }
 
-                if (plugin.containsCanceling(player)) {
+                if (editingData.isCanceling()) {
 
                     barManager.removeBar(player);
-                    barManager.setFinished(true);
+                    editingData.setConfirm(false);
 
-                    createBar.remove(barName);
-                    barKeyName.remove(player);
-                    if (plugin.containsEditing(player)) plugin.removeEditing(player);
-
-                    plugin.removeConfirm(player);
-                    plugin.removeCanceling(player);
+                    plugin.getUtilities().removePlayerEditing(player);
 
                     player.closeInventory();
                     MessageUtil.sendMessage(player, "You have cancelled the bar creation!");
                 }
 
-                if (plugin.containsSaving(player)) {
+                if (editingData.isSaving()) {
 
                     MessageUtil.sendMessage(player, "Saving the bar... Please wait...");
 
-                    List<String> commands = new ArrayList<>();
-                    for (String cmds : values.get("Commands").split(", ")) {
-                        if (values.get("Commands").isEmpty()) continue;
-                        commands.add(cmds.replaceAll("[\\[\\]]", ""));
-                    }
-
-                    List<String> displayName = new ArrayList<>();
-                    for (String frames : values.get("DisplayName").split(", ")) {
-                        if (values.get("DisplayName").isEmpty()) continue;
-                        displayName.add(frames.replaceAll("[\\[\\]]", ""));
-                    }
-
-                    configuration.set(section + ".DisplayName.Frames", displayName);
-                    configuration.set(section + ".DisplayName.Period", Long.valueOf(values.get("Period")));
-                    configuration.set(section + ".Time", values.get("Time"));
-                    configuration.set(section + ".Color", values.get("Color"));
-                    configuration.set(section + ".Style", values.get("Style"));
-                    configuration.set(section + ".Commands", commands);
-                    configuration.set(section + ".AnnouncerMode.Enabled", values.get("AnnouncerModeEnabled"));
-                    configuration.set(section + ".AnnouncerMode.Time", values.get("AnnouncerModeTime"));
+                    configuration.set(section + ".DisplayName.Frames", barsData.getNameFrames());
+                    configuration.set(section + ".DisplayName.Period", barsData.getNamePeriod());
+                    configuration.set(section + ".Time", barsData.getCountdownTime());
+                    configuration.set(section + ".Color", barsData.getColor());
+                    configuration.set(section + ".Style", barsData.getStyle());
+                    configuration.set(section + ".Commands", barsData.getCommands());
+                    configuration.set(section + ".AnnouncerMode.Enabled", barsData.isAnnouncerEnabled());
+                    configuration.set(section + ".AnnouncerMode.Time", barsData.getAnnouncerTime());
                     plugin.saveConfig();
 
-                    String enabled = values.get("AnnouncerModeEnabled");
-                    if (enabled != null && enabled.equalsIgnoreCase("true")) {
-                        String timeFormat = values.get("AnnouncerModeTime");
-                        plugin.getUtilities().formatTime(barName + "-Announcer", timeFormat);
-                    } else if (enabled != null && enabled.equalsIgnoreCase("false")) {
-                        plugin.getTimer().remove(barName + "-Announcer");
-                    }
+                    if (barsData.isAnnouncerEnabled())
+                        plugin.getUtilities().formatTime(barName + "-Announcer", barsData.getAnnouncerTime());
+                    else plugin.getTimer().remove(barName + "-Announcer");
 
-                    plugin.getBarManagerMap().put(barName, new BossBarManager(plugin));
+                    plugin.loadBars();
                     barManager.removeBar(player);
-                    barManager.setFinished(true);
-                    if (plugin.containsEditing(player)) plugin.removeEditing(player);
+                    editingData.setConfirm(false);
 
-                    createBar.remove(barName);
-                    barKeyName.remove(player);
-
-                    plugin.removeConfirm(player);
-                    plugin.removeSaving(player);
+                    plugin.getUtilities().removePlayerEditing(player);
 
                     player.closeInventory();
                     MessageUtil.sendMessage(player, "The bar has been successfully saved!");
                 }
             }
             if (slot == 3 && item.hasItemMeta()) {
-                if (plugin.containsCanceling(player)) {
+                if (editingData.isCanceling()) {
 
-                    plugin.removeConfirm(player);
-                    plugin.removeCanceling(player);
-                    plugin.setEditing(player);
+                    editingData.setConfirm(false);
+                    editingData.setCanceling(false);
+                    editingData.setEditing(true);
+
                     BossbarMenuMaker.createEditMenu(player, plugin);
 
                 }
-                if (plugin.containsSaving(player)) {
+                if (editingData.isSaving()) {
 
-                    plugin.removeConfirm(player);
-                    plugin.removeSaving(player);
-                    plugin.setEditing(player);
+                    editingData.setConfirm(false);
+                    editingData.setSaving(false);
+                    editingData.setEditing(true);
+
                     BossbarMenuMaker.createEditMenu(player, plugin);
 
                 }
-                if (plugin.containsDeleting(player)) {
+                if (editingData.isDeleting()) {
 
-                    plugin.removeConfirm(player);
-                    plugin.removeDeleting(player);
-                    plugin.setEditing(player);
+                    editingData.setConfirm(false);
+                    editingData.setDeleting(false);
+                    editingData.setEditing(true);
+
                     BossbarMenuMaker.createEditBarsMenu(player, plugin);
 
                 }
@@ -175,13 +143,11 @@ public class ConfirmMenu implements Listener {
 
         if ((event.getPlayer() instanceof Player)) {
             Player player = (Player) event.getPlayer();
-            if (player != null && plugin.containsConfirm(player) && inventoryName.equals("Confirm...") && inventory.getType() == InventoryType.HOPPER) {
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        BossbarMenuMaker.createConfimMenu(player);
-                    }
-                }, 1L);
+            PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
+
+            if (player != null && plugin.getUtilities().getPlayerEditingDataMap().containsKey(player) && editingData.isConfirm()
+                    && inventoryName.equals("Confirm...") && inventory.getType() == InventoryType.HOPPER) {
+                Bukkit.getScheduler().runTaskLater(plugin, () -> BossbarMenuMaker.createConfimMenu(player), 1L);
             }
         }
     }

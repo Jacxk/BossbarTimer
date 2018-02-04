@@ -3,8 +3,9 @@ package com.minestom.BarMenuCreator.BarListener;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.BarsData;
+import com.minestom.Utils.PlayerEditingData;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,8 +13,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Map;
 
 public class EditCurrentBarsMenu implements Listener {
 
@@ -25,58 +24,43 @@ public class EditCurrentBarsMenu implements Listener {
 
     @EventHandler
     public void onInteract(InventoryClickEvent event) {
-
-        FileConfiguration configuration = plugin.getConfig();
-        Player player = (Player) event.getWhoClicked();
-        int slot = event.getRawSlot();
-        ItemStack item = event.getCurrentItem();
         String inventoryName = event.getView().getTopInventory().getTitle();
         InventoryType.SlotType slotType = event.getSlotType();
         if (inventoryName.equals("Select a bar to edit") && slotType != InventoryType.SlotType.OUTSIDE) {
-            if (item == null || !item.hasItemMeta()) {
-                return;
-            }
+
+            ItemStack item = event.getCurrentItem();
+            if (item == null || !item.hasItemMeta()) return;
             event.setCancelled(true);
+
+            int slot = event.getRawSlot();
+
+            Player player = (Player) event.getWhoClicked();
             String barKeyName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
+
             if (slot != 49) {
-                plugin.getCreateBarValues().put(barKeyName, plugin.getBarValues());
-                plugin.getBarKeyName().put(player, barKeyName);
 
-                Map<String, String> values = plugin.getCreateBarValues().get(plugin.getBarKeyName().get(player));
+                plugin.getUtilities().addPlayerEditing(player);
 
-                if (configuration.getString("Bars." + barKeyName + ".DisplayName") != null) {
-                    values.put("DisplayName", configuration.getStringList("Bars." + barKeyName + ".DisplayName.Frames").toString());
-                } else values.put("DisplayName", "[&cAnimated Text, &fAnimated Text]");
-                values.put("Time", configuration.getString("Bars." + barKeyName + ".Time"));
-                values.put("Color", configuration.getString("Bars." + barKeyName + ".Color"));
-                values.put("Style", configuration.getString("Bars." + barKeyName + ".Style"));
-                values.put("Period", configuration.getString("Bars." + barKeyName + ".DisplayName.Period"));
-                values.put("AnnouncerModeEnabled", configuration.getString("Bars." + barKeyName + ".AnnouncerMode.Enabled"));
-                values.put("AnnouncerModeTime", configuration.getString("Bars." + barKeyName + ".AnnouncerMode.Time"));
-                if (configuration.getString("Bars." + barKeyName + ".Commands") != null) {
-                    values.put("Commands", configuration.getStringList("Bars." + barKeyName + ".Commands").toString());
-                } else values.put("Commands", "[say test, say testing]");
-
-                plugin.getCreateBarValues().put(plugin.getBarKeyName().get(player), values);
+                PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
+                BarsData barsData = plugin.getBarDataMap().get(barKeyName);
 
                 if (event.getClick() == ClickType.LEFT) {
-                    BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarKeyName().get(player));
+                    BossBarManager barManager = plugin.getBarManagerMap().get(barsData);
 
-                    barManager.createBar(configuration.getString("Bars." + barKeyName + ".DisplayName"),
-                            configuration.getString("Bars." + barKeyName + ".Color"),
-                            configuration.getString("Bars." + barKeyName + ".Style"));
-                    plugin.getUtilities().setFrames(plugin.getConfig().getStringList("Bars." + barKeyName + ".DisplayName.Frames"));
-                    plugin.getUtilities().setPeriod(plugin.getConfig().getLong("Bars." + barKeyName + ".DisplayName.Period"));
+                    barManager.createBar(barsData.getNameFrames().get(0), barsData.getColor(), barsData.getStyle());
+                    plugin.getUtilities().setFrames(barsData.getNameFrames());
+                    plugin.getUtilities().setPeriod(barsData.getNamePeriod());
                     plugin.getUtilities().animateText(barManager);
-                    barManager.setFinished(false);
                     barManager.addPlayer(player);
 
-                    plugin.setEditing(player);
+                    editingData.setBarKeyName(barKeyName);
+                    editingData.setBarsData(barsData);
+                    editingData.setEditing(true);
                     BossbarMenuMaker.createEditMenu(player, plugin);
                 }
                 if (event.getClick() == ClickType.SHIFT_LEFT) {
-                    plugin.setDeleting(player);
-                    plugin.setConfirm(player);
+                    editingData.setDeleting(true);
+                    editingData.setCanceling(true);
                     BossbarMenuMaker.createConfimMenu(player);
                 }
             }

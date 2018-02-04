@@ -19,10 +19,10 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        Map<String, Double> timer = plugin.getTimer();
-        for (Map.Entry<String, Double> entry : timer.entrySet()) {
+        Map<String, Long> timer = plugin.getTimer();
+        for (Map.Entry<String, Long> entry : timer.entrySet()) {
             if (!entry.getKey().contains("-Announcer")) {
-                BossBarManager barManager = plugin.getBarManagerMap().get(entry.getKey());
+                BossBarManager barManager = plugin.getBarManagerMap().get(plugin.getBarDataMap().get(entry.getKey()));
                 barManager.addPlayer(player);
             }
         }
