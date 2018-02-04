@@ -3,9 +3,9 @@ package com.minestom.BarMenuCreator.BarListener;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.BarsData;
 import com.minestom.Utils.PlayerEditingData;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -33,7 +33,6 @@ public class EditCurrentBarsMenu implements Listener {
             event.setCancelled(true);
 
             int slot = event.getRawSlot();
-            FileConfiguration configuration = plugin.getConfig();
 
             Player player = (Player) event.getWhoClicked();
             String barKeyName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
@@ -43,32 +42,19 @@ public class EditCurrentBarsMenu implements Listener {
                 plugin.getUtilities().addPlayerEditing(player);
 
                 PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
-                editingData.setBarKeyName(barKeyName);
-
-                if (configuration.getString("Bars." + barKeyName + ".DisplayName") != null) {
-                    editingData.addBarValue("DisplayName", configuration.getStringList("Bars." + barKeyName + ".DisplayName.Frames").toString());
-                } else editingData.addBarValue("DisplayName", "[&cAnimated Text, &fAnimated Text]");
-                editingData.addBarValue("Time", configuration.getString("Bars." + barKeyName + ".Time"));
-                editingData.addBarValue("Color", configuration.getString("Bars." + barKeyName + ".Color"));
-                editingData.addBarValue("Style", configuration.getString("Bars." + barKeyName + ".Style"));
-                editingData.addBarValue("Period", configuration.getString("Bars." + barKeyName + ".DisplayName.Period"));
-                editingData.addBarValue("AnnouncerModeEnabled", configuration.getString("Bars." + barKeyName + ".AnnouncerMode.Enabled"));
-                editingData.addBarValue("AnnouncerModeTime", configuration.getString("Bars." + barKeyName + ".AnnouncerMode.Time"));
-                if (configuration.getString("Bars." + barKeyName + ".Commands") != null) {
-                    editingData.addBarValue("Commands", configuration.getStringList("Bars." + barKeyName + ".Commands").toString());
-                } else editingData.addBarValue("Commands", "[say test, say testing]");
+                BarsData barsData = plugin.getBarDataMap().get(barKeyName);
 
                 if (event.getClick() == ClickType.LEFT) {
-                    BossBarManager barManager = plugin.getBarManagerMap().get(editingData.getBarKeyName());
+                    BossBarManager barManager = plugin.getBarManagerMap().get(barsData);
 
-                    barManager.createBar(configuration.getString("Bars." + barKeyName + ".DisplayName"),
-                            configuration.getString("Bars." + barKeyName + ".Color"),
-                            configuration.getString("Bars." + barKeyName + ".Style"));
-                    plugin.getUtilities().setFrames(plugin.getConfig().getStringList("Bars." + barKeyName + ".DisplayName.Frames"));
-                    plugin.getUtilities().setPeriod(plugin.getConfig().getLong("Bars." + barKeyName + ".DisplayName.Period"));
+                    barManager.createBar(barsData.getNameFrames().get(0), barsData.getColor(), barsData.getStyle());
+                    plugin.getUtilities().setFrames(barsData.getNameFrames());
+                    plugin.getUtilities().setPeriod(barsData.getNamePeriod());
                     plugin.getUtilities().animateText(barManager);
                     barManager.addPlayer(player);
 
+                    editingData.setBarKeyName(barKeyName);
+                    editingData.setBarsData(barsData);
                     editingData.setEditing(true);
                     BossbarMenuMaker.createEditMenu(player, plugin);
                 }

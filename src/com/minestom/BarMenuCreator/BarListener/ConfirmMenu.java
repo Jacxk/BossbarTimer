@@ -3,6 +3,7 @@ package com.minestom.BarMenuCreator.BarListener;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.BarsData;
 import com.minestom.Utils.MessageUtil;
 import com.minestom.Utils.PlayerEditingData;
 import org.bukkit.Bukkit;
@@ -15,9 +16,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ConfirmMenu implements Listener {
 
@@ -42,7 +40,8 @@ public class ConfirmMenu implements Listener {
 
             Player player = (Player) event.getWhoClicked();
             PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
-            BossBarManager barManager = plugin.getBarManagerMap().get(editingData.getBarKeyName());
+            BarsData barsData = editingData.getBarsData();
+            BossBarManager barManager = plugin.getBarManagerMap().get(barsData);
             FileConfiguration configuration = plugin.getConfig();
 
             int slot = event.getRawSlot();
@@ -56,7 +55,7 @@ public class ConfirmMenu implements Listener {
                     barManager.removeBar(player);
                     editingData.setConfirm(false);
 
-                    plugin.getBarManagerMap().remove(editingData.getBarKeyName());
+                    plugin.getBarManagerMap().remove(barsData);
                     plugin.getUtilities().removePlayerEditing(player);
 
                     configuration.set(section, null);
@@ -81,37 +80,21 @@ public class ConfirmMenu implements Listener {
 
                     MessageUtil.sendMessage(player, "Saving the bar... Please wait...");
 
-                    List<String> commands = new ArrayList<>();
-                    for (String cmds : editingData.getBarValue("Commands").split(", ")) {
-                        if (editingData.getBarValue("Commands").isEmpty()) continue;
-                        commands.add(cmds.replaceAll("[\\[\\]]", ""));
-                    }
-
-                    List<String> displayName = new ArrayList<>();
-                    for (String frames : editingData.getBarValue("DisplayName").split(", ")) {
-                        if (editingData.getBarValue("DisplayName").isEmpty()) continue;
-                        displayName.add(frames.replaceAll("[\\[\\]]", ""));
-                    }
-
-                    configuration.set(section + ".DisplayName.Frames", displayName);
-                    configuration.set(section + ".DisplayName.Period", Long.valueOf(editingData.getBarValue("Period")));
-                    configuration.set(section + ".Time", editingData.getBarValue("Time"));
-                    configuration.set(section + ".Color", editingData.getBarValue("Color"));
-                    configuration.set(section + ".Style", editingData.getBarValue("Style"));
-                    configuration.set(section + ".Commands", commands);
-                    configuration.set(section + ".AnnouncerMode.Enabled", editingData.getBarValue("AnnouncerModeEnabled"));
-                    configuration.set(section + ".AnnouncerMode.Time", editingData.getBarValue("AnnouncerModeTime"));
+                    configuration.set(section + ".DisplayName.Frames", barsData.getNameFrames());
+                    configuration.set(section + ".DisplayName.Period", barsData.getNamePeriod());
+                    configuration.set(section + ".Time", barsData.getCountdownTime());
+                    configuration.set(section + ".Color", barsData.getColor());
+                    configuration.set(section + ".Style", barsData.getStyle());
+                    configuration.set(section + ".Commands", barsData.getCommands());
+                    configuration.set(section + ".AnnouncerMode.Enabled", barsData.isAnnouncerEnabled());
+                    configuration.set(section + ".AnnouncerMode.Time", barsData.getAnnouncerTime());
                     plugin.saveConfig();
 
-                    String enabled = editingData.getBarValue("AnnouncerModeEnabled");
-                    if (enabled != null && enabled.equalsIgnoreCase("true")) {
-                        String timeFormat = editingData.getBarValue("AnnouncerModeTime");
-                        plugin.getUtilities().formatTime(barName + "-Announcer", timeFormat);
-                    } else if (enabled != null && enabled.equalsIgnoreCase("false")) {
-                        plugin.getTimer().remove(barName + "-Announcer");
-                    }
+                    if (barsData.isAnnouncerEnabled())
+                        plugin.getUtilities().formatTime(barName + "-Announcer", barsData.getAnnouncerTime());
+                    else plugin.getTimer().remove(barName + "-Announcer");
 
-                    plugin.getBarManagerMap().put(barName, new BossBarManager(plugin));
+                    plugin.loadBars();
                     barManager.removeBar(player);
                     editingData.setConfirm(false);
 
@@ -164,12 +147,7 @@ public class ConfirmMenu implements Listener {
 
             if (player != null && plugin.getUtilities().getPlayerEditingDataMap().containsKey(player) && editingData.isConfirm()
                     && inventoryName.equals("Confirm...") && inventory.getType() == InventoryType.HOPPER) {
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        BossbarMenuMaker.createConfimMenu(player);
-                    }
-                }, 1L);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> BossbarMenuMaker.createConfimMenu(player), 1L);
             }
         }
     }

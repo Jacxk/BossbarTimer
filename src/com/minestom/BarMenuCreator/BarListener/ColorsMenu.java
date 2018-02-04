@@ -3,6 +3,7 @@ package com.minestom.BarMenuCreator.BarListener;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.BarsData;
 import com.minestom.Utils.PlayerEditingData;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -33,14 +34,15 @@ public class ColorsMenu implements Listener {
 
             Player player = (Player) event.getWhoClicked();
             PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
-            BossBarManager barManager = plugin.getBarManagerMap().get(editingData.getBarKeyName());
+            BarsData barsData = editingData.getBarsData();
+            BossBarManager barManager = plugin.getBarManagerMap().get(barsData);
 
             int slot = event.getRawSlot();
 
             if (slot != 8 && item.hasItemMeta()) {
                 String color = ChatColor.stripColor(item.getItemMeta().getDisplayName());
                 barManager.setBarColor(color);
-                editingData.addBarValue("Color", color);
+                barsData.setColor(color);
             }
             if (slot == 8 && item.hasItemMeta()) {
                 BossbarMenuMaker.createEditMenu(player, plugin);

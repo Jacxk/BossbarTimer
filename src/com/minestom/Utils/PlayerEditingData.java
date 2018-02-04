@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class PlayerEditingData {
 
-    private Map<String, String> barValues = new HashMap<>();
+    private BarsData barsData;
     private String barKeyName;
     private boolean editing = false;
     private boolean editTimer = false;
@@ -18,13 +18,17 @@ public class PlayerEditingData {
     private boolean addingCmd = false;
     private boolean announcerTime = false;
     private boolean editPeriod = false;
-    
-    public String getBarValue(String value) {
-        return barValues.get(value);
+
+    public PlayerEditingData(BarsData barsData){
+        this.barsData = barsData;
     }
 
-    public void addBarValue(String value, String value2) {
-        barValues.put(value, value2);
+    public BarsData getBarsData() {
+        return barsData;
+    }
+
+    public void setBarsData(BarsData barsData) {
+        this.barsData = barsData;
     }
 
     public String getBarKeyName() {

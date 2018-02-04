@@ -3,6 +3,7 @@ package com.minestom.BarMenuCreator.BarListener;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.BarsData;
 import com.minestom.Utils.MessageUtil;
 import com.minestom.Utils.PlayerEditingData;
 import com.minestom.Utils.Utilities;
@@ -37,6 +38,7 @@ public class InChatEdition implements Listener {
         if (!utilities.getPlayerEditingDataMap().containsKey(player)) return;
 
         PlayerEditingData editingData = utilities.getEditingData(player);
+        BarsData barsData = editingData.getBarsData();
         String message = event.getMessage();
 
         if (editingData.isAddingCmd()) {
@@ -50,14 +52,14 @@ public class InChatEdition implements Listener {
             }
 
             List<String> lore = new ArrayList<>();
-            for (String cmds : editingData.getBarValue("Commands").split(", ")) {
-                if (editingData.getBarValue("Commands").isEmpty()) continue;
-                lore.add(cmds.replaceAll("[\\[\\]]", ""));
+            for (String commandString : barsData.getCommands()) {
+                if (barsData.getCommands() == null || barsData.getCommands().isEmpty()) break;
+                lore.add(commandString);
             }
             lore.add(message);
 
             editingData.setAddingCmd(false);
-            editingData.addBarValue("Commands", lore.toString());
+            barsData.setCommands(lore);
             BossbarMenuMaker.createAvancedMenu(player, plugin);
         }
         if (editingData.isEditingName()) {
@@ -69,16 +71,12 @@ public class InChatEdition implements Listener {
                 return;
             }
 
-            List<String> frames = new ArrayList<>();
-            for (String cmds : editingData.getBarValue("DisplayName").split(", ")) {
-                if (editingData.getBarValue("DisplayName").isEmpty()) continue;
-                frames.add(cmds.replaceAll("[\\[\\]]", ""));
-            }
+            List<String> frames = new ArrayList<>(barsData.getNameFrames());
             frames.add(message);
 
             editingData.setEditingName(false);
             editingData.setEditing(true);
-            editingData.addBarValue("DisplayName", frames.toString());
+            barsData.setNameFrames(frames);
             BossbarMenuMaker.createEditMenu(player, plugin);
 
             utilities.setFrames(frames);
@@ -91,7 +89,7 @@ public class InChatEdition implements Listener {
                 BossbarMenuMaker.createEditMenu(player, plugin);
                 return;
             }
-            editingData.addBarValue("Time", message);
+            barsData.setCountdownTime(message);
             editingData.setEditTimer(false);
             editingData.setEditing(true);
             BossbarMenuMaker.createAvancedMenu(player, plugin);
@@ -103,30 +101,32 @@ public class InChatEdition implements Listener {
                 editingData.setCreateBar(false);
                 return;
             }
-            for (String bars : plugin.getBarManagerMap().keySet()) {
+            for (String bars : plugin.getBarDataMap().keySet()) {
                 if (message.equals(bars)) {
                     MessageUtil.sendMessage(player, "There is a bar with that name! Try another name!");
                     return;
                 }
             }
-            editingData.addBarValue("DisplayName", "[&cExample &fText, &fExample &cText]");
-            editingData.addBarValue("Period", "10");
-            editingData.addBarValue("Time", "0s");
-            editingData.addBarValue("Color", "White");
-            editingData.addBarValue("Style", "Solid");
-            editingData.addBarValue("Commands", "[say test, say another test]");
-            editingData.addBarValue("AnnouncerModeEnabled", "false");
-            editingData.addBarValue("AnnouncerModeTime", "none");
+
+            barsData.setBarKeyName(message.replace(" ", "_"));
+            barsData.setNameFrames(Arrays.asList("&cExample &fText", "&fExample &cText"));
+            barsData.setNamePeriod(20);
+            barsData.setCountdownTime("1m 30s");
+            barsData.setColor("WHITE");
+            barsData.setStyle("SOLID");
+            barsData.setCommands(Arrays.asList("say first command", "say second command"));
+            barsData.setAnnouncerEnabled(false);
+            barsData.setAnnouncerTime("none");
 
             editingData.setBarKeyName(message.replace(" ", "_"));
-            plugin.getBarManagerMap().put(editingData.getBarKeyName(), new BossBarManager(plugin));
-            BossBarManager barManager = plugin.getBarManagerMap().get(editingData.getBarKeyName());
+            plugin.getBarManagerMap().put(editingData.getBarsData(), new BossBarManager(plugin));
+            BossBarManager barManager = plugin.getBarManagerMap().get(editingData.getBarsData());
 
             barManager.createBar(" ", "WHITE", "SOLID");
             barManager.addPlayer(player);
 
-            utilities.setFrames(Arrays.asList("&cExample &fText", "&fExample &cText"));
-            utilities.setPeriod(20);
+            utilities.setFrames(barsData.getNameFrames());
+            utilities.setPeriod(barsData.getNamePeriod());
             utilities.animateText(barManager);
 
             BossbarMenuMaker.createEditMenu(player, plugin);
@@ -141,14 +141,14 @@ public class InChatEdition implements Listener {
                 BossbarMenuMaker.createEditMenu(player, plugin);
                 return;
             }
-            editingData.addBarValue("AnnouncerModeTime", message);
+            barsData.setAnnouncerTime(message);
             editingData.setAnnouncerTime(false);
             editingData.setEditing(true);
             BossbarMenuMaker.createAvancedMenu(player, plugin);
         }
         if (editingData.isEditPeriod()) {
             event.setCancelled(true);
-            BossBarManager barManager = plugin.getBarManagerMap().get(editingData.getBarKeyName());
+            BossBarManager barManager = plugin.getBarManagerMap().get(editingData.getBarsData());
 
             if (message.equalsIgnoreCase("cancel")) {
                 editingData.setEditPeriod(false);
@@ -160,21 +160,14 @@ public class InChatEdition implements Listener {
                 MessageUtil.sendMessage(player, "You need to enter the time in a number.");
                 return;
             }
-            editingData.addBarValue("Period", message);
+            barsData.setNamePeriod(Integer.valueOf(message));
             editingData.setEditPeriod(false);
             editingData.setEditing(true);
             BossbarMenuMaker.createEditMenu(player, plugin);
 
-            List<String> frames = new ArrayList<>();
-
-            for (String cmds : editingData.getBarValue("DisplayName").split(", ")) {
-                if (editingData.getBarValue("DisplayName").isEmpty()) continue;
-                frames.add(cmds.replaceAll("[\\[\\]]", ""));
-            }
-
             Bukkit.getScheduler().cancelTask(utilities.getTaskId());
-            utilities.setPeriod(Long.parseLong(editingData.getBarValue("Period")));
-            utilities.setFrames(frames);
+            utilities.setPeriod(barsData.getNamePeriod());
+            utilities.setFrames(barsData.getNameFrames());
             utilities.animateText(barManager);
         }
     }

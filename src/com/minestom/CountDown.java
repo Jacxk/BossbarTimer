@@ -1,5 +1,8 @@
 package com.minestom;
 
+import com.minestom.BarMenuCreator.Api.BarEndEvent;
+import com.minestom.BarMenuCreator.Api.BarStartEvent;
+import com.minestom.Utils.BarsData;
 import com.minestom.Utils.MessageUtil;
 import com.minestom.Utils.PlayerEditingData;
 import com.minestom.Utils.Utilities;
@@ -21,52 +24,56 @@ public class CountDown extends BukkitRunnable {
 
     @Override
     public void run() {
-        Map<String, Double> timer = plugin.getTimer();
+        Map<String, Long> timer = plugin.getTimer();
         if (timer.isEmpty()) return;
-        for (Map.Entry<String, Double> entry : timer.entrySet()) {
+        for (Map.Entry<String, Long> entry : timer.entrySet()) {
             String barName = entry.getKey();
-            double timeLeft = entry.getValue();
-            BossBarManager bossBar = plugin.getBarManagerMap().get(barName);
+            long timeLeft = entry.getValue();
+            BarsData barsData = plugin.getBarDataMap().get(barName);
+            BossBarManager bossBar = plugin.getBarManagerMap().get(barsData);
             if (timeLeft == 0) {
                 if (!barName.contains("-Announcer")) {
                     bossBar.setBarProgress(1, 1);
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         bossBar.removeBar(player);
                     }
-                    utilities.executeCommand(plugin.getConfig().getStringList("Bars." + barName + ".Commands"));
-                    if (plugin.getConfig().getString("Bars." + barName + ".AnnouncerMode.Enabled") != null &&
-                            plugin.getConfig().getString("Bars." + barName + ".AnnouncerMode.Enabled").equalsIgnoreCase("True")) {
-                        utilities.formatTime(barName + "-Announcer", plugin.getConfig().getString("Bars." + barName + ".AnnouncerMode.Time"));
+                    utilities.executeCommand(barsData.getCommands());
+                    if (barsData.isAnnouncerEnabled()) {
+                        utilities.formatTime(barName + "-Announcer", barsData.getAnnouncerTime());
                     }
                     Bukkit.getScheduler().cancelTask(utilities.getTaskId());
                     timer.remove(barName);
+                    BarEndEvent barEndEvent = new BarEndEvent(plugin.getUtilities(), plugin.getBarDataMap().get(barName));
+                    Bukkit.getServer().getPluginManager().callEvent(barEndEvent);
                 } else {
                     String name = barName.replace("-Announcer", "");
-                    BossBarManager barManager = plugin.getBarManagerMap().get(name);
+                    BossBarManager barManager = plugin.getBarManagerMap().get(barsData);
 
                     timer.remove(barName);
 
-                    String timeFormat = plugin.getConfig().getString("Bars." + name + ".Time");
-                    double time = Double.parseDouble(timeFormat.replaceAll("[a-zA-Z]", ""));
+                    String timeFormat = barsData.getCountdownTime();
+                    long time = Long.parseLong(timeFormat.replaceAll("[a-zA-Z]", ""));
 
                     if (timeFormat.contains("s")) {
                         timer.put(name, time);
                     } else if (timeFormat.contains("m")) {
-                        time = time * 60;
+                        time *= 60;
                         timer.put(name, time);
                     } else if (timeFormat.contains("h")) {
-                        time = time * 3600;
+                        time *= 3600;
                         timer.put(name, time);
                     } else timer.put(name, time);
 
                     plugin.getInitialTime().put(name, time);
 
-                    barManager.setBarColor(plugin.getConfig().getString("Bars." + name + ".Color").toUpperCase());
-                    barManager.setBarStyle(plugin.getConfig().getString("Bars." + name + ".Style").toUpperCase());
+                    barManager.setBarColor(barsData.getColor().toUpperCase());
+                    barManager.setBarStyle(barsData.getStyle().toUpperCase());
 
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         barManager.addPlayer(player);
                     }
+                    BarStartEvent barStartEvent = new BarStartEvent(plugin.getUtilities(), plugin.getBarDataMap().get(barName));
+                    Bukkit.getServer().getPluginManager().callEvent(barStartEvent);
                 }
             } else {
                 timer.put(barName, timeLeft - 1);

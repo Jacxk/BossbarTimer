@@ -10,7 +10,6 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ public class Utilities {
 
     private BossbarTimer plugin;
     private Map<Player, PlayerEditingData> playerEditingDataMap = new HashMap<>();
+
     public Utilities(BossbarTimer plugin) {
         this.plugin = plugin;
     }
@@ -89,27 +89,37 @@ public class Utilities {
     }
 
     public void formatTime(String name, String timeFormat) {
-        Map<String, Double> timer = plugin.getTimer();
-        String[] timeBefore = timeFormat.split(" ");
-        double time = 0;
-        for (String splitTime : timeBefore) {
-            if (splitTime.contains("s")) {
-                time += Double.parseDouble(splitTime.replaceAll("[a-zA-Z]", ""));
-            }
-            if (splitTime.contains("m")) {
-                time += Double.parseDouble(splitTime.replaceAll("[a-zA-Z]", "")) * 60;
-            }
-            if (splitTime.contains("h")) {
-                time += Double.parseDouble(splitTime.replaceAll("[a-zA-Z]", "")) * 3600;
-            }
-            if (splitTime.contains("d")) {
-                time += Double.parseDouble(splitTime.replaceAll("[a-zA-Z]", "")) * 86400;
-            }
-        }
+        Map<String, Long> timer = plugin.getTimer();
+
         if (!name.contains("-Announcer")) {
-            plugin.getInitialTime().put(name, time);
+            plugin.getInitialTime().put(name, timeToSeconds(timeFormat));
         }
-        timer.put(name, time);
+        timer.put(name, timeToSeconds(timeFormat));
+    }
+
+    public Long timeToMillis(String timeFormat) {
+        return timeToSeconds(timeFormat) * 1000;
+    }
+
+    private Long timeToSeconds(String timeFormat) {
+        String[] timeBefore = timeFormat.split(" ");
+        long time = 0;
+
+        for (String timeString : timeBefore) {
+            if (timeString.contains("s")) {
+                time += Long.parseLong(timeString.replaceAll("[a-zA-Z]", ""));
+            }
+            if (timeString.contains("m")) {
+                time += Long.parseLong(timeString.replaceAll("[a-zA-Z]", "")) * 60;
+            }
+            if (timeString.contains("h")) {
+                time += Long.parseLong(timeString.replaceAll("[a-zA-Z]", "")) * 3600;
+            }
+            if (timeString.contains("d")) {
+                time += Long.parseLong(timeString.replaceAll("[a-zA-Z]", "")) * 86400;
+            }
+        }
+        return time;
     }
 
     public void executeCommand(List<String> cmds) {
@@ -158,8 +168,8 @@ public class Utilities {
     private List<String> frames;
     private long period;
 
-    public BukkitTask animateText(BossBarManager barManager) {
-        return new BukkitRunnable() {
+    public void animateText(BossBarManager barManager) {
+        new BukkitRunnable() {
             int i = -1;
 
             @Override
@@ -182,15 +192,15 @@ public class Utilities {
         return taskId;
     }
 
-    public void setPeriod(long period) {
+    public void setPeriod(int period) {
         this.period = period;
     }
 
-    public void addPlayerEditing(Player player){
-        playerEditingDataMap.put(player, new PlayerEditingData());
+    public void addPlayerEditing(Player player) {
+        playerEditingDataMap.put(player, new PlayerEditingData(new BarsData()));
     }
 
-    public void removePlayerEditing(Player player){
+    public void removePlayerEditing(Player player) {
         playerEditingDataMap.remove(player);
     }
 
@@ -198,7 +208,7 @@ public class Utilities {
         return playerEditingDataMap;
     }
 
-    public PlayerEditingData getEditingData(Player player){
+    public PlayerEditingData getEditingData(Player player) {
         return playerEditingDataMap.get(player);
     }
 }

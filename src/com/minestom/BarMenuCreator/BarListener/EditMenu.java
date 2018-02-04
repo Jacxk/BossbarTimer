@@ -2,6 +2,7 @@ package com.minestom.BarMenuCreator.BarListener;
 
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.BarsData;
 import com.minestom.Utils.MessageUtil;
 import com.minestom.Utils.PlayerEditingData;
 import com.minestom.Utils.Utilities;
@@ -43,6 +44,7 @@ public class EditMenu implements Listener {
 
             Player player = (Player) event.getWhoClicked();
             PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
+            BarsData barsData = editingData.getBarsData();
 
             int slot = event.getRawSlot();
 
@@ -53,12 +55,8 @@ public class EditMenu implements Listener {
                 BossbarMenuMaker.createStyleMenu(player);
             }
             if (slot == 2 && item.hasItemMeta()) {
-                List<String> lore = new ArrayList<>();
+                List<String> lore = new ArrayList<>(barsData.getNameFrames());
 
-                for (String cmds : editingData.getBarValue("DisplayName").split(", ")) {
-                    if (editingData.getBarValue("DisplayName").isEmpty()) continue;
-                    lore.add(cmds.replaceAll("[\\[\\]]", ""));
-                }
                 if (event.getClick() == ClickType.LEFT) {
                     player.closeInventory();
                     editingData.setEditing(false);
@@ -70,11 +68,11 @@ public class EditMenu implements Listener {
 
                     if (!lore.isEmpty()) {
                         lore.remove(lore.size() - 1);
-                        editingData.addBarValue("DisplayName", lore.toString());
+                        barsData.setNameFrames(lore);
                     }
                     if (lore.size() == 0) {
                         lore.clear();
-                        editingData.addBarValue("DisplayName", "");
+                        barsData.setNameFrames(lore);
                     }
                     BossbarMenuMaker.createEditMenu(player, plugin);
 
@@ -83,7 +81,7 @@ public class EditMenu implements Listener {
                 if (event.getClick() == ClickType.SHIFT_LEFT) {
 
                     lore.clear();
-                    editingData.addBarValue("DisplayName", "");
+                    barsData.setNameFrames(lore);
                     BossbarMenuMaker.createEditMenu(player, plugin);
 
                     utilities.setFrames(Arrays.asList("&cExample &fText", "&fExample &cText"));

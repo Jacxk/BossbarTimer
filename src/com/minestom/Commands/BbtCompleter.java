@@ -38,7 +38,7 @@ public class BbtCompleter implements TabCompleter {
                 }
             }
             if (args[0].equalsIgnoreCase("stop")) {
-                for (Map.Entry<String, Double> entry : plugin.getTimer().entrySet()) {
+                for (Map.Entry<String, Long> entry : plugin.getTimer().entrySet()) {
                     barsName.add(entry.getKey());
                 }
             }

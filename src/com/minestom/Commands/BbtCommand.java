@@ -1,5 +1,6 @@
 package com.minestom.Commands;
 
+import com.minestom.BarMenuCreator.Api.BarStartEvent;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
@@ -101,11 +102,9 @@ public class BbtCommand implements CommandExecutor {
         if (argsLength == 1) {
             plugin.reloadConfig();
             MessageUtil.sendMessage(sender, "The configuration file has been reloaded!");
-            for (String barName : plugin.getConfig().getConfigurationSection("Bars").getKeys(false)) {
-                if (!plugin.getBarManagerMap().containsKey(barName)) {
-                    plugin.getBarManagerMap().put(barName, new BossBarManager(plugin));
-                }
-            }
+            plugin.getBarDataMap().clear();
+            plugin.getBarManagerMap().clear();
+            plugin.loadBars();
             Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
         }
     }
@@ -116,7 +115,7 @@ public class BbtCommand implements CommandExecutor {
             return;
         }
         String barName = args[1];
-        BossBarManager bossBar = plugin.getBarManagerMap().get(barName);
+        BossBarManager bossBar = plugin.getBarManagerMap().get(plugin.getBarDataMap().get(barName));
         if (!plugin.getTimer().containsKey(barName)) {
             MessageUtil.sendMessage(sender, "That bar is not active!");
             return;
@@ -127,6 +126,8 @@ public class BbtCommand implements CommandExecutor {
         plugin.getTimer().remove(barName);
         Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
         MessageUtil.sendMessage(sender, "The bar timer has been stopped!");
+        BarStartEvent barStartEvent = new BarStartEvent(plugin.getUtilities(), plugin.getBarDataMap().get(barName));
+        Bukkit.getServer().getPluginManager().callEvent(barStartEvent);
     }
 
     private void startParameter(CommandSender sender, Integer argsLength, String[] args) {
@@ -146,9 +147,12 @@ public class BbtCommand implements CommandExecutor {
             MessageUtil.sendMessage(sender, "That bar is already active!");
             return;
         }
+        BossBarManager bossBar = plugin.getBarManagerMap().get(plugin.getBarDataMap().get(barName));
+        BarStartEvent barStartEvent = new BarStartEvent(plugin.getUtilities(), plugin.getBarDataMap().get(barName));
+        Bukkit.getServer().getPluginManager().callEvent(barStartEvent);
+
         String timeFormat = plugin.getConfig().getString("Bars." + barName + ".Time");
         plugin.getUtilities().formatTime(barName, timeFormat);
-        BossBarManager bossBar = plugin.getBarManagerMap().get(barName);
 
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             bossBar.addPlayer(onlinePlayer);
@@ -159,7 +163,7 @@ public class BbtCommand implements CommandExecutor {
 
         MessageUtil.sendMessage(sender, "The bar &e" + barName + " &7has been started!");
         plugin.getUtilities().setFrames(plugin.getConfig().getStringList("Bars." + barName + ".DisplayName.Frames"));
-        plugin.getUtilities().setPeriod(plugin.getConfig().getLong("Bars." + barName + ".DisplayName.Period"));
+        plugin.getUtilities().setPeriod(plugin.getConfig().getInt("Bars." + barName + ".DisplayName.Period"));
         plugin.getUtilities().animateText(bossBar);
     }
 }

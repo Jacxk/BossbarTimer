@@ -2,6 +2,7 @@ package com.minestom.BarMenuCreator.BarListener;
 
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossbarTimer;
+import com.minestom.Utils.BarsData;
 import com.minestom.Utils.MessageUtil;
 import com.minestom.Utils.PlayerEditingData;
 import org.bukkit.entity.Player;
@@ -39,6 +40,7 @@ public class AvancedMenu implements Listener {
 
             Player player = (Player) event.getWhoClicked();
             PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
+            BarsData barsData = editingData.getBarsData();
 
             int slot = event.getRawSlot();
 
@@ -50,12 +52,7 @@ public class AvancedMenu implements Listener {
                 MessageUtil.sendMessage(player, "&7TIP: You can use 's' for seconds, 'm' for minutes and 'h' for ours.");
             }
             if (slot == 1) {
-                List<String> lore = new ArrayList<>();
-
-                for (String cmds : editingData.getBarValue("Commands").split(", ")) {
-                    if (editingData.getBarValue("Commands").isEmpty()) continue;
-                    lore.add(cmds.replaceAll("[\\[\\]]", ""));
-                }
+                List<String> lore = new ArrayList<>(barsData.getCommands());
 
                 if (event.getClick() == ClickType.LEFT) {
                     editingData.setEditing(false);
@@ -67,36 +64,26 @@ public class AvancedMenu implements Listener {
                 if (event.getClick() == ClickType.RIGHT) {
                     if (!lore.isEmpty()) {
                         lore.remove(lore.size() - 1);
-                        editingData.addBarValue("Commands", lore.toString());
+                        barsData.setCommands(lore);
                     }
                     if (lore.size() == 0) {
                         lore.clear();
-                        editingData.addBarValue("Commands", "");
+                        barsData.setCommands(lore);
                     }
                     BossbarMenuMaker.createAvancedMenu(player, plugin);
                 }
                 if (event.getClick() == ClickType.SHIFT_LEFT) {
                     lore.clear();
-                    editingData.addBarValue("Commands", "");
+                    barsData.setCommands(lore);
                     BossbarMenuMaker.createAvancedMenu(player, plugin);
                 }
 
             }
             if (slot == 2) {
                 if (event.getClick() == ClickType.LEFT) {
-                    boolean enabled = false;
 
-                    if (editingData.getBarValue("AnnouncerModeEnabled") == null) {
-                        enabled = false;
-                    } else if (editingData.getBarValue("AnnouncerModeEnabled").equalsIgnoreCase("true")) {
-                        enabled = true;
-                    } else if (editingData.getBarValue("AnnouncerModeEnabled").equalsIgnoreCase("false")) {
-                        enabled = false;
-                    }
-
-                    if (!enabled) {
-                        editingData.addBarValue("AnnouncerModeEnabled", "True");
-                    } else editingData.addBarValue("AnnouncerModeEnabled", "False");
+                    if (barsData.isAnnouncerEnabled()) barsData.setAnnouncerEnabled(false);
+                    else barsData.setAnnouncerEnabled(true);
 
                     BossbarMenuMaker.createAvancedMenu(player, plugin);
                 }
