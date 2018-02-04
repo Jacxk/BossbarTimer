@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -122,7 +123,6 @@ public class InChatEdition implements Listener {
             BossBarManager barManager = plugin.getBarManagerMap().get(editingData.getBarKeyName());
 
             barManager.createBar(" ", "WHITE", "SOLID");
-            barManager.setFinished(false);
             barManager.addPlayer(player);
 
             utilities.setFrames(Arrays.asList("&cExample &fText", "&fExample &cText"));
@@ -177,5 +177,22 @@ public class InChatEdition implements Listener {
             utilities.setFrames(frames);
             utilities.animateText(barManager);
         }
+    }
+
+    @EventHandler
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        if (event.isCancelled()) return;
+
+        Utilities utilities = plugin.getUtilities();
+        Player player = event.getPlayer();
+
+        if (!utilities.getPlayerEditingDataMap().containsKey(player)) return;
+
+        PlayerEditingData editingData = utilities.getEditingData(player);
+
+        if (editingData.isAnnouncerTime() || editingData.isCreateBar() || editingData.isEditTimer() ||
+                editingData.isEditingName() || editingData.isEditPeriod() || editingData.isAddingCmd())
+            event.setCancelled(true);
+
     }
 }

@@ -1,7 +1,7 @@
 main: com.minestom.BossbarTimer
 name: BossbarTimer
 version: 1.0.0
-authors: [By_Jack, Wythe]
+author: By_Jack
 commands:
   bossbartimer:
     aliases: [bbt, btimer]

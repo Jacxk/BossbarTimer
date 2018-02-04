@@ -27,6 +27,10 @@ public class BbtCommand implements CommandExecutor {
 
         Integer argsLength = args.length;
         if (argsLength == 0 && sender instanceof Player) {
+            if (!sender.hasPermission("bossbartimer.open")) {
+                MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
+                return true;
+            }
             Player player = (Player) sender;
             PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
             if (plugin.getUtilities().getPlayerEditingDataMap().containsKey(player) && editingData.isEditing()) {
@@ -37,26 +41,38 @@ public class BbtCommand implements CommandExecutor {
 
         switch (args[0]) {
             case "help":
+                if (!sender.hasPermission("bossbartimer.help")) {
+                    MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
+                    break;
+                }
                 helpParameter(sender, argsLength);
                 break;
             case "reload":
+                if (!sender.hasPermission("bossbartimer.reload")) {
+                    MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
+                    break;
+                }
                 reloadParameter(sender, argsLength);
                 break;
             case "stop":
+                if (!sender.hasPermission("bossbartimer.stop")) {
+                    MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
+                    break;
+                }
                 stopParameter(sender, argsLength, args);
                 break;
-            case "create":
-                if (!(sender instanceof Player)) {
-                    MessageUtil.sendMessage(sender, "Only players can use this command");
-                    return true;
-                }
-                Player player = (Player) sender;
-                createParameter(player, argsLength, args);
-                break;
             case "start":
+                if (!sender.hasPermission("bossbartimer.start")) {
+                    MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
+                    break;
+                }
                 startParameter(sender, argsLength, args);
                 break;
             default:
+                if (!sender.hasPermission("bossbartimer.help")) {
+                    MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
+                    break;
+                }
                 helpParameter(sender, argsLength);
                 break;
         }
@@ -71,10 +87,7 @@ public class BbtCommand implements CommandExecutor {
                     "",
                     "&8 - &a/bbt start <name>",
                     "&8 - &a/bbt stop <name>",
-                    // "&8 - &a/bbt create <name> <time> <color> <style> <DisplayName>", // currently not working
                     "&8 - &a/bbt reload",
-                    "",
-                    "&7TIP: Use 'Tab' to autocomplete some arguments, such as <color>, <style> and <name>",
                     "",
                     "&7https://github.com/Jacxk/BossbarTimer/wiki",
                     "",
@@ -112,31 +125,8 @@ public class BbtCommand implements CommandExecutor {
             bossBar.removeBar(onlinePlayer);
         }
         plugin.getTimer().remove(barName);
-        bossBar.setFinished(false);
         Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
         MessageUtil.sendMessage(sender, "The bar timer has been stopped!");
-    }
-
-    private void createParameter(Player player, Integer argsLength, String[] args) {
-        if (argsLength <= 4) {
-            MessageUtil.sendMessage(player, "Wrong usage! Use: &a/bbt create <name> <time> <color> <style> <DisplayName>");
-            return;
-        }
-        String barName = args[1];
-        String time = args[2];
-        String color = args[3];
-        String style = args[4];
-        StringBuilder displayName = new StringBuilder();
-        for (int i = 5; i < argsLength; i++) {
-            displayName.append(args[i]).append(" ");
-        }
-        plugin.getConfig().set("Bars." + barName + ".DisplayName", displayName.toString().trim());
-        plugin.getConfig().set("Bars." + barName + ".Time", time);
-        plugin.getConfig().set("Bars." + barName + ".Color", color.toUpperCase());
-        plugin.getConfig().set("Bars." + barName + ".Style", style.toUpperCase());
-        plugin.saveConfig();
-        plugin.getBarManagerMap().put(barName, plugin.getBarManager());
-        MessageUtil.sendMessage(player, "A new bar timer has been created!");
     }
 
     private void startParameter(CommandSender sender, Integer argsLength, String[] args) {
@@ -166,7 +156,6 @@ public class BbtCommand implements CommandExecutor {
 
         bossBar.setBarColor(plugin.getConfig().getString("Bars." + barName + ".Color").toUpperCase());
         bossBar.setBarStyle(plugin.getConfig().getString("Bars." + barName + ".Style").toUpperCase());
-        bossBar.setFinished(false);
 
         MessageUtil.sendMessage(sender, "The bar &e" + barName + " &7has been started!");
         plugin.getUtilities().setFrames(plugin.getConfig().getStringList("Bars." + barName + ".DisplayName.Frames"));

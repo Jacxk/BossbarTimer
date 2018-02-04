@@ -36,6 +36,10 @@ public class MainMenu implements Listener {
 
             int slot = event.getRawSlot();
             if (slot == 1) {
+                if (!player.hasPermission("bossbartimer.create")) {
+                    MessageUtil.sendMessage(player, plugin.getConfig().getString("Messages.NoPermission"));
+                    return;
+                }
                 plugin.getUtilities().addPlayerEditing(player);
                 PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
 
@@ -44,6 +48,10 @@ public class MainMenu implements Listener {
                 MessageUtil.sendMessage(player, "&aEnter the bar name in the chat. Use &eCancel &ato cancel.");
             }
             if (slot == 3) {
+                if (!player.hasPermission("bossbartimer.edit")) {
+                    MessageUtil.sendMessage(player, plugin.getConfig().getString("Messages.NoPermission"));
+                    return;
+                }
                 BossbarMenuMaker.createEditBarsMenu(player, plugin);
             }
         }

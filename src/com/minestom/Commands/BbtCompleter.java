@@ -12,7 +12,7 @@ import java.util.*;
 
 public class BbtCompleter implements TabCompleter {
 
-    private static final String[] COMMANDS = {"create", "start", "stop", "reload"};
+    private static final String[] COMMANDS = {"start", "stop", "reload"};
     private BossbarTimer plugin;
 
     public BbtCompleter(BossbarTimer plugin) {
@@ -43,34 +43,6 @@ public class BbtCompleter implements TabCompleter {
                 }
             }
             StringUtil.copyPartialMatches(bars, barsName, completions);
-        }
-
-        if (args.length == 4) {
-            String color = args[3];
-            if (args[0].equalsIgnoreCase("create")) {
-                List<String> colors = new ArrayList<>();
-                colors.add(BarColor.RED.toString());
-                colors.add(BarColor.BLUE.toString());
-                colors.add(BarColor.GREEN.toString());
-                colors.add(BarColor.PINK.toString());
-                colors.add(BarColor.PURPLE.toString());
-                colors.add(BarColor.WHITE.toString());
-                colors.add(BarColor.YELLOW.toString());
-                StringUtil.copyPartialMatches(color, colors, completions);
-            }
-        }
-
-        if (args.length == 5) {
-            String style = args[4];
-            if (args[0].equalsIgnoreCase("create")) {
-                List<String> styles = new ArrayList<>();
-                styles.add(BarStyle.SOLID.toString());
-                styles.add(BarStyle.SEGMENTED_20.toString());
-                styles.add(BarStyle.SEGMENTED_6.toString());
-                styles.add(BarStyle.SEGMENTED_10.toString());
-                styles.add(BarStyle.SEGMENTED_12.toString());
-                StringUtil.copyPartialMatches(style, styles, completions);
-            }
         }
 
         Collections.sort(completions);

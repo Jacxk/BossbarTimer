@@ -25,10 +25,6 @@ public class BossBarManager {
         return finished;
     }
 
-    public void setFinished(boolean finished) {
-        this.finished = finished;
-    }
-
     public BossBarManager(BossbarTimer plugin) {
         this.plugin = plugin;
     }

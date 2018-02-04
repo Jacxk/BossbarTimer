@@ -2,6 +2,7 @@ package com.minestom;
 
 import com.minestom.Utils.MessageUtil;
 import com.minestom.Utils.PlayerEditingData;
+import com.minestom.Utils.Utilities;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -11,14 +12,17 @@ import java.util.Map;
 public class CountDown extends BukkitRunnable {
 
     private BossbarTimer plugin;
+    private Utilities utilities;
 
     public CountDown(BossbarTimer plugin) {
         this.plugin = plugin;
+        this.utilities = plugin.getUtilities();
     }
 
     @Override
     public void run() {
         Map<String, Double> timer = plugin.getTimer();
+        if (timer.isEmpty()) return;
         for (Map.Entry<String, Double> entry : timer.entrySet()) {
             String barName = entry.getKey();
             double timeLeft = entry.getValue();
@@ -26,16 +30,15 @@ public class CountDown extends BukkitRunnable {
             if (timeLeft == 0) {
                 if (!barName.contains("-Announcer")) {
                     bossBar.setBarProgress(1, 1);
-                    bossBar.setFinished(true);
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         bossBar.removeBar(player);
                     }
-                    plugin.getUtilities().executeCommand(plugin.getConfig().getStringList("Bars." + barName + ".Commands"));
+                    utilities.executeCommand(plugin.getConfig().getStringList("Bars." + barName + ".Commands"));
                     if (plugin.getConfig().getString("Bars." + barName + ".AnnouncerMode.Enabled") != null &&
                             plugin.getConfig().getString("Bars." + barName + ".AnnouncerMode.Enabled").equalsIgnoreCase("True")) {
-                        plugin.getUtilities().formatTime(barName + "-Announcer", plugin.getConfig().getString("Bars." + barName + ".AnnouncerMode.Time"));
+                        utilities.formatTime(barName + "-Announcer", plugin.getConfig().getString("Bars." + barName + ".AnnouncerMode.Time"));
                     }
-                    Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
+                    Bukkit.getScheduler().cancelTask(utilities.getTaskId());
                     timer.remove(barName);
                 } else {
                     String name = barName.replace("-Announcer", "");
@@ -58,7 +61,6 @@ public class CountDown extends BukkitRunnable {
 
                     plugin.getInitialTime().put(name, time);
 
-                    barManager.setFinished(false);
                     barManager.setBarColor(plugin.getConfig().getString("Bars." + name + ".Color").toUpperCase());
                     barManager.setBarStyle(plugin.getConfig().getString("Bars." + name + ".Style").toUpperCase());
 
@@ -75,8 +77,8 @@ public class CountDown extends BukkitRunnable {
             }
         }
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!plugin.getUtilities().getPlayerEditingDataMap().containsKey(player)) return;
-            PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
+            if (!utilities.getPlayerEditingDataMap().containsKey(player)) return;
+            PlayerEditingData editingData = utilities.getEditingData(player);
             if (editingData.isEditingName()) {
                 MessageUtil.sendTitle(player, "§aPlease enter the name", "§cin the chat", 0, 25, 0);
             }

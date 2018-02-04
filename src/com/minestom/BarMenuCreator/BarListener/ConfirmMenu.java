@@ -54,7 +54,6 @@ public class ConfirmMenu implements Listener {
                 if (editingData.isDeleting()) {
 
                     barManager.removeBar(player);
-                    barManager.setFinished(true);
                     editingData.setConfirm(false);
 
                     plugin.getBarManagerMap().remove(editingData.getBarKeyName());
@@ -70,7 +69,6 @@ public class ConfirmMenu implements Listener {
                 if (editingData.isCanceling()) {
 
                     barManager.removeBar(player);
-                    barManager.setFinished(true);
                     editingData.setConfirm(false);
 
                     plugin.getUtilities().removePlayerEditing(player);
@@ -115,7 +113,6 @@ public class ConfirmMenu implements Listener {
 
                     plugin.getBarManagerMap().put(barName, new BossBarManager(plugin));
                     barManager.removeBar(player);
-                    barManager.setFinished(true);
                     editingData.setConfirm(false);
 
                     plugin.getUtilities().removePlayerEditing(player);

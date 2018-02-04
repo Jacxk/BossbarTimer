@@ -55,9 +55,7 @@ public class BossbarTimer extends JavaPlugin {
     }
 
     private void saveBarData() {
-        if (timer.isEmpty()) {
-            return;
-        }
+        if (timer.isEmpty()) return;
 
         for (Map.Entry<String, Double> entry : timer.entrySet()) {
             String barName = entry.getKey();
@@ -81,6 +79,7 @@ public class BossbarTimer extends JavaPlugin {
             }
         }
 
+        getConfig().set("Data", null);
         loadBarsData();
     }
 
