@@ -3,6 +3,8 @@ package com.minestom;
 import com.minestom.BarMenuCreator.BarListener.*;
 import com.minestom.Commands.BbtCommand;
 import com.minestom.Commands.BbtCompleter;
+import com.minestom.Runnables.Announcer;
+import com.minestom.Runnables.CountDown;
 import com.minestom.Updater.SpigotUpdater;
 import com.minestom.Utils.BarsData;
 import com.minestom.Utils.Utilities;
@@ -20,10 +22,9 @@ import java.util.Map;
 public class BossbarTimer extends JavaPlugin implements Listener {
 
     private Map<String, Long> timer = new HashMap<>();
-    private Map<String, Long> initialTime = new HashMap<>();
-    private Map<BarsData, BossBarManager> barManagerMap = new HashMap<>();
+    private Map<String, Long> announcer = new HashMap<>();
     private Map<String, BarsData> barDataMap = new HashMap<>();
-    private BossBarManager barManager;
+    public boolean debug = false;
     private Utilities utilities;
 
     @Override
@@ -62,7 +63,7 @@ public class BossbarTimer extends JavaPlugin implements Listener {
         for (Map.Entry<String, Long> entry : timer.entrySet()) {
             String barName = entry.getKey();
             double timeLeft = entry.getValue();
-            if (!barName.contains("-Announcer")) {
+            if (timeLeft != 0) {
                 getConfig().set("Data." + barName, timeLeft);
                 saveConfig();
             }
@@ -70,25 +71,26 @@ public class BossbarTimer extends JavaPlugin implements Listener {
     }
 
     public void loadBars() {
-        BossBarManager barManager = new BossBarManager(this);
+        this.getServer().getScheduler().cancelTasks(this);
         new CountDown(this).runTaskTimer(this, 0L, 20L);
+        new Announcer(this).runTaskTimer(this, 0L, 20L);
 
         for (String barName : getConfig().getConfigurationSection("Bars").getKeys(false)) {
             if (barDataMap.containsKey(barName)) continue;
-            barDataMap.put(barName, new BarsData(barName, getConfig().getStringList("Bars." + barName + ".DisplayName.Frames"),
+            barDataMap.put(barName, new BarsData(barName,
+                    getConfig().getStringList("Bars." + barName + ".DisplayName.Frames"),
                     getConfig().getStringList("Bars." + barName + ".Commands"),
                     getConfig().getInt("Bars." + barName + ".DisplayName.Period"),
                     getConfig().getString("Bars." + barName + ".Time"),
                     getConfig().getString("Bars." + barName + ".Color"),
                     getConfig().getString("Bars." + barName + ".Style"),
-                    Boolean.valueOf(getConfig().getString("Bars." + barName + ".AnnouncerMode.Enabled")),
-                    getConfig().getString("Bars." + barName + ".AnnouncerMode.Time")));
-            barManagerMap.put(barDataMap.get(barName), barManager);
+                    getConfig().getBoolean("Bars." + barName + ".AnnouncerMode.Enabled"),
+                    getConfig().getString("Bars." + barName + ".AnnouncerMode.Time"),
+                    utilities.timeToSeconds(getConfig().getString("Bars." + barName + ".Time"))));
 
-            String enabled = getConfig().getString("Bars." + barName + ".AnnouncerMode.Enabled");
-            if (enabled != null && enabled.equalsIgnoreCase("true")) {
+            if (barDataMap.get(barName).isAnnouncerEnabled()) {
                 String timeFormat = getConfig().getString("Bars." + barName + ".AnnouncerMode.Time");
-                utilities.formatTime(barName + "-Announcer", timeFormat);
+                announcer.put(barName, utilities.timeToSeconds(timeFormat));
             }
         }
         loadBarsData();
@@ -98,14 +100,9 @@ public class BossbarTimer extends JavaPlugin implements Listener {
         ConfigurationSection data = getConfig().getConfigurationSection("Data");
         if (data != null) {
             for (String barName : data.getKeys(false)) {
-                String timeFormat = getConfig().getString("Bars." + barName + ".Time");
-                utilities.formatTime(barName, timeFormat);
-
                 timer.put(barName, getConfig().getLong("Data." + barName));
-                BossBarManager bossBar = barManagerMap.get(barDataMap.get(barName));
-
-                bossBar.setBarColor(getConfig().getString("Bars." + barName + ".Color").toUpperCase());
-                bossBar.setBarStyle(getConfig().getString("Bars." + barName + ".Style").toUpperCase());
+                BarsData barsData = barDataMap.get(barName);
+                utilities.start(barsData);
             }
             getConfig().set("Data", null);
             saveConfig();
@@ -113,7 +110,6 @@ public class BossbarTimer extends JavaPlugin implements Listener {
     }
 
     private void init() {
-        barManager = new BossBarManager(this);
         utilities = new Utilities(this);
     }
 
@@ -141,24 +137,16 @@ public class BossbarTimer extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new EditCurrentBarsMenu(this), this);
     }
 
-    public BossBarManager getBarManager() {
-        return barManager;
-    }
-
-    public Map<BarsData, BossBarManager> getBarManagerMap() {
-        return barManagerMap;
-    }
-
     public Utilities getUtilities() {
         return utilities;
     }
 
-    public Map<String, Long> getInitialTime() {
-        return initialTime;
-    }
-
     public Map<String, Long> getTimer() {
         return timer;
+    }
+
+    public Map<String, Long> getAnnouncerTimer() {
+        return announcer;
     }
 
     public Map<String, BarsData> getBarDataMap() {

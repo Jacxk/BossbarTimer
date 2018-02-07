@@ -37,7 +37,7 @@ public class StylesMenu implements Listener {
             if (slot != 8 && item.hasItemMeta()) {
                 PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
                 BarsData barsData = editingData.getBarsData();
-                BossBarManager barManager = plugin.getBarManagerMap().get(barsData);
+                BossBarManager barManager = barsData.getBossBarManager();
                 String style = ChatColor.stripColor(item.getItemMeta().getDisplayName()).replace(" ", "_");
 
                 barManager.setBarStyle(style);

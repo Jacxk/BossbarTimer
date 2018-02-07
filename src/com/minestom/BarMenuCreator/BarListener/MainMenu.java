@@ -46,6 +46,8 @@ public class MainMenu implements Listener {
                 player.closeInventory();
                 editingData.setCreateBar(true);
                 MessageUtil.sendMessage(player, "&aEnter the bar name in the chat. Use &eCancel &ato cancel.");
+
+                if (plugin.debug) MessageUtil.sendDebugMessage("Clicked Slot: " + slot + "\nClicked Option: Create new bar");
             }
             if (slot == 3) {
                 if (!player.hasPermission("bossbartimer.edit")) {
@@ -53,6 +55,8 @@ public class MainMenu implements Listener {
                     return;
                 }
                 BossbarMenuMaker.createEditBarsMenu(player, plugin);
+
+                if (plugin.debug) MessageUtil.sendDebugMessage("Clicked Slot: " + slot + "\nClicked Option: Edit current bar");
             }
         }
     }

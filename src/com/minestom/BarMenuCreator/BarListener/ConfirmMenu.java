@@ -41,7 +41,7 @@ public class ConfirmMenu implements Listener {
             Player player = (Player) event.getWhoClicked();
             PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
             BarsData barsData = editingData.getBarsData();
-            BossBarManager barManager = plugin.getBarManagerMap().get(barsData);
+            BossBarManager barManager = barsData.getBossBarManager();
             FileConfiguration configuration = plugin.getConfig();
 
             int slot = event.getRawSlot();
@@ -55,7 +55,6 @@ public class ConfirmMenu implements Listener {
                     barManager.removeBar(player);
                     editingData.setConfirm(false);
 
-                    plugin.getBarManagerMap().remove(barsData);
                     plugin.getUtilities().removePlayerEditing(player);
 
                     configuration.set(section, null);
@@ -89,10 +88,6 @@ public class ConfirmMenu implements Listener {
                     configuration.set(section + ".AnnouncerMode.Enabled", barsData.isAnnouncerEnabled());
                     configuration.set(section + ".AnnouncerMode.Time", barsData.getAnnouncerTime());
                     plugin.saveConfig();
-
-                    if (barsData.isAnnouncerEnabled())
-                        plugin.getUtilities().formatTime(barName + "-Announcer", barsData.getAnnouncerTime());
-                    else plugin.getTimer().remove(barName + "-Announcer");
 
                     plugin.loadBars();
                     barManager.removeBar(player);

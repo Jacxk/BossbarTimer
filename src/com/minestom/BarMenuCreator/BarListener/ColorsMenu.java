@@ -35,7 +35,7 @@ public class ColorsMenu implements Listener {
             Player player = (Player) event.getWhoClicked();
             PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
             BarsData barsData = editingData.getBarsData();
-            BossBarManager barManager = plugin.getBarManagerMap().get(barsData);
+            BossBarManager barManager = barsData.getBossBarManager();
 
             int slot = event.getRawSlot();
 
