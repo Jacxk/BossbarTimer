@@ -9,22 +9,6 @@ import org.bukkit.entity.Player;
 
 public class BossBarManager {
 
-    private BossbarTimer plugin;
-    private double timeleft;
-
-    public double getTimeleft() {
-        return timeleft;
-    }
-
-    public void setTimeleft(double timeleft) {
-        this.timeleft = timeleft;
-    }
-
-
-    public BossBarManager(BossbarTimer plugin) {
-        this.plugin = plugin;
-    }
-
     private BossBar bar = Bukkit.createBossBar(null, BarColor.RED, BarStyle.SOLID);
 
     public void createBar(String title, String color, String style) {

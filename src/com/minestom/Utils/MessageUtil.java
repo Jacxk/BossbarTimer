@@ -1,5 +1,6 @@
 package com.minestom.Utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,6 +31,13 @@ public class MessageUtil {
         fullMessage += message;
 
         player.sendMessage(colorMessage(fullMessage));
+    }
+
+    public static void sendDebugMessage(String message) {
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            if (player.hasPermission("bossbartimer.debug")) player.sendMessage(colorMessage(prefix + message));
+        });
+        Bukkit.getLogger().info(message);
     }
 
     public static void sendMessages(Player player, String[] messages) {

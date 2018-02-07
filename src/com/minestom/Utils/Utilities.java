@@ -88,20 +88,11 @@ public class Utilities {
         return duration.trim();
     }
 
-    public void formatTime(String name, String timeFormat) {
-        Map<String, Long> timer = plugin.getTimer();
-
-        if (!name.contains("-Announcer")) {
-            plugin.getInitialTime().put(name, timeToSeconds(timeFormat));
-        }
-        timer.put(name, timeToSeconds(timeFormat));
-    }
-
     public Long timeToMillis(String timeFormat) {
         return timeToSeconds(timeFormat) * 1000;
     }
 
-    private Long timeToSeconds(String timeFormat) {
+    public Long timeToSeconds(String timeFormat) {
         String[] timeBefore = timeFormat.split(" ");
         long time = 0;
 
@@ -168,7 +159,8 @@ public class Utilities {
     private List<String> frames;
     private long period;
 
-    public void animateText(BossBarManager barManager) {
+    public void animateText(BarsData barsData) {
+        BossBarManager barManager = barsData.getBossBarManager();
         new BukkitRunnable() {
             int i = -1;
 
@@ -178,10 +170,28 @@ public class Utilities {
                 if (frames.isEmpty()) frames.addAll(Arrays.asList("&cExample &fText", "&fExample &cText"));
                 if (i <= frames.size()) i++;
                 if (i >= frames.size()) i = 0;
-                barManager.setBarName(frames.get(i).replace("{time}",
-                        plugin.getUtilities().format((long) barManager.getTimeleft())));
+                barManager.setBarName(frames.get(i).replace("{time}", format(barsData.getInitialTime())));
             }
         }.runTaskTimer(plugin, 0L, period);
+    }
+
+    public void start(BarsData barsData) {
+        BossBarManager barManager = barsData.getBossBarManager();
+        barManager.setBarColor(barsData.getColor());
+        barManager.setBarStyle(barsData.getStyle());
+
+        setFrames(barsData.getNameFrames());
+        setPeriod(barsData.getNamePeriod());
+        animateText(barsData);
+
+        Bukkit.getOnlinePlayers().forEach(barManager::addPlayer);
+    }
+
+    public void stop(BarsData barsData) {
+        BossBarManager barManager = barsData.getBossBarManager();
+
+        Bukkit.getOnlinePlayers().forEach(barManager::removeBar);
+        Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
     }
 
     public void setFrames(List<String> frames) {

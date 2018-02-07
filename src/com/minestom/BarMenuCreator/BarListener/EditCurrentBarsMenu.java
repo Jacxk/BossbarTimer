@@ -45,12 +45,12 @@ public class EditCurrentBarsMenu implements Listener {
                 BarsData barsData = plugin.getBarDataMap().get(barKeyName);
 
                 if (event.getClick() == ClickType.LEFT) {
-                    BossBarManager barManager = plugin.getBarManagerMap().get(barsData);
+                    BossBarManager barManager = barsData.getBossBarManager();
 
                     barManager.createBar(barsData.getNameFrames().get(0), barsData.getColor(), barsData.getStyle());
                     plugin.getUtilities().setFrames(barsData.getNameFrames());
                     plugin.getUtilities().setPeriod(barsData.getNamePeriod());
-                    plugin.getUtilities().animateText(barManager);
+                    plugin.getUtilities().animateText(barsData);
                     barManager.addPlayer(player);
 
                     editingData.setBarKeyName(barKeyName);

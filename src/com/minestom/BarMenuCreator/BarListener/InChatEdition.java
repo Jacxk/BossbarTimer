@@ -39,6 +39,7 @@ public class InChatEdition implements Listener {
 
         PlayerEditingData editingData = utilities.getEditingData(player);
         BarsData barsData = editingData.getBarsData();
+        BossBarManager barManager = barsData.getBossBarManager();
         String message = event.getMessage();
 
         if (editingData.isAddingCmd()) {
@@ -119,15 +120,13 @@ public class InChatEdition implements Listener {
             barsData.setAnnouncerTime("none");
 
             editingData.setBarKeyName(message.replace(" ", "_"));
-            plugin.getBarManagerMap().put(editingData.getBarsData(), new BossBarManager(plugin));
-            BossBarManager barManager = plugin.getBarManagerMap().get(editingData.getBarsData());
 
             barManager.createBar(" ", "WHITE", "SOLID");
             barManager.addPlayer(player);
 
             utilities.setFrames(barsData.getNameFrames());
             utilities.setPeriod(barsData.getNamePeriod());
-            utilities.animateText(barManager);
+            utilities.animateText(barsData);
 
             BossbarMenuMaker.createEditMenu(player, plugin);
             editingData.setCreateBar(false);
@@ -148,7 +147,6 @@ public class InChatEdition implements Listener {
         }
         if (editingData.isEditPeriod()) {
             event.setCancelled(true);
-            BossBarManager barManager = plugin.getBarManagerMap().get(editingData.getBarsData());
 
             if (message.equalsIgnoreCase("cancel")) {
                 editingData.setEditPeriod(false);
@@ -168,7 +166,7 @@ public class InChatEdition implements Listener {
             Bukkit.getScheduler().cancelTask(utilities.getTaskId());
             utilities.setPeriod(barsData.getNamePeriod());
             utilities.setFrames(barsData.getNameFrames());
-            utilities.animateText(barManager);
+            utilities.animateText(barsData);
         }
     }
 
