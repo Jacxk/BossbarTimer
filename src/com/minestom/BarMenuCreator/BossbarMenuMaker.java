@@ -1,8 +1,8 @@
 package com.minestom.BarMenuCreator;
 
 import com.minestom.BossbarTimer;
-import com.minestom.Utils.BarsData;
-import com.minestom.Utils.PlayerEditingData;
+import com.minestom.DataHandler.BarsData;
+import com.minestom.DataHandler.PlayerEditingData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

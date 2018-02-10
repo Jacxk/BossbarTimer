@@ -1,6 +1,6 @@
-package com.minestom.Utils;
+package com.minestom.DataHandler;
 
-import com.minestom.BossBarManager;
+import com.minestom.Utils.BossBarManager;
 
 import java.util.List;
 
@@ -17,6 +17,7 @@ public class BarsData {
     private String announcerTime;
     private String barKeyName;
     private BossBarManager bossBarManager;
+    private long currentTime;
 
     public BarsData() {
         this.bossBarManager = new BossBarManager();
@@ -35,6 +36,7 @@ public class BarsData {
         this.announcerTime = announcerTime;
         this.bossBarManager = new BossBarManager();
         this.initialTime = initialTime;
+        this.currentTime = 0;
     }
 
     public String getBarKeyName() {
@@ -119,5 +121,13 @@ public class BarsData {
 
     public void setInitialTime(long initialTime) {
         this.initialTime = initialTime;
+    }
+
+    public long getCurrentTime() {
+        return currentTime;
+    }
+
+    public void setCurrentTime(long currentTime) {
+        this.currentTime = currentTime;
     }
 }

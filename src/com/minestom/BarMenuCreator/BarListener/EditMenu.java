@@ -2,9 +2,9 @@ package com.minestom.BarMenuCreator.BarListener;
 
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossbarTimer;
-import com.minestom.Utils.BarsData;
+import com.minestom.DataHandler.BarsData;
 import com.minestom.Utils.MessageUtil;
-import com.minestom.Utils.PlayerEditingData;
+import com.minestom.DataHandler.PlayerEditingData;
 import com.minestom.Utils.Utilities;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

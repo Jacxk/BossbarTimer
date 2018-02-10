@@ -12,7 +12,7 @@ import java.util.*;
 
 public class BbtCompleter implements TabCompleter {
 
-    private static final String[] COMMANDS = {"start", "stop", "reload"};
+    private static final String[] COMMANDS = {"start", "stop", "reload", "debug", "update"};
     private BossbarTimer plugin;
 
     public BbtCompleter(BossbarTimer plugin) {

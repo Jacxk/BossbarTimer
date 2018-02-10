@@ -1,11 +1,11 @@
 package com.minestom.BarMenuCreator.BarListener;
 
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
-import com.minestom.BossBarManager;
+import com.minestom.Utils.BossBarManager;
 import com.minestom.BossbarTimer;
-import com.minestom.Utils.BarsData;
+import com.minestom.DataHandler.BarsData;
 import com.minestom.Utils.MessageUtil;
-import com.minestom.Utils.PlayerEditingData;
+import com.minestom.DataHandler.PlayerEditingData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -87,6 +87,7 @@ public class ConfirmMenu implements Listener {
                     configuration.set(section + ".Commands", barsData.getCommands());
                     configuration.set(section + ".AnnouncerMode.Enabled", barsData.isAnnouncerEnabled());
                     configuration.set(section + ".AnnouncerMode.Time", barsData.getAnnouncerTime());
+                    barsData.setInitialTime(plugin.getUtilities().timeToSeconds(barsData.getCountdownTime()));
                     plugin.saveConfig();
 
                     plugin.loadBars();
@@ -94,6 +95,11 @@ public class ConfirmMenu implements Listener {
                     editingData.setConfirm(false);
 
                     plugin.getUtilities().removePlayerEditing(player);
+
+                    if (barsData.isAnnouncerEnabled()) {
+                        String timeFormat = barsData.getAnnouncerTime();
+                        plugin.getAnnouncerTimer().put(barName, plugin.getUtilities().timeToSeconds(timeFormat));
+                    }
 
                     player.closeInventory();
                     MessageUtil.sendMessage(player, "The bar has been successfully saved!");

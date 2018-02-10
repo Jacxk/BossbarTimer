@@ -1,7 +1,8 @@
 package com.minestom.Utils;
 
-import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
+import com.minestom.DataHandler.BarsData;
+import com.minestom.DataHandler.PlayerEditingData;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
@@ -170,7 +171,7 @@ public class Utilities {
                 if (frames.isEmpty()) frames.addAll(Arrays.asList("&cExample &fText", "&fExample &cText"));
                 if (i <= frames.size()) i++;
                 if (i >= frames.size()) i = 0;
-                barManager.setBarName(frames.get(i).replace("{time}", format(barsData.getInitialTime())));
+                barManager.setBarName(frames.get(i).replace("{time}", format(barsData.getCurrentTime())));
             }
         }.runTaskTimer(plugin, 0L, period);
     }

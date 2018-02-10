@@ -5,8 +5,8 @@ import com.minestom.Commands.BbtCommand;
 import com.minestom.Commands.BbtCompleter;
 import com.minestom.Runnables.Announcer;
 import com.minestom.Runnables.CountDown;
-import com.minestom.Updater.SpigotUpdater;
-import com.minestom.Utils.BarsData;
+import com.minestom.Updater.Update;
+import com.minestom.DataHandler.BarsData;
 import com.minestom.Utils.Utilities;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,7 +15,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +25,7 @@ public class BossbarTimer extends JavaPlugin implements Listener {
     private Map<String, BarsData> barDataMap = new HashMap<>();
     public boolean debug = false;
     private Utilities utilities;
+    private Update update;
 
     @Override
     public void onEnable() {
@@ -39,13 +39,9 @@ public class BossbarTimer extends JavaPlugin implements Listener {
         registerListeners();
         registerCommands();
         loadBars();
-        getLogger().info("Plugin made by By_Jack with help of False!");
+        getLogger().info("Plugin made by " + this.getDescription().getAuthors().toString());
+        update.sendUpdateMessage();
         getLogger().info("The plugin is now ready to use!");
-        try {
-            new SpigotUpdater(this, 48668, true, false);
-        } catch (IOException e) {
-            getLogger().info("An Error has occurred: " + e.getMessage());
-        }
 
     }
 
@@ -111,6 +107,7 @@ public class BossbarTimer extends JavaPlugin implements Listener {
 
     private void init() {
         utilities = new Utilities(this);
+        update = new Update(this, 51577); // Just a place holder
     }
 
     private void setupConfig() {
@@ -147,6 +144,10 @@ public class BossbarTimer extends JavaPlugin implements Listener {
 
     public Map<String, Long> getAnnouncerTimer() {
         return announcer;
+    }
+
+    public Update getUpdate() {
+        return update;
     }
 
     public Map<String, BarsData> getBarDataMap() {

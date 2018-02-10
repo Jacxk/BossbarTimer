@@ -1,9 +1,8 @@
 package com.minestom.Runnables;
 
 import com.minestom.BarMenuCreator.Api.BarStartEvent;
-import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
-import com.minestom.Utils.BarsData;
+import com.minestom.DataHandler.BarsData;
 import com.minestom.Utils.MessageUtil;
 import com.minestom.Utils.Utilities;
 import org.bukkit.Bukkit;
@@ -29,7 +28,6 @@ public class Announcer extends BukkitRunnable {
             long time = entry.getValue();
 
             BarsData barsData = plugin.getBarDataMap().get(barName);
-            BossBarManager barManager = barsData.getBossBarManager();
 
             if (time == 0) {
                 long announcerTime = utilities.timeToSeconds(barsData.getAnnouncerTime());
@@ -40,7 +38,7 @@ public class Announcer extends BukkitRunnable {
 
                 plugin.getUtilities().start(barsData);
 
-                BarStartEvent barStartEvent = new BarStartEvent(plugin.getUtilities(), plugin.getBarDataMap().get(barName));
+                BarStartEvent barStartEvent = new BarStartEvent(plugin.getUtilities(), barsData);
                 Bukkit.getServer().getPluginManager().callEvent(barStartEvent);
 
                 if (plugin.debug) MessageUtil.sendDebugMessage("Announcing " + barName + "\nTime: " + time);

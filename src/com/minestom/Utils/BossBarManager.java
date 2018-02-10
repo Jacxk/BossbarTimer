@@ -1,4 +1,4 @@
-package com.minestom;
+package com.minestom.Utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -9,7 +9,11 @@ import org.bukkit.entity.Player;
 
 public class BossBarManager {
 
-    private BossBar bar = Bukkit.createBossBar(null, BarColor.RED, BarStyle.SOLID);
+    private BossBar bar;
+
+    public BossBarManager() {
+        bar = Bukkit.createBossBar(null, BarColor.RED, BarStyle.SOLID);
+    }
 
     public void createBar(String title, String color, String style) {
         bar = Bukkit.createBossBar(ChatColor.translateAlternateColorCodes('&', title),

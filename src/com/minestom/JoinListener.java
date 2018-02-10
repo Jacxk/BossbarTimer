@@ -1,6 +1,7 @@
 package com.minestom;
 
-import com.minestom.Utils.BarsData;
+import com.minestom.DataHandler.BarsData;
+import com.minestom.Utils.BossBarManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,5 +27,12 @@ public class JoinListener implements Listener {
             BossBarManager barManager = barsData.getBossBarManager();
             barManager.addPlayer(player);
         }
+        sendUpdate(player);
     }
+
+    private void sendUpdate(Player player) {
+        if (player.hasPermission("bossbartimer.update.notification"))
+            plugin.getUpdate().sendUpdateMessage(player);
+    }
+
 }

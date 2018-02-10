@@ -1,7 +1,4 @@
-package com.minestom.Utils;
-
-import java.util.HashMap;
-import java.util.Map;
+package com.minestom.DataHandler;
 
 public class PlayerEditingData {
 

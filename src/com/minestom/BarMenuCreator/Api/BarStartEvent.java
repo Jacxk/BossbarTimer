@@ -1,6 +1,6 @@
 package com.minestom.BarMenuCreator.Api;
 
-import com.minestom.Utils.BarsData;
+import com.minestom.DataHandler.BarsData;
 import com.minestom.Utils.Utilities;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

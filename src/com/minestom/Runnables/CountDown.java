@@ -1,11 +1,11 @@
 package com.minestom.Runnables;
 
 import com.minestom.BarMenuCreator.Api.BarEndEvent;
-import com.minestom.BossBarManager;
+import com.minestom.Utils.BossBarManager;
 import com.minestom.BossbarTimer;
-import com.minestom.Utils.BarsData;
+import com.minestom.DataHandler.BarsData;
 import com.minestom.Utils.MessageUtil;
-import com.minestom.Utils.PlayerEditingData;
+import com.minestom.DataHandler.PlayerEditingData;
 import com.minestom.Utils.Utilities;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -39,17 +39,17 @@ public class CountDown extends BukkitRunnable {
                 utilities.stop(barsData);
 
                 timer.remove(barName, timeLeft);
-                BarEndEvent barEndEvent = new BarEndEvent(plugin.getUtilities(), plugin.getBarDataMap().get(barName));
+                BarEndEvent barEndEvent = new BarEndEvent(plugin.getUtilities(), barsData);
                 Bukkit.getServer().getPluginManager().callEvent(barEndEvent);
 
                 if (plugin.debug) MessageUtil.sendDebugMessage("Count down ended... Bar name: " + barName);
 
-            } else {
+            } else if (timeLeft >= 1) {
                 timer.put(barName, timeLeft - 1);
+                barsData.setCurrentTime(timeLeft - 1);
                 barManager.setBarProgress(timeLeft, barsData.getInitialTime());
             }
-            if (plugin.debug)
-                MessageUtil.sendDebugMessage("Countdown -> Bar name " + barName + "\nTime left: " + timeLeft);
+            if (plugin.debug) MessageUtil.sendDebugMessage("Countdown -> Bar name " + barName + "\nTime left: " + timeLeft);
         }
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (!utilities.getPlayerEditingDataMap().containsKey(player)) return;

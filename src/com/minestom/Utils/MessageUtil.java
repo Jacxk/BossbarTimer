@@ -35,7 +35,7 @@ public class MessageUtil {
 
     public static void sendDebugMessage(String message) {
         Bukkit.getOnlinePlayers().forEach(player -> {
-            if (player.hasPermission("bossbartimer.debug")) player.sendMessage(colorMessage(prefix + message));
+            if (player.hasPermission("bossbartimer.debug")) player.sendMessage(colorMessage("&cBBT Debug > " + message));
         });
         Bukkit.getLogger().info(message);
     }

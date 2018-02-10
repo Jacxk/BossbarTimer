@@ -2,11 +2,10 @@ package com.minestom.Commands;
 
 import com.minestom.BarMenuCreator.Api.BarStartEvent;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
-import com.minestom.BossBarManager;
 import com.minestom.BossbarTimer;
-import com.minestom.Utils.BarsData;
+import com.minestom.DataHandler.BarsData;
 import com.minestom.Utils.MessageUtil;
-import com.minestom.Utils.PlayerEditingData;
+import com.minestom.DataHandler.PlayerEditingData;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -70,6 +69,14 @@ public class BbtCommand implements CommandExecutor {
                 }
                 startParameter(sender, argsLength, args);
                 break;
+            case "update":
+                if (!sender.hasPermission("bossbartimer.update.check")) {
+                    MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
+                    break;
+                }
+                if (sender instanceof Player) plugin.getUpdate().sendUpdateMessage((Player) sender);
+                else plugin.getUpdate().sendUpdateMessage();
+                break;
             case "debug":
                 if (!sender.hasPermission("bossbartimer.debug")) {
                     MessageUtil.sendMessage(sender, plugin.getConfig().getString("Messages.NoPermission"));
@@ -113,7 +120,7 @@ public class BbtCommand implements CommandExecutor {
             MessageUtil.sendMessage(sender, "The configuration file has been reloaded!");
             plugin.getBarDataMap().clear();
             plugin.loadBars();
-            Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
+            plugin.getServer().getScheduler().cancelTask(plugin.getUtilities().getTaskId());
         }
     }
 
