@@ -2,7 +2,7 @@ package com.minestom.DataHandler;
 
 public class PlayerEditingData {
 
-    private BarsData barsData;
+    private BossBarHandler bossBarHandler;
     private String barKeyName;
     private boolean editing = false;
     private boolean editTimer = false;
@@ -16,16 +16,16 @@ public class PlayerEditingData {
     private boolean announcerTime = false;
     private boolean editPeriod = false;
 
-    public PlayerEditingData(BarsData barsData){
-        this.barsData = barsData;
+    public PlayerEditingData(BossBarHandler bossBarHandler){
+        this.bossBarHandler = bossBarHandler;
     }
 
-    public BarsData getBarsData() {
-        return barsData;
+    public BossBarHandler getBossBarHandler() {
+        return bossBarHandler;
     }
 
-    public void setBarsData(BarsData barsData) {
-        this.barsData = barsData;
+    public void setBossBarHandler(BossBarHandler bossBarHandler) {
+        this.bossBarHandler = bossBarHandler;
     }
 
     public String getBarKeyName() {

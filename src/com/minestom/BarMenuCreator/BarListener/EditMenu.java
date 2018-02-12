@@ -2,10 +2,9 @@ package com.minestom.BarMenuCreator.BarListener;
 
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossbarTimer;
-import com.minestom.DataHandler.BarsData;
-import com.minestom.Utils.MessageUtil;
+import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
-import com.minestom.Utils.Utilities;
+import com.minestom.Utils.MessageUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,7 +15,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class EditMenu implements Listener {
@@ -40,11 +38,9 @@ public class EditMenu implements Listener {
             }
             event.setCancelled(true);
 
-            Utilities utilities = plugin.getUtilities();
-
             Player player = (Player) event.getWhoClicked();
             PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
-            BarsData barsData = editingData.getBarsData();
+            BossBarHandler bossBarHandler = editingData.getBossBarHandler();
 
             int slot = event.getRawSlot();
 
@@ -55,7 +51,7 @@ public class EditMenu implements Listener {
                 BossbarMenuMaker.createStyleMenu(player);
             }
             if (slot == 2 && item.hasItemMeta()) {
-                List<String> lore = new ArrayList<>(barsData.getNameFrames());
+                List<String> lore = new ArrayList<>(bossBarHandler.getNameFrames());
 
                 if (event.getClick() == ClickType.LEFT) {
                     player.closeInventory();
@@ -68,23 +64,20 @@ public class EditMenu implements Listener {
 
                     if (!lore.isEmpty()) {
                         lore.remove(lore.size() - 1);
-                        barsData.setNameFrames(lore);
+                        bossBarHandler.setNameFrames(lore);
                     }
                     if (lore.size() == 0) {
                         lore.clear();
-                        barsData.setNameFrames(lore);
+                        bossBarHandler.setNameFrames(lore);
                     }
                     BossbarMenuMaker.createEditMenu(player, plugin);
 
-                    utilities.setFrames(lore);
                 }
                 if (event.getClick() == ClickType.SHIFT_LEFT) {
 
                     lore.clear();
-                    barsData.setNameFrames(lore);
+                    bossBarHandler.setNameFrames(lore);
                     BossbarMenuMaker.createEditMenu(player, plugin);
-
-                    utilities.setFrames(Arrays.asList("&cExample &fText", "&fExample &cText"));
 
                 }
                 if (event.getClick() == ClickType.SHIFT_RIGHT) {

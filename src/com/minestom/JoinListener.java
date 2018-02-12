@@ -1,6 +1,6 @@
 package com.minestom;
 
-import com.minestom.DataHandler.BarsData;
+import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.Utils.BossBarManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,10 +21,9 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        Map<String, Long> timer = plugin.getTimer();
-        for (Map.Entry<String, Long> entry : timer.entrySet()) {
-            BarsData barsData = plugin.getBarDataMap().get(entry.getKey());
-            BossBarManager barManager = barsData.getBossBarManager();
+        for (BossBarHandler bossBarHandler : plugin.getBarDataMap().values()) {
+            if (!bossBarHandler.isRunning()) continue;
+            BossBarManager barManager = bossBarHandler.getBossBarManager();
             barManager.addPlayer(player);
         }
         sendUpdate(player);

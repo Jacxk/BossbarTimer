@@ -1,7 +1,7 @@
 package com.minestom.Utils;
 
 import com.minestom.BossbarTimer;
-import com.minestom.DataHandler.BarsData;
+import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DurationFormatUtils;
@@ -10,9 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +24,7 @@ public class Utilities {
         this.plugin = plugin;
     }
 
-    private String format(long input) {
+    public String format(long input) {
         return formatDurationWords(input * 1000, true, true);
     }
 
@@ -156,59 +154,8 @@ public class Utilities {
         }
     }
 
-    private int taskId;
-    private List<String> frames;
-    private long period;
-
-    public void animateText(BarsData barsData) {
-        BossBarManager barManager = barsData.getBossBarManager();
-        new BukkitRunnable() {
-            int i = -1;
-
-            @Override
-            public void run() {
-                taskId = this.getTaskId();
-                if (frames.isEmpty()) frames.addAll(Arrays.asList("&cExample &fText", "&fExample &cText"));
-                if (i <= frames.size()) i++;
-                if (i >= frames.size()) i = 0;
-                barManager.setBarName(frames.get(i).replace("{time}", format(barsData.getCurrentTime())));
-            }
-        }.runTaskTimer(plugin, 0L, period);
-    }
-
-    public void start(BarsData barsData) {
-        BossBarManager barManager = barsData.getBossBarManager();
-        barManager.setBarColor(barsData.getColor());
-        barManager.setBarStyle(barsData.getStyle());
-
-        setFrames(barsData.getNameFrames());
-        setPeriod(barsData.getNamePeriod());
-        animateText(barsData);
-
-        Bukkit.getOnlinePlayers().forEach(barManager::addPlayer);
-    }
-
-    public void stop(BarsData barsData) {
-        BossBarManager barManager = barsData.getBossBarManager();
-
-        Bukkit.getOnlinePlayers().forEach(barManager::removeBar);
-        Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
-    }
-
-    public void setFrames(List<String> frames) {
-        this.frames = frames;
-    }
-
-    public int getTaskId() {
-        return taskId;
-    }
-
-    public void setPeriod(int period) {
-        this.period = period;
-    }
-
     public void addPlayerEditing(Player player) {
-        playerEditingDataMap.put(player, new PlayerEditingData(new BarsData()));
+        playerEditingDataMap.put(player, new PlayerEditingData(new BossBarHandler(plugin)));
     }
 
     public void removePlayerEditing(Player player) {

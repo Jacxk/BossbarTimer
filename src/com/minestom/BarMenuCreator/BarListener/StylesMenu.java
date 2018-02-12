@@ -3,7 +3,7 @@ package com.minestom.BarMenuCreator.BarListener;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.Utils.BossBarManager;
 import com.minestom.BossbarTimer;
-import com.minestom.DataHandler.BarsData;
+import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -36,12 +36,12 @@ public class StylesMenu implements Listener {
 
             if (slot != 8 && item.hasItemMeta()) {
                 PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
-                BarsData barsData = editingData.getBarsData();
-                BossBarManager barManager = barsData.getBossBarManager();
+                BossBarHandler bossBarHandler = editingData.getBossBarHandler();
+                BossBarManager barManager = bossBarHandler.getBossBarManager();
                 String style = ChatColor.stripColor(item.getItemMeta().getDisplayName()).replace(" ", "_");
 
                 barManager.setBarStyle(style);
-                barsData.setStyle(style);
+                bossBarHandler.setStyle(style);
             }
             if (slot == 8 && item.hasItemMeta()) {
                 BossbarMenuMaker.createEditMenu(player, plugin);

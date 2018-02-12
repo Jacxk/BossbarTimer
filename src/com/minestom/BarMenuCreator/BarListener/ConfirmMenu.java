@@ -3,7 +3,7 @@ package com.minestom.BarMenuCreator.BarListener;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.Utils.BossBarManager;
 import com.minestom.BossbarTimer;
-import com.minestom.DataHandler.BarsData;
+import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.Utils.MessageUtil;
 import com.minestom.DataHandler.PlayerEditingData;
 import org.bukkit.Bukkit;
@@ -40,8 +40,8 @@ public class ConfirmMenu implements Listener {
 
             Player player = (Player) event.getWhoClicked();
             PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
-            BarsData barsData = editingData.getBarsData();
-            BossBarManager barManager = barsData.getBossBarManager();
+            BossBarHandler bossBarHandler = editingData.getBossBarHandler();
+            BossBarManager barManager = bossBarHandler.getBossBarManager();
             FileConfiguration configuration = plugin.getConfig();
 
             int slot = event.getRawSlot();
@@ -70,6 +70,7 @@ public class ConfirmMenu implements Listener {
                     editingData.setConfirm(false);
 
                     plugin.getUtilities().removePlayerEditing(player);
+                    bossBarHandler.stopAnimatedTitle();
 
                     player.closeInventory();
                     MessageUtil.sendMessage(player, "You have cancelled the bar creation!");
@@ -79,15 +80,15 @@ public class ConfirmMenu implements Listener {
 
                     MessageUtil.sendMessage(player, "Saving the bar... Please wait...");
 
-                    configuration.set(section + ".DisplayName.Frames", barsData.getNameFrames());
-                    configuration.set(section + ".DisplayName.Period", barsData.getNamePeriod());
-                    configuration.set(section + ".Time", barsData.getCountdownTime());
-                    configuration.set(section + ".Color", barsData.getColor());
-                    configuration.set(section + ".Style", barsData.getStyle());
-                    configuration.set(section + ".Commands", barsData.getCommands());
-                    configuration.set(section + ".AnnouncerMode.Enabled", barsData.isAnnouncerEnabled());
-                    configuration.set(section + ".AnnouncerMode.Time", barsData.getAnnouncerTime());
-                    barsData.setInitialTime(plugin.getUtilities().timeToSeconds(barsData.getCountdownTime()));
+                    configuration.set(section + ".DisplayName.Frames", bossBarHandler.getNameFrames());
+                    configuration.set(section + ".DisplayName.Period", bossBarHandler.getNamePeriod());
+                    configuration.set(section + ".Time", bossBarHandler.getCountdownTime());
+                    configuration.set(section + ".Color", bossBarHandler.getColor());
+                    configuration.set(section + ".Style", bossBarHandler.getStyle());
+                    configuration.set(section + ".Commands", bossBarHandler.getCommands());
+                    configuration.set(section + ".AnnouncerMode.Enabled", bossBarHandler.isAnnouncerEnabled());
+                    configuration.set(section + ".AnnouncerMode.Time", bossBarHandler.getAnnouncerTime());
+                    bossBarHandler.setInitialTime(plugin.getUtilities().timeToSeconds(bossBarHandler.getCountdownTime()));
                     plugin.saveConfig();
 
                     plugin.loadBars();
@@ -95,9 +96,10 @@ public class ConfirmMenu implements Listener {
                     editingData.setConfirm(false);
 
                     plugin.getUtilities().removePlayerEditing(player);
+                    bossBarHandler.stopAnimatedTitle();
 
-                    if (barsData.isAnnouncerEnabled()) {
-                        String timeFormat = barsData.getAnnouncerTime();
+                    if (bossBarHandler.isAnnouncerEnabled()) {
+                        String timeFormat = bossBarHandler.getAnnouncerTime();
                         plugin.getAnnouncerTimer().put(barName, plugin.getUtilities().timeToSeconds(timeFormat));
                     }
 

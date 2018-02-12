@@ -3,10 +3,9 @@ package com.minestom;
 import com.minestom.BarMenuCreator.BarListener.*;
 import com.minestom.Commands.BbtCommand;
 import com.minestom.Commands.BbtCompleter;
+import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.Runnables.Announcer;
-import com.minestom.Runnables.CountDown;
 import com.minestom.Updater.Update;
-import com.minestom.DataHandler.BarsData;
 import com.minestom.Utils.Utilities;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -20,9 +19,8 @@ import java.util.Map;
 
 public class BossbarTimer extends JavaPlugin implements Listener {
 
-    private Map<String, Long> timer = new HashMap<>();
     private Map<String, Long> announcer = new HashMap<>();
-    private Map<String, BarsData> barDataMap = new HashMap<>();
+    private Map<String, BossBarHandler> barDataMap = new HashMap<>();
     public boolean debug = false;
     private Utilities utilities;
     private Update update;
@@ -54,26 +52,26 @@ public class BossbarTimer extends JavaPlugin implements Listener {
     }
 
     private void saveBarData() {
-        if (timer.isEmpty()) return;
+        for (BossBarHandler bossBarHandler : getBarDataMap().values()) {
+            if (!bossBarHandler.isRunning()) continue;
+            String barName = bossBarHandler.getBarKeyName();
+            long timeLeft = bossBarHandler.getCurrentTime();
 
-        for (Map.Entry<String, Long> entry : timer.entrySet()) {
-            String barName = entry.getKey();
-            double timeLeft = entry.getValue();
             if (timeLeft != 0) {
                 getConfig().set("Data." + barName, timeLeft);
                 saveConfig();
             }
+            Bukkit.getOnlinePlayers().forEach(bossBarHandler.getBossBarManager()::removeBar);
         }
     }
 
     public void loadBars() {
         this.getServer().getScheduler().cancelTasks(this);
-        new CountDown(this).runTaskTimer(this, 0L, 20L);
         new Announcer(this).runTaskTimer(this, 0L, 20L);
 
         for (String barName : getConfig().getConfigurationSection("Bars").getKeys(false)) {
             if (barDataMap.containsKey(barName)) continue;
-            barDataMap.put(barName, new BarsData(barName,
+            barDataMap.put(barName, new BossBarHandler(this, barName,
                     getConfig().getStringList("Bars." + barName + ".DisplayName.Frames"),
                     getConfig().getStringList("Bars." + barName + ".Commands"),
                     getConfig().getInt("Bars." + barName + ".DisplayName.Period"),
@@ -96,9 +94,9 @@ public class BossbarTimer extends JavaPlugin implements Listener {
         ConfigurationSection data = getConfig().getConfigurationSection("Data");
         if (data != null) {
             for (String barName : data.getKeys(false)) {
-                timer.put(barName, getConfig().getLong("Data." + barName));
-                BarsData barsData = barDataMap.get(barName);
-                utilities.start(barsData);
+                BossBarHandler bossBarHandler = barDataMap.get(barName);
+                bossBarHandler.start();
+                bossBarHandler.setCurrentTime(getConfig().getLong("Data." + barName));
             }
             getConfig().set("Data", null);
             saveConfig();
@@ -107,7 +105,7 @@ public class BossbarTimer extends JavaPlugin implements Listener {
 
     private void init() {
         utilities = new Utilities(this);
-        update = new Update(this, 51577); // Just a place holder
+        update = new Update(this, 51577);
     }
 
     private void setupConfig() {
@@ -138,10 +136,6 @@ public class BossbarTimer extends JavaPlugin implements Listener {
         return utilities;
     }
 
-    public Map<String, Long> getTimer() {
-        return timer;
-    }
-
     public Map<String, Long> getAnnouncerTimer() {
         return announcer;
     }
@@ -150,7 +144,7 @@ public class BossbarTimer extends JavaPlugin implements Listener {
         return update;
     }
 
-    public Map<String, BarsData> getBarDataMap() {
+    public Map<String, BossBarHandler> getBarDataMap() {
         return barDataMap;
     }
 }

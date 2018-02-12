@@ -2,7 +2,7 @@ package com.minestom.BarMenuCreator.BarListener;
 
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossbarTimer;
-import com.minestom.DataHandler.BarsData;
+import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.Utils.MessageUtil;
 import com.minestom.DataHandler.PlayerEditingData;
 import org.bukkit.entity.Player;
@@ -40,7 +40,7 @@ public class AvancedMenu implements Listener {
 
             Player player = (Player) event.getWhoClicked();
             PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
-            BarsData barsData = editingData.getBarsData();
+            BossBarHandler bossBarHandler = editingData.getBossBarHandler();
 
             int slot = event.getRawSlot();
 
@@ -52,7 +52,7 @@ public class AvancedMenu implements Listener {
                 MessageUtil.sendMessage(player, "&7TIP: You can use 's' for seconds, 'm' for minutes and 'h' for ours.");
             }
             if (slot == 1) {
-                List<String> lore = new ArrayList<>(barsData.getCommands());
+                List<String> lore = new ArrayList<>(bossBarHandler.getCommands());
 
                 if (event.getClick() == ClickType.LEFT) {
                     editingData.setEditing(false);
@@ -64,17 +64,17 @@ public class AvancedMenu implements Listener {
                 if (event.getClick() == ClickType.RIGHT) {
                     if (!lore.isEmpty()) {
                         lore.remove(lore.size() - 1);
-                        barsData.setCommands(lore);
+                        bossBarHandler.setCommands(lore);
                     }
                     if (lore.size() == 0) {
                         lore.clear();
-                        barsData.setCommands(lore);
+                        bossBarHandler.setCommands(lore);
                     }
                     BossbarMenuMaker.createAvancedMenu(player, plugin);
                 }
                 if (event.getClick() == ClickType.SHIFT_LEFT) {
                     lore.clear();
-                    barsData.setCommands(lore);
+                    bossBarHandler.setCommands(lore);
                     BossbarMenuMaker.createAvancedMenu(player, plugin);
                 }
 
@@ -82,8 +82,8 @@ public class AvancedMenu implements Listener {
             if (slot == 2) {
                 if (event.getClick() == ClickType.LEFT) {
 
-                    if (barsData.isAnnouncerEnabled()) barsData.setAnnouncerEnabled(false);
-                    else barsData.setAnnouncerEnabled(true);
+                    if (bossBarHandler.isAnnouncerEnabled()) bossBarHandler.setAnnouncerEnabled(false);
+                    else bossBarHandler.setAnnouncerEnabled(true);
 
                     BossbarMenuMaker.createAvancedMenu(player, plugin);
                 }

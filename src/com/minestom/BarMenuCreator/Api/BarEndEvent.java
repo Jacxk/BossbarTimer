@@ -1,6 +1,6 @@
 package com.minestom.BarMenuCreator.Api;
 
-import com.minestom.DataHandler.BarsData;
+import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.Utils.Utilities;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -21,17 +21,17 @@ public class BarEndEvent extends Event {
     private List<String> commands;
     private List<String> frames;
 
-    public BarEndEvent(Utilities utilities, BarsData barsData) {
+    public BarEndEvent(Utilities utilities, BossBarHandler bossBarHandler) {
         this.utilities = utilities;
-        this.announcer = barsData.isAnnouncerEnabled();
-        this.namePeriod = barsData.getNamePeriod();
-        this.announcerTime = barsData.getAnnouncerTime();
-        this.countDownTime = barsData.getCountdownTime();
-        this.keyName = barsData.getBarKeyName();
-        this.color = barsData.getColor();
-        this.style = barsData.getStyle();
-        this.commands = barsData.getCommands();
-        this.frames = barsData.getNameFrames();
+        this.announcer = bossBarHandler.isAnnouncerEnabled();
+        this.namePeriod = bossBarHandler.getNamePeriod();
+        this.announcerTime = bossBarHandler.getAnnouncerTime();
+        this.countDownTime = bossBarHandler.getCountdownTime();
+        this.keyName = bossBarHandler.getBarKeyName();
+        this.color = bossBarHandler.getColor();
+        this.style = bossBarHandler.getStyle();
+        this.commands = bossBarHandler.getCommands();
+        this.frames = bossBarHandler.getNameFrames();
     }
     @Override
     public String toString() {

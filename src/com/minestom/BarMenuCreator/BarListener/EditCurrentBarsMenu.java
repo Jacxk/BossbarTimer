@@ -3,7 +3,7 @@ package com.minestom.BarMenuCreator.BarListener;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.Utils.BossBarManager;
 import com.minestom.BossbarTimer;
-import com.minestom.DataHandler.BarsData;
+import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -42,19 +42,18 @@ public class EditCurrentBarsMenu implements Listener {
                 plugin.getUtilities().addPlayerEditing(player);
 
                 PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
-                BarsData barsData = plugin.getBarDataMap().get(barKeyName);
+                BossBarHandler bossBarHandler = plugin.getBarDataMap().get(barKeyName);
 
                 if (event.getClick() == ClickType.LEFT) {
-                    BossBarManager barManager = barsData.getBossBarManager();
+                    BossBarManager barManager = bossBarHandler.getBossBarManager();
 
-                    barManager.createBar(barsData.getNameFrames().get(0), barsData.getColor(), barsData.getStyle());
-                    plugin.getUtilities().setFrames(barsData.getNameFrames());
-                    plugin.getUtilities().setPeriod(barsData.getNamePeriod());
-                    plugin.getUtilities().animateText(barsData);
+                    barManager.createBar(bossBarHandler.getNameFrames().get(0), bossBarHandler.getColor(), bossBarHandler.getStyle());
+
+                    bossBarHandler.startAnimatedTitle();
                     barManager.addPlayer(player);
 
                     editingData.setBarKeyName(barKeyName);
-                    editingData.setBarsData(barsData);
+                    editingData.setBossBarHandler(bossBarHandler);
                     editingData.setEditing(true);
                     BossbarMenuMaker.createEditMenu(player, plugin);
                 }

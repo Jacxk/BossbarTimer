@@ -1,12 +1,10 @@
 package com.minestom.Commands;
 
-import com.minestom.BarMenuCreator.Api.BarStartEvent;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossbarTimer;
-import com.minestom.DataHandler.BarsData;
-import com.minestom.Utils.MessageUtil;
+import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
-import org.bukkit.Bukkit;
+import com.minestom.Utils.MessageUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -120,7 +118,6 @@ public class BbtCommand implements CommandExecutor {
             MessageUtil.sendMessage(sender, "The configuration file has been reloaded!");
             plugin.getBarDataMap().clear();
             plugin.loadBars();
-            plugin.getServer().getScheduler().cancelTask(plugin.getUtilities().getTaskId());
         }
     }
 
@@ -130,48 +127,37 @@ public class BbtCommand implements CommandExecutor {
             return;
         }
         String barName = args[1];
+        BossBarHandler bossBarHandler = plugin.getBarDataMap().get(barName);
 
-        if (!plugin.getTimer().containsKey(barName)) {
+        if (!bossBarHandler.isRunning()) {
             MessageUtil.sendMessage(sender, "That bar is not active!");
             return;
         }
-
-        plugin.getTimer().remove(barName);
-        plugin.getUtilities().stop(plugin.getBarDataMap().get(barName));
+        bossBarHandler.stop(false);
 
         MessageUtil.sendMessage(sender, "The bar timer has been stopped!");
-
-        BarStartEvent barStartEvent = new BarStartEvent(plugin.getUtilities(), plugin.getBarDataMap().get(barName));
-        Bukkit.getServer().getPluginManager().callEvent(barStartEvent);
     }
 
     private void startParameter(CommandSender sender, Integer argsLength, String[] args) {
-        Bukkit.getScheduler().cancelTask(plugin.getUtilities().getTaskId());
         if (argsLength == 1) {
             MessageUtil.sendMessage(sender, "You need to specify a bar!");
             return;
         }
 
         String barName = args[1];
+        BossBarHandler bossBarHandler = plugin.getBarDataMap().get(barName);
 
         if (!plugin.getConfig().isConfigurationSection("Bars." + barName)) {
             MessageUtil.sendMessage(sender, "That bar is not available try another one!");
             return;
         }
-        if (plugin.getTimer().containsKey(barName)) {
+        if (bossBarHandler.isRunning()) {
             MessageUtil.sendMessage(sender, "That bar is already active!");
             return;
         }
-        BarsData barsData = plugin.getBarDataMap().get(barName);
 
-        String timeFormat = barsData.getCountdownTime();
-        plugin.getTimer().put(barName, plugin.getUtilities().timeToSeconds(timeFormat));
-
-        plugin.getUtilities().start(barsData);
+        bossBarHandler.start();
 
         MessageUtil.sendMessage(sender, "The bar &e" + barName + " &7has been started!");
-
-        BarStartEvent barStartEvent = new BarStartEvent(plugin.getUtilities(), plugin.getBarDataMap().get(barName));
-        Bukkit.getServer().getPluginManager().callEvent(barStartEvent);
     }
 }

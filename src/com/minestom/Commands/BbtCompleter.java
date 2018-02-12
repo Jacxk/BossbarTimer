@@ -1,8 +1,7 @@
 package com.minestom.Commands;
 
 import com.minestom.BossbarTimer;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
+import com.minestom.DataHandler.BossBarHandler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -33,13 +32,13 @@ public class BbtCompleter implements TabCompleter {
             String bars = args[1];
             List<String> barsName = new ArrayList<>();
             if (args[0].equalsIgnoreCase("start")) {
-                for (String names : plugin.getConfig().getConfigurationSection("Bars").getKeys(false)) {
+                for (String names : plugin.getBarDataMap().keySet()) {
                     barsName.add(names);
                 }
             }
             if (args[0].equalsIgnoreCase("stop")) {
-                for (Map.Entry<String, Long> entry : plugin.getTimer().entrySet()) {
-                    barsName.add(entry.getKey());
+                for (BossBarHandler bossBarHandler : plugin.getBarDataMap().values()) {
+                    if (bossBarHandler.isRunning()) barsName.add(bossBarHandler.getBarKeyName());
                 }
             }
             StringUtil.copyPartialMatches(bars, barsName, completions);
