@@ -1,7 +1,7 @@
 package com.minestom.Commands;
 
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
-import com.minestom.BossbarTimer;
+import com.minestom.BossBarTimer;
 import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
 import com.minestom.Utils.MessageUtil;
@@ -12,9 +12,9 @@ import org.bukkit.entity.Player;
 
 public class BbtCommand implements CommandExecutor {
 
-    private BossbarTimer plugin;
+    private BossBarTimer plugin;
 
-    public BbtCommand(BossbarTimer plugin) {
+    public BbtCommand(BossBarTimer plugin) {
         this.plugin = plugin;
     }
 

@@ -2,7 +2,7 @@ package com.minestom.DataHandler;
 
 import com.minestom.BarMenuCreator.Api.BarEndEvent;
 import com.minestom.BarMenuCreator.Api.BarStartEvent;
-import com.minestom.BossbarTimer;
+import com.minestom.BossBarTimer;
 import com.minestom.Utils.BossBarManager;
 import com.minestom.Utils.MessageUtil;
 import com.minestom.Utils.Utilities;
@@ -28,16 +28,17 @@ public class BossBarHandler {
     private long currentTime;
     private int framesTask;
     private int countDownTask;
-    private BossbarTimer plugin;
+    private BossBarTimer plugin;
     private Utilities utilities;
     private boolean running;
 
-    public BossBarHandler(BossbarTimer plugin) {
+    public BossBarHandler(BossBarTimer plugin) {
         this.plugin = plugin;
+        this.utilities = plugin.getUtilities();
         this.bossBarManager = new BossBarManager();
     }
 
-    public BossBarHandler(BossbarTimer plugin, String barKeyName, List<String> nameFrames, List<String> commands, int namePeriod, String countdownTime, String color,
+    public BossBarHandler(BossBarTimer plugin, String barKeyName, List<String> nameFrames, List<String> commands, int namePeriod, String countdownTime, String color,
                           String style, boolean announcerEnabled, String announcerTime, long initialTime) {
         this.plugin = plugin;
         this.utilities = plugin.getUtilities();
@@ -100,6 +101,7 @@ public class BossBarHandler {
                 framesTask = this.getTaskId();
             }
         }.runTaskTimer(plugin, 0L, namePeriod);
+        if (plugin.debug) MessageUtil.sendDebugMessage("Stopping countdown...");
     }
 
     public void stop(boolean b) {
@@ -199,7 +201,7 @@ public class BossBarHandler {
         return bossBarManager;
     }
 
-    public long getInitialTime() {
+    private long getInitialTime() {
         return initialTime;
     }
 

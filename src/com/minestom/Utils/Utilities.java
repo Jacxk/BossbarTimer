@@ -1,6 +1,6 @@
 package com.minestom.Utils;
 
-import com.minestom.BossbarTimer;
+import com.minestom.BossBarTimer;
 import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
 import org.apache.commons.lang.StringUtils;
@@ -17,10 +17,10 @@ import java.util.Map;
 
 public class Utilities {
 
-    private BossbarTimer plugin;
+    private BossBarTimer plugin;
     private Map<Player, PlayerEditingData> playerEditingDataMap = new HashMap<>();
 
-    public Utilities(BossbarTimer plugin) {
+    public Utilities(BossBarTimer plugin) {
         this.plugin = plugin;
     }
 

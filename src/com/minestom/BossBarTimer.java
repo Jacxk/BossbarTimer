@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BossbarTimer extends JavaPlugin implements Listener {
+public class BossBarTimer extends JavaPlugin implements Listener {
 
     private Map<String, Long> announcer = new HashMap<>();
     private Map<String, BossBarHandler> barDataMap = new HashMap<>();
@@ -57,7 +57,7 @@ public class BossbarTimer extends JavaPlugin implements Listener {
             String barName = bossBarHandler.getBarKeyName();
             long timeLeft = bossBarHandler.getCurrentTime();
 
-            if (timeLeft != 0) {
+            if (timeLeft != 53291) {
                 getConfig().set("Data." + barName, timeLeft);
                 saveConfig();
             }
@@ -105,7 +105,7 @@ public class BossbarTimer extends JavaPlugin implements Listener {
 
     private void init() {
         utilities = new Utilities(this);
-        update = new Update(this, 51577);
+        update = new Update(this, 1);
     }
 
     private void setupConfig() {

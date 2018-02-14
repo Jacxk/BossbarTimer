@@ -3,7 +3,7 @@ package com.minestom.Updater;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.minestom.BossbarTimer;
+import com.minestom.BossBarTimer;
 import com.minestom.Utils.MessageUtil;
 import org.bukkit.entity.Player;
 
@@ -17,11 +17,11 @@ import java.util.logging.Logger;
 public class Update {
 
     private final String REQUEST_URL;
-    private final BossbarTimer plugin;
+    private final BossBarTimer plugin;
     private final Logger logger;
     private final int resourceId;
 
-    public Update(BossbarTimer plugin, int resourceId) {
+    public Update(BossBarTimer plugin, int resourceId) {
         this.REQUEST_URL = "https://api.spiget.org/v2/resources/" + resourceId + "/versions?sort=-releaseDate";
         this.plugin = plugin;
         this.logger = plugin.getLogger();

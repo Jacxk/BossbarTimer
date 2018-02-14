@@ -1,7 +1,7 @@
 package com.minestom.BarMenuCreator.BarListener;
 
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
-import com.minestom.BossbarTimer;
+import com.minestom.BossBarTimer;
 import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
 import com.minestom.Utils.BossBarManager;
@@ -20,9 +20,9 @@ import java.util.List;
 
 public class InChatEdition implements Listener {
 
-    private BossbarTimer plugin;
+    private BossBarTimer plugin;
 
-    public InChatEdition(BossbarTimer plugin) {
+    public InChatEdition(BossBarTimer plugin) {
         this.plugin = plugin;
     }
 
@@ -113,6 +113,7 @@ public class InChatEdition implements Listener {
             bossBarHandler.setNameFrames(Arrays.asList("&cExample &fText", "&fExample &cText"));
             bossBarHandler.setNamePeriod(20);
             bossBarHandler.setCountdownTime("1m 30s");
+            bossBarHandler.setCurrentTime(utilities.timeToSeconds("1m 30s"));
             bossBarHandler.setColor("WHITE");
             bossBarHandler.setStyle("SOLID");
             bossBarHandler.setCommands(Arrays.asList("say first command", "say second command"));

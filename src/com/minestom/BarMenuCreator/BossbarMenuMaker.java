@@ -1,6 +1,6 @@
 package com.minestom.BarMenuCreator;
 
-import com.minestom.BossbarTimer;
+import com.minestom.BossBarTimer;
 import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
 import org.bukkit.Bukkit;
@@ -44,7 +44,7 @@ public class BossbarMenuMaker {
         player.openInventory(inv);
     }
 
-    public static void createEditBarsMenu(Player player, BossbarTimer plugin) {
+    public static void createEditBarsMenu(Player player, BossBarTimer plugin) {
         FileConfiguration configuration = plugin.getConfig();
         Inventory inv = Bukkit.createInventory(player, 54, "Select a bar to edit");
         int slot = -1;
@@ -65,7 +65,7 @@ public class BossbarMenuMaker {
         player.openInventory(inv);
     }
 
-    public static void createEditMenu(Player player, BossbarTimer plugin) {
+    public static void createEditMenu(Player player, BossBarTimer plugin) {
         PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
         BossBarHandler bossBarHandler = editingData.getBossBarHandler();
         Inventory inv = Bukkit.createInventory(player, InventoryType.HOPPER, "Edit Mode");
@@ -124,7 +124,7 @@ public class BossbarMenuMaker {
         player.openInventory(inv);
     }
 
-    public static void createAvancedMenu(Player player, BossbarTimer plugin) {
+    public static void createAvancedMenu(Player player, BossBarTimer plugin) {
         PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
         BossBarHandler bossBarHandler = editingData.getBossBarHandler();
         Inventory inv = Bukkit.createInventory(player, InventoryType.HOPPER, "Advanced Settings");

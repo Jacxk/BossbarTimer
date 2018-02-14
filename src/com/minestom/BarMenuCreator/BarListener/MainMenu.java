@@ -1,9 +1,9 @@
 package com.minestom.BarMenuCreator.BarListener;
 
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
-import com.minestom.BossbarTimer;
-import com.minestom.Utils.MessageUtil;
+import com.minestom.BossBarTimer;
 import com.minestom.DataHandler.PlayerEditingData;
+import com.minestom.Utils.MessageUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,9 +14,9 @@ import org.bukkit.inventory.ItemStack;
 
 public class MainMenu implements Listener {
 
-    private BossbarTimer plugin;
+    private BossBarTimer plugin;
 
-    public MainMenu(BossbarTimer plugin) {
+    public MainMenu(BossBarTimer plugin) {
         this.plugin = plugin;
     }
 

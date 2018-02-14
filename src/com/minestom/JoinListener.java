@@ -7,13 +7,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.Map;
-
 public class JoinListener implements Listener {
 
-    private BossbarTimer plugin;
+    private BossBarTimer plugin;
 
-    public JoinListener(BossbarTimer plugin) {
+    public JoinListener(BossBarTimer plugin) {
         this.plugin = plugin;
     }
 

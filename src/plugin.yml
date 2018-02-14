@@ -1,5 +1,5 @@
-main: com.minestom.BossbarTimer
-name: BossbarTimer
+main: com.minestom.BossBarTimer
+name: BossBarTimer
 version: 1.0.0
 author: By_Jack
 commands:

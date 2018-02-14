@@ -1,20 +1,23 @@
 package com.minestom.Commands;
 
-import com.minestom.BossbarTimer;
+import com.minestom.BossBarTimer;
 import com.minestom.DataHandler.BossBarHandler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.util.StringUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class BbtCompleter implements TabCompleter {
 
     private static final String[] COMMANDS = {"start", "stop", "reload", "debug", "update"};
-    private BossbarTimer plugin;
+    private BossBarTimer plugin;
 
-    public BbtCompleter(BossbarTimer plugin) {
+    public BbtCompleter(BossBarTimer plugin) {
         this.plugin = plugin;
     }
 

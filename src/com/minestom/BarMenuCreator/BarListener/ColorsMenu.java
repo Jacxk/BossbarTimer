@@ -1,10 +1,10 @@
 package com.minestom.BarMenuCreator.BarListener;
 
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
-import com.minestom.Utils.BossBarManager;
-import com.minestom.BossbarTimer;
+import com.minestom.BossBarTimer;
 import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
+import com.minestom.Utils.BossBarManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,9 +15,9 @@ import org.bukkit.inventory.ItemStack;
 
 public class ColorsMenu implements Listener {
 
-    private BossbarTimer plugin;
+    private BossBarTimer plugin;
 
-    public ColorsMenu(BossbarTimer plugin) {
+    public ColorsMenu(BossBarTimer plugin) {
         this.plugin = plugin;
     }
 

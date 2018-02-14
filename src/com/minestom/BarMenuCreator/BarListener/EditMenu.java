@@ -1,7 +1,7 @@
 package com.minestom.BarMenuCreator.BarListener;
 
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
-import com.minestom.BossbarTimer;
+import com.minestom.BossBarTimer;
 import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
 import com.minestom.Utils.MessageUtil;
@@ -19,9 +19,9 @@ import java.util.List;
 
 public class EditMenu implements Listener {
 
-    private BossbarTimer plugin;
+    private BossBarTimer plugin;
 
-    public EditMenu(BossbarTimer plugin) {
+    public EditMenu(BossBarTimer plugin) {
         this.plugin = plugin;
     }
 
