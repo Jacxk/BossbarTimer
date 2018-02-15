@@ -1,7 +1,7 @@
 package com.minestom.BarMenuCreator.BarListener;
 
-import com.minestom.Api.Events.BarCreateEvent;
-import com.minestom.Api.Events.BarDeleteEvent;
+import com.minestom.Api.BarCreateEvent;
+import com.minestom.Api.BarDeleteEvent;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarTimer;
 import com.minestom.DataHandler.BossBarHandler;

@@ -1,7 +1,7 @@
 package com.minestom.DataHandler;
 
-import com.minestom.Api.Events.BarEndEvent;
-import com.minestom.Api.Events.BarStartEvent;
+import com.minestom.Api.BarEndEvent;
+import com.minestom.Api.BarStartEvent;
 import com.minestom.BossBarTimer;
 import com.minestom.Utils.MessageUtil;
 import com.minestom.Utils.Utilities;
@@ -39,6 +39,7 @@ public class BossBarHandler {
     public BossBarHandler(BossBarTimer plugin) {
         this.plugin = plugin;
         this.utilities = plugin.getUtilities();
+        this.bar = Bukkit.createBossBar("", BarColor.RED, BarStyle.SOLID);
         this.running = false;
     }
 
@@ -57,6 +58,7 @@ public class BossBarHandler {
         this.announcerTime = announcerTime;
         this.initialTime = initialTime;
         this.currentTime = utilities.timeToSeconds(countdownTime);
+        this.bar = Bukkit.createBossBar("", BarColor.RED, BarStyle.SOLID);
         this.running = false;
     }
 
