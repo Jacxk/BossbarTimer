@@ -4,7 +4,6 @@ import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarTimer;
 import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
-import com.minestom.Utils.BossBarManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -45,12 +44,11 @@ public class EditCurrentBarsMenu implements Listener {
                 BossBarHandler bossBarHandler = plugin.getBarDataMap().get(barKeyName);
 
                 if (event.getClick() == ClickType.LEFT) {
-                    BossBarManager barManager = bossBarHandler.getBossBarManager();
 
-                    barManager.createBar(bossBarHandler.getNameFrames().get(0), bossBarHandler.getColor(), bossBarHandler.getStyle());
+                    bossBarHandler.createBar(bossBarHandler.getNameFrames().get(0), bossBarHandler.getColor(), bossBarHandler.getStyle());
 
                     bossBarHandler.startAnimatedTitle();
-                    barManager.addPlayer(player);
+                    bossBarHandler.addPlayer(player);
 
                     editingData.setBarKeyName(barKeyName);
                     editingData.setBossBarHandler(bossBarHandler);

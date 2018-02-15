@@ -1,10 +1,11 @@
 package com.minestom.BarMenuCreator.BarListener;
 
+import com.minestom.Api.Events.BarCreateEvent;
+import com.minestom.Api.Events.BarDeleteEvent;
 import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarTimer;
 import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
-import com.minestom.Utils.BossBarManager;
 import com.minestom.Utils.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -41,7 +42,6 @@ public class ConfirmMenu implements Listener {
             Player player = (Player) event.getWhoClicked();
             PlayerEditingData editingData = plugin.getUtilities().getEditingData(player);
             BossBarHandler bossBarHandler = editingData.getBossBarHandler();
-            BossBarManager barManager = bossBarHandler.getBossBarManager();
             FileConfiguration configuration = plugin.getConfig();
 
             int slot = event.getRawSlot();
@@ -52,7 +52,7 @@ public class ConfirmMenu implements Listener {
 
                 if (editingData.isDeleting()) {
 
-                    barManager.removeBar(player);
+                    bossBarHandler.removeBar(player);
                     editingData.setConfirm(false);
 
                     plugin.getUtilities().removePlayerEditing(player);
@@ -62,11 +62,14 @@ public class ConfirmMenu implements Listener {
 
                     player.closeInventory();
                     MessageUtil.sendMessage(player, "You have successfully deleted the bar!");
+
+                    BarDeleteEvent barDeleteEvent = new BarDeleteEvent(plugin.getUtilities(), bossBarHandler);
+                    Bukkit.getServer().getPluginManager().callEvent(barDeleteEvent);
                 }
 
                 if (editingData.isCanceling()) {
 
-                    barManager.removeBar(player);
+                    bossBarHandler.removeBar(player);
                     editingData.setConfirm(false);
 
                     plugin.getUtilities().removePlayerEditing(player);
@@ -92,7 +95,7 @@ public class ConfirmMenu implements Listener {
                     plugin.saveConfig();
 
                     plugin.loadBars();
-                    barManager.removeBar(player);
+                    bossBarHandler.removeBar(player);
                     editingData.setConfirm(false);
 
                     plugin.getUtilities().removePlayerEditing(player);
@@ -105,6 +108,9 @@ public class ConfirmMenu implements Listener {
 
                     player.closeInventory();
                     MessageUtil.sendMessage(player, "The bar has been successfully saved!");
+
+                    BarCreateEvent barCreateEvent = new BarCreateEvent(plugin.getUtilities(), bossBarHandler);
+                    Bukkit.getServer().getPluginManager().callEvent(barCreateEvent);
                 }
             }
             if (slot == 3 && item.hasItemMeta()) {

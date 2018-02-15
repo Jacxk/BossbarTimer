@@ -4,7 +4,6 @@ import com.minestom.BarMenuCreator.BossbarMenuMaker;
 import com.minestom.BossBarTimer;
 import com.minestom.DataHandler.BossBarHandler;
 import com.minestom.DataHandler.PlayerEditingData;
-import com.minestom.Utils.BossBarManager;
 import com.minestom.Utils.MessageUtil;
 import com.minestom.Utils.Utilities;
 import org.apache.commons.lang.StringUtils;
@@ -38,7 +37,6 @@ public class InChatEdition implements Listener {
 
         PlayerEditingData editingData = utilities.getEditingData(player);
         BossBarHandler bossBarHandler = editingData.getBossBarHandler();
-        BossBarManager barManager = bossBarHandler.getBossBarManager();
         String message = event.getMessage();
 
         if (editingData.isAddingCmd()) {
@@ -122,8 +120,8 @@ public class InChatEdition implements Listener {
 
             editingData.setBarKeyName(message.replace(" ", "_"));
 
-            barManager.createBar(" ", "WHITE", "SOLID");
-            barManager.addPlayer(player);
+            bossBarHandler.createBar(" ", "WHITE", "SOLID");
+            bossBarHandler.addPlayer(player);
 
             bossBarHandler.startAnimatedTitle();
 

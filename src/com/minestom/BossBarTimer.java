@@ -57,11 +57,11 @@ public class BossBarTimer extends JavaPlugin implements Listener {
             String barName = bossBarHandler.getBarKeyName();
             long timeLeft = bossBarHandler.getCurrentTime();
 
-            if (timeLeft != 53291) {
+            if (timeLeft != 0) {
                 getConfig().set("Data." + barName, timeLeft);
                 saveConfig();
             }
-            Bukkit.getOnlinePlayers().forEach(bossBarHandler.getBossBarManager()::removeBar);
+            Bukkit.getOnlinePlayers().forEach(bossBarHandler::removeBar);
         }
     }
 
@@ -105,7 +105,7 @@ public class BossBarTimer extends JavaPlugin implements Listener {
 
     private void init() {
         utilities = new Utilities(this);
-        update = new Update(this, 1);
+        update = new Update(this, 53291);
     }
 
     private void setupConfig() {
